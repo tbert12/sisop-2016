@@ -1,29 +1,23 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+75.08 - SistemasOperativos Trapabajo Practico Grupo 5. Primer cuatrimestre Año 2016 
 
-### What is this repository for? ###
+### Resumen ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Sistema de autoplanes
+* Version 0
+* [Enunciado del TP](http://materias.fi.uba.ar/7508/Practica-2016/1C.html)
 
-### How do I get set up? ###
+### Como configuro el repo? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* Pullear
+* Codear
 
-### Contribution guidelines ###
+### Integrantes ###
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+* Facundo Etchanchu
+* Juan Manuel Bouvier
+* Octavio Iogha
+* Guido Negri
+* Martin Cura
+* Tomas Bert
