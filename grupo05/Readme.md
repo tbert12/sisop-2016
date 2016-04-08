@@ -4,14 +4,17 @@
 
 ### 2) Recibir ofertas (shell) => `Martin`
 ### 3) Procesar Ofertas (shell) => `Tomi`
-Input
-- Concesionarios MAEDIR/concesionarios.csv
-- Fechas de Adjudicación MAEDIR/FechasAdj.csv
-- Archivos de Input ARRIDIR/<cod_concesionario>_<aniomesdia>.csv
-Output
-- Archivos Aceptados OKDIR/<nombre del archivo>
-- Archivos Rechazados NOKDIR/<nombre del archivo>
-- Log del Comando LOGDIR/RecibirOfertas.log
+####Input
+- Concesionarios **MAEDIR/concesionarios.csv**
+- Fechas de Adjudicación **MAEDIR/FechasAdj.csv**
+- Archivos de Input **ARRIDIR/<cod-concesionario>_<aniomesdia>.csv**
+
+####Output
+- Archivos Aceptados **OKDIR/<nombre del archivo>**
+- Archivos Rechazados **NOKDIR/<nombre del archivo>**
+- Log del Comando **LOGDIR/RecibirOfertas.log**
+ 
+
 ### 4) Generar sorteo (shell) => `Facu`
 ### 5) Determinar ganadores (perl) => `Octa`
 ### 6) Complementarias y Documentacion => `Bubi`
