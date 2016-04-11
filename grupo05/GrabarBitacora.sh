@@ -5,9 +5,9 @@ MSG=$2	# Mensaje a loggear
 if [ -z ${3+x} ]; then		# El tercer argumento es el tipo de mensaje
 	MSG_TYPE="INFO";	# INFO es tipo por default
 else
-	if [ $3 -eq 2 ]; then		# Tipo 2 es ERROR
+	if [ $(($3)) -eq 2 ]; then		# Tipo 2 es ERROR
 		MSG_TYPE="ERR"
-	elif [ $3 -eq 1 ]; then		# Tipo 1 es WARNING
+	elif [ $(($3)) -eq 1 ]; then		# Tipo 1 es WARNING
 		MSG_TYPE="WAR"
 	else				# Tipo 0 es INFORMATIVO
 		MSG_TYPE="INFO"
