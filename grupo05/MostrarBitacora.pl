@@ -8,12 +8,25 @@ open (BITACORA, "$bitacora") || die "ERROR: No se pudo abrir la bitacora $bitaco
 
 while ($linea=<BITACORA>) {
 	if (defined $query) {
-		if ($linea =~ /$query/) {
-			print "$linea";
+		if ($linea =~ /$query/) {	# Busca coincidencias de regex.
+			if (defined $ARGV[2] && length $ARGV[2] > 0) {
+				open (SALIDA, ">$ARGV[2]") or die "ERROR: No se pudo abrir archivo de salida.";
+				print SALIDA $linea;
+			} else {
+				print "$linea";
+			}
 		}
 	} else {
-		print "$linea";
+		if (defined $ARGV[2] && length $ARGV[2] > 0) { 
+			open (SALIDA, ">$ARGV[2]") or die "ERROR: No se pudo abrir archivo de salida.";
+			print SALIDA $linea;
+		} else {
+			print "$linea";
+		}
 	}
 }
 
+if (defined $ARGV[2] && length $ARGV[2] > 0) {
+	close (SALIDA);
+}
 close (BITACORA);
