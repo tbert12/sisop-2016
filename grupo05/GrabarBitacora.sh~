@@ -25,7 +25,7 @@ echo "$USER $DATE $COMANDO [$MSG_TYPE]: $MSG" >> $BITACORA
 CURRENT_LOGSIZE="$(wc -c < $BITACORA)"
 if [ $((CURRENT_LOGSIZE)) -gt $((LOGSIZE)) ]; then
 	LAST_REGS=`tail -n 50 "$BITACORA"`
-	rm "$BITACORA"
+	rm $BITACORA
 	echo "$LAST_REGS" > $BITACORA
 	echo "$USER $DATE $COMANDO [INFO]: Log Excedido" >> $BITACORA
 fi
