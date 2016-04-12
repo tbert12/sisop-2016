@@ -30,3 +30,4 @@ if [ $((CURRENT_LOGSIZE)) -gt $((LOGSIZE)) ]; then
 	echo "$USER $DATE $COMANDO [INFO]: Log Excedido" >> $BITACORA
 fi
 
+return 0
