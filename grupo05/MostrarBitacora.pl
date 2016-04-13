@@ -10,7 +10,8 @@ sub imprimirLinea {
 	my ($linea, $comando) = @_;
         if (defined $ARGV[2] && length $ARGV[2] > 0) {
                 open (SALIDA, ">>$ARGV[2]") 
-			or &logError ("No se pudo abrir archivo de salida.", $comando);
+			or (&logError ("No se pudo abrir archivo de salida de MostrarBitacora.", $comando) == 0
+				or return (1));
                 print SALIDA $linea;
         } else {
                 print "$linea";
@@ -26,15 +27,18 @@ sub main {
 
 	$bitacora = $ENV{LOGDIR} . $comando . ".log";
 	open (BITACORA, "$bitacora") 
-		or &logError("No se pudo abrir el archivo de bitacora sobre el que se va a realizar la consulta.", $comando);
+		or (&logError("No se pudo abrir el archivo de bitacora sobre el que se va a realizar la consulta de MostrarBitacora.", $comando) == 0
+			or return (1));
 
 	while ($linea=<BITACORA>) {
 		if (defined $query) {
 			if ($linea =~ /$query/) {	# Busca coincidencias de regex.
-				&imprimirLinea ($linea, $comando);
+				&imprimirLinea ($linea, $comando) == 0
+					or return (1);
 			}
 		} else {
-			&imprimirLinea ($linea, $comando);
+			&imprimirLinea ($linea, $comando) == 0
+				or return (1);
 		}
 	}
 
