@@ -6,7 +6,7 @@
 ### 3) Procesar Ofertas (shell) => `Tomi`
 ####Input
 - Concesionarios **MAEDIR/concesionarios.csv**
-- Fechas de Adjudicación **MAEDIR/FechasAdj.csv**
+- Fechas de Adjudicacion **MAEDIR/FechasAdj.csv**
 - Archivos de Input **ARRIDIR/<cod-concesionario>_<aniomesdia>.csv**
 
 ####Output
@@ -24,3 +24,5 @@
 * Detener procesos (shell | perl)
 * Lanzar Proceso (shell | perl)
 
+#Datos
+[Drive con todos los csv](https://drive.google.com/open?id=0B5miVOLotTY5Mm1md2xTS3AydjQ)
