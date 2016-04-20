@@ -19,15 +19,17 @@ DATE=`date +%d/%m/%Y" "%H:%M:%S`	# Fecha actual
 # Escribo registro de log al final del archivo
 # Si el archivo de bitacora no existe, creo uno nuevo
 BITACORA="$LOGDIR$COMANDO.log"
-echo "$USER $DATE $COMANDO [$MSG_TYPE]: $MSG" >> $BITACORA
-
-# Si el tamanio del archivo supera LOGSIZE se trunca a ultimas 50 lineas
-CURRENT_LOGSIZE="$(wc -c < $BITACORA)"
-if [ $((CURRENT_LOGSIZE)) -gt $((LOGSIZE)) ]; then
-	LAST_REGS=`tail -n 50 "$BITACORA"`
-	rm "$BITACORA"
-	echo "$LAST_REGS" > $BITACORA
-	echo "$USER $DATE $COMANDO [INFO]: Log Excedido" >> $BITACORA
+if [ -n "$MSG" ]; then		# Solo loggeo mensajes no vacios.
+	echo "$USER $DATE $COMANDO [$MSG_TYPE]: $MSG" >> $BITACORA
+	
+	# Si el tamanio del archivo supera LOGSIZE se trunca a ultimas 50 lineas
+	CURRENT_LOGSIZE="$(wc -c < $BITACORA)"
+	if [ $((CURRENT_LOGSIZE)) -gt $((LOGSIZE)) ]; then
+        	LAST_REGS=`tail -n 50 "$BITACORA"`
+        	rm "$BITACORA"
+        	echo "$LAST_REGS" > $BITACORA
+        	echo "$USER $DATE $COMANDO [INFO]: LOG EXCEDIDO" >> $BITACORA
+	fi
 fi
 
 return 0
