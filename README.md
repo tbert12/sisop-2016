@@ -4,9 +4,9 @@
 
 ### Resumen ###
 
-* Sistema de autoplanes
-* Version 0
+* Sistema de autoplanes CIPAK
 * [Enunciado del TP](http://materias.fi.uba.ar/7508/Practica-2016/SO7508_TP_TemaK_2016-1c.pdf)
+* Version 0
 
 ### Como configuro el repo? ###
 
