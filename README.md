@@ -1,12 +1,12 @@
 # README #
 
-75.08 - SistemasOperativos Trapabajo Practico Grupo 5. Primer cuatrimestre Año 2016 
+75.08 - SistemasOperativos Trapabajo Practico Grupo 5. Primer cuatrimestre AÃ±o 2016 
 
 ### Resumen ###
 
 * Sistema de autoplanes
 * Version 0
-* [Enunciado del TP](http://materias.fi.uba.ar/7508/Practica-2016/1C.html)
+* [Enunciado del TP](http://materias.fi.uba.ar/7508/Practica-2016/SO7508_TP_TemaK_2016-1c.pdf)
 
 ### Como configuro el repo? ###
 
