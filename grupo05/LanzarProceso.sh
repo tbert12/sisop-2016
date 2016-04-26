@@ -7,7 +7,9 @@ logMessage () {
 	if [ "$CALLED_FROM_COMMANDLINE" = true ]; then
 		echo "$MSG"
 	else
-		sh GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
+		if [ ! -z "$COMANDO" ]; then
+			sh GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
+		fi
 	fi
 }
 
