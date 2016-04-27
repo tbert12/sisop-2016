@@ -97,7 +97,7 @@ generarArchConfiguracion(){
 organizarArchivos(){
 	if [ ! -e "$arch_comprimido" ]
 	  then
-		echo "Hubo un error: se requiere el archivo source.tar.gz en la carpeta $PWD para poder continuar la instalación"
+		echo "Hubo un error: se requiere el archivo source.tar.gz en la carpeta $PWD para poder continuar la instalación."
 		exit 1
 	fi
 
@@ -120,6 +120,13 @@ if [ -e "$ARCH_CNF" ]
   then
 	echo "Ya existe una instalacion previa. Para reinstalar, primero desinstale y limpia el directorio."
 	return 1
+fi
+
+
+if [ ! -e "$arch_comprimido" ]
+  then
+	echo "Hubo un error: se requiere el archivo source.tar.gz en la carpeta actual ($PWD) para poder efectuar la instalación."
+	exit 1
 fi
 
 
