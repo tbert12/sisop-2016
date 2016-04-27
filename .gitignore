@@ -1,3 +1,5 @@
 *.project
 *.sh~
+*.pl~
 *.csv
+/grupo05/datos/
