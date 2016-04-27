@@ -14,30 +14,35 @@
 # Ouput:
 #		Archivos de sorteos PROCDIR/sorteos/<sorteoId>_<fecha de adjudicación>
 # 		Log del Comando LOGDIR/GenerarSorteo.log
-
+#
 #Entorno -> hay que ver como lo definimos ?
 MAEDIR="MAEDIR/"
 PROCDIR="PROCDIR/"
-LOGDIR="LOGDIR/" #Este no hace falta. lo hace el log
 #FIN Entorni
 
-
 #funcion que genera un sorteo para una fecha y un ID
-generarSorteo() {
 
+generarSorteo() {
+	
 	#Fecha de adjudicacion
 	FECHAADJ=$1
 	#SorteoID
 	SORTEOID=$2
 
 	#Inicio el log grabando "Inicio de Sorteo"
-	sh GrabarBitacora GenerarSorteo "Inicio de Sorteo"
+	sh GrabarBitacora GenerarSorteo "Inicio de Sorteo Numero: $SORTEOID de la fecha: $FECHAADJ"
 
 	#genera en NUMEROS_SORTEO un array con la secuencia de 1 a 168 random
 	NUMEROS_SORTEO=($(seq 168 | shuf))
 
 	#Archivo a guardar
-	FILE="$PROCDIR/sorteos/$SORTEOID""_""$FECHAADJ.csv"
+	FILE="$PROCDIR""sorteos/$SORTEOID""_""$FECHAADJ.csv"
+
+	#si el directorio PROCDIR/sorteos no existe lo creo
+	if [ ! -d $PROCDIR"sorteos" ]
+		then
+			mkdir -p $PROCDIR"sorteos"
+	fi
 
 	#Verifico si el archivo ya esta creado
 	if [ -w $FILE ]
@@ -91,9 +96,9 @@ if [ -r "$ARCH_FECHAS_ADJ" ]
 				# Extraigo la fecha y reformateo a YYYYMMDD
 				fecha_adj=$(echo "$linea_adj" | cut -c7-10)$(echo "$linea_adj" | cut -c4-5)$(echo "$linea_adj" | cut -c1-2)
 				
-				generarSorteo FECHA $(generarId "$FECHA")
+				generarSorteo $fecha_adj $(generarId "$fecha_adj")
 			fi
-		done < fechas_adj_inversoAUX.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
+		done < $ARCH_FECHAS_ADJ  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
 else
 	sh GrabarBitacora.sh "GenerarSorteo" '1' "No hay archivo de adjudicacion"
 fi
