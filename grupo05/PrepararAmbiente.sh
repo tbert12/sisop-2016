@@ -200,13 +200,8 @@ verificarAmbienteSinInicializar(){
 	AMBIENTE_SIN_INICIALIZAR=1
 	
 	#AMBIENTE_INICIALIZADO es la variable global.
-<<<<<<< HEAD
 	if [ ${AMBIENTE_INICIALIZADO-0} -eq 0 ]; then
-		sh GrabarBitacora PrepararAmbiente ERR "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"
-=======
-	if [ ${AMBIENTE_INICIALIZADO-1} -eq 1 ]; then
 		bash GrabarBitacora PrepararAmbiente ERR "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"
->>>>>>> db6402320f311508f80098d0069c0645afd90c75
 		echo "ERROR: El ambiente ya se encuentra inicializado en esta sesion."
 		AMBIENTE_SIN_INICIALIZAR=0
 	fi
@@ -244,7 +239,8 @@ setearVariablesAmbiente() {
 	#Otra variables necesarias (agregar mas de ser necesario):
 	AMBIENTE_INICIALIZADO=1
 	export $AMBIENTE_INICIALIZADO
-	######REVISAR: FALTA SETEAR LA VARIABLE PATH, NO SE BIEN QUE SERIA.
+	PATH="$PATH:$BINDIR"
+	export $PATH
 	
 	return $SETEO_CORRECTO
 }
@@ -262,14 +258,16 @@ continuarEjecucion() {
 			
 			#Chequeo si ya se estaba ejecutando anteriormente:
 			#1 = Ya se estaba ejecutando
-			if [ $? -eq 1 ]; then
+			retornoLanzarProceso=$?
+			if [ $retornoLanzarProceso -eq 1 ]; then
 				bash GrabarBitacora PrepararAmbiente WAR "El comando RecibirOferta ya se encontraba activado y corriendo."
 				echo "El comando RecibirOferta fue activado anteriormente y se encuentra corriendo."
 			#2 = No se pudo ejecutar por algun error
-			elif [ $? -eq 2 ]; then
+			elif [ $retornoLanzarProceso -eq 2 ]; then
 				bash GrabarBitacora PrepararAmbiente ERR "El comando RecibirOferta no puede ejecutarse."
 				echo "El comando RecibirOferta no puede ejecutarse."
-			else
+			#0 = Se ejecuto correctamente
+			elif [ $retornoLanzarProceso -eq 0 ]; then
 				GrabarBitacora PrepararAmbiente INFO "El comando RecibirOferta fue activado."
 				############# VER COMO RECIBIR EL PID DE RECIBIR OFERTAS ##############
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: <Process Id de RecibirOfertas>"
@@ -279,7 +277,7 @@ continuarEjecucion() {
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
-			echo "bash LanzarProceso.sh bash RecibirOfertas.sh otroComando" ######## REVISAR
+			echo "bash LanzarProceso.sh bash RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?
 			return 0
 		fi
 	done
@@ -297,7 +295,7 @@ borrarVariablesAmbiente() {
 	unset NOKDIR
 	unset LOGSIZE
 	unset SLEEPTIME
-	#unset PATH
+	PATH=$(echo $PATH | sed 's-^\(.*\):.*$-\1-g')
 }
 
 ###################################################################
