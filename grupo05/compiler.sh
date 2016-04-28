@@ -13,7 +13,8 @@ tar -czf $arch_comprimido source/
 mkdir CIPAK_G5/
 
 mv $arch_comprimido CIPAK_G5/
-cp -ar Documentacion/ CIPAK_G5/
+cp -ar Documentacion/ CIPAK_G5/ 2> /dev/null
+cp -ar doc/ CIPAK_G5/ 2> /dev/null
 cp -a installer.sh CIPAK_G5/
 cp -a Readme.md CIPAK_G5/
 

@@ -20,7 +20,7 @@ repararInstalacion() {
 	TIPO=$2 #BINDIR o MAEDIR
 	
 	tar -xvzf "$GRUPO""source/source.tar.gz"
-	sh MoverArchivos.sh "$GRUPO""source/source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
+	bash MoverArchivos.sh "$GRUPO""source/source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
 	rm -rf "$GRUPO""source/source/" #####REVISAR: Borra todo o solo los archivos?
 }
 
@@ -31,13 +31,13 @@ verificarScript() {
 	SCRIPT_DISPONIBLE=0
 	
 	if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then	
-		sh GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
+		bash GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
 		repararInstalacion "$NOMBRE_ARCHIVO" "BINDIR"
 		
 		if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then
-			sh GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
+			bash GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
 			Echo "No fue posible reparar la instalacion. Debe realizarlo el administrador del sistema." # MAS INDICACIONES AL ADMIN?
 			SCRIPT_DISPONIBLE=1
 		fi
@@ -53,13 +53,13 @@ verificarArchivoMaestro() {
 	MAESTRO_DISPONIBLE=0
 	
 	if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then	
-		sh GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
+		bash GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
 		repararInstalacion "$NOMBRE_ARCHIVO" "MAEDIR"
 		
 		if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then
-			sh GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
+			bash GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
 			Echo "No fue posible reparar la instalacion. Debe realizarlo el administrador del sistema" # MAS INDICACIONES? IDEM SCRIPTS
 			MAESTRO_DISPONIBLE=1
 		fi
@@ -141,12 +141,12 @@ verificarPermisosScripts() {
 	for SCRIPT in *
 	do
 		if [ ! -x $SCRIPT ]; then
-			sh GrabarBitacora PrepararAmbiente WAR "El script $SCRIPT no tiene permiso de ejecucion. Se intenta modificarlo."
+			bash GrabarBitacora PrepararAmbiente WAR "El script $SCRIPT no tiene permiso de ejecucion. Se intenta modificarlo."
 			echo "WARNING: El script $SCRIPT no tiene permiso de ejecucion. Se intenta modificarlo."
 			chmod +x $SCRIPT
 		fi
 		if [ ! -x $SCRIPT ]; then
-			sh GrabarBitacora PrepararAmbiente ERR "El script $SCRIPT no tiene permiso de ejecucion y no fue posible modificarlo."
+			bash GrabarBitacora PrepararAmbiente ERR "El script $SCRIPT no tiene permiso de ejecucion y no fue posible modificarlo."
 			echo "ERROR: No fue posible modificar el permiso."
 			PERMISOS_SCRIPTS=1
 		fi
@@ -167,12 +167,12 @@ verificarPermisosMaestros() {
 	for MAESTRO in *
 	do
 		if [ ! -r $MAESTRO ]; then
-			sh GrabarBitacora PrepararAmbiente WAR "El archivo $MAESTRO no tiene permiso de lectura. Se intenta modificarlo."
+			bash GrabarBitacora PrepararAmbiente WAR "El archivo $MAESTRO no tiene permiso de lectura. Se intenta modificarlo."
 			echo "WARNING: El archivo $MAESTRO no tiene permiso de lectura. Se intenta modificarlo."
 			chmod +r $MAESTRO
 		fi
 		if [ ! -r $MAESTRO ]; then
-			sh GrabarBitacora PrepararAmbiente ERR "El archivo $MAESTRO no tiene permiso de lectura y no fue posible modificarlo."
+			bash GrabarBitacora PrepararAmbiente ERR "El archivo $MAESTRO no tiene permiso de lectura y no fue posible modificarlo."
 			echo "ERROR: No fue posible modificar el permiso."
 			PERMISOS_MAESTRO=1
 		fi
@@ -187,7 +187,7 @@ verificarArchivoConfiguracion() {
 	CONFIG_EXISTE=0
 	
 	if [ ! -f "config/CIPAK.cnf" ]; then ######REVISAR: chequear si accedo bien a esta direccion
-		sh GrabarBitacora PrepararAmbiente ERR "El archivo de configuracion CIPAK.cnf no existe."
+		bash GrabarBitacora PrepararAmbiente ERR "El archivo de configuracion CIPAK.cnf no existe."
 		echo "ERROR: El archivo de configuracion CIPAK.cnf no existe. Debe instalar nuevamente el sistema."
 		CONFIG_EXISTE=1
 	fi
@@ -201,7 +201,7 @@ verificarAmbienteSinInicializar(){
 	
 	#AMBIENTE_INICIALIZADO es la variable global.
 	if [ ${AMBIENTE_INICIALIZADO-1} -eq 1 ]; then
-		sh GrabarBitacora PrepararAmbiente ERR "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"
+		bash GrabarBitacora PrepararAmbiente ERR "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"
 		echo "ERROR: El ambiente ya se encuentra inicializado en esta sesion."
 		AMBIENTE_SIN_INICIALIZAR=1
 	fi
@@ -220,7 +220,7 @@ setearVariablesAmbiente() {
 	fi
 	
 	#Inicializo sistema:
-	sh GrabarBitacora PrepararAmbiente INFO "Estado del Sistema: INICIALIZADO."
+	bash GrabarBitacora PrepararAmbiente INFO "Estado del Sistema: INICIALIZADO."
 	echo "Estado del Sistema: INICIALIZADO."
 	echo
 	echo "A continuacion se muestran las variables de ambiente:"
@@ -231,7 +231,7 @@ setearVariablesAmbiente() {
 	while read VARIABLE VALOR USUARIO FECHA
 	do
 		export $VARIABLE=$VALOR
-		sh GrabarBitacora PrepararAmbiente INFO "Nombre de variable: $VARIABLE - Valor: $VALOR"
+		bash GrabarBitacora PrepararAmbiente INFO "Nombre de variable: $VARIABLE - Valor: $VALOR"
 		echo "Nombre de variable: $VARIABLE - Valor: $VALOR"
 	done <../config/CIPAK.cnf ######REVISAR: Chequear si accedo bien
 	IFS=$IFS_original
@@ -253,28 +253,28 @@ continuarEjecucion() {
 		read RESPUESTA
 		if [ "$RESPUESTA" = "Si" ]; then
 			#Lanzo el comando recibirOferta:
-			sh LanzarProceso.sh "sh RecibirOfertas.sh" PrepararAmbiente ####REVISAR LLAMADA
+			bash LanzarProceso.sh "bash RecibirOfertas.sh" PrepararAmbiente ####REVISAR LLAMADA
 			
 			#Chequeo si ya se estaba ejecutando anteriormente:
 			#1 = Ya se estaba ejecutando
 			if [ $? -eq 1 ]; then
-				sh GrabarBitacora PrepararAmbiente WAR "El comando RecibirOferta ya se encontraba activado y corriendo."
+				bash GrabarBitacora PrepararAmbiente WAR "El comando RecibirOferta ya se encontraba activado y corriendo."
 				echo "El comando RecibirOferta fue activado anteriormente y se encuentra corriendo."
 			#2 = No se pudo ejecutar por algun error
 			elif [ $? -eq 2 ]; then
-				sh GrabarBitacora PrepararAmbiente ERR "El comando RecibirOferta no puede ejecutarse."
+				bash GrabarBitacora PrepararAmbiente ERR "El comando RecibirOferta no puede ejecutarse."
 				echo "El comando RecibirOferta no puede ejecutarse."
 			else
 				GrabarBitacora PrepararAmbiente INFO "El comando RecibirOferta fue activado."
 				############# VER COMO RECIBIR EL PID DE RECIBIR OFERTAS ##############
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: <Process Id de RecibirOfertas>"
 				echo "Para detenerlo utilizar la siguiente linea:"
-				echo "sh DetenerProceso xxxxxxxxxxxxx"######### REVISAR
+				echo "bash DetenerProceso xxxxxxxxxxxxx"######### REVISAR
 			fi
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
-			echo "sh LanzarProceso.sh sh RecibirOfertas.sh otroComando" ######## REVISAR
+			echo "bash LanzarProceso.sh bash RecibirOfertas.sh otroComando" ######## REVISAR
 			return 0
 		fi
 	done

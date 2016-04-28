@@ -11,18 +11,18 @@ STOP_RESULT=$?
 
 if [ "$STOP_RESULT" -eq 0 ]; then
 	if [ -z ${PID+x} ]; then
-		sh GrabarBitacora.sh "$COMANDO" "El proceso $PROCESS_NAME ha sido detenido exitosamente."
+		bash GrabarBitacora.sh "$COMANDO" "El proceso $PROCESS_NAME ha sido detenido exitosamente."
 		echo "El proceso $PROCESS_NAME ha sido detenido exitosamente."
 	else
-		sh GrabarBitacora.sh "$COMANDO" "El proceso $PROCESS_NAME con PID $PID ha sido detenido exitosamente."
+		bash GrabarBitacora.sh "$COMANDO" "El proceso $PROCESS_NAME con PID $PID ha sido detenido exitosamente."
 		echo "El proceso $PROCESS_NAME con PID $PID ha sido detenido exitosamente."
 	fi
 elif [ "$STOP_RESULT" -eq 1 ]; then
 	echo "$OUTPUT"
-	sh GrabarBitacora.sh "$COMANDO" "$OUTPUT" 1
+	bash GrabarBitacora.sh "$COMANDO" "$OUTPUT" 1
 else
 	echo "Ocurrio un error al invocar al comando start-stop-daemon. No se pudo detener el proceso $PROCESS_NAME."
-	sh GrabarBitacora.sh "$COMANDO" "Ocurrio un error al invocar al comando start-stop-daemon. No se pudo detener el proceso $PROCESS_NAME." 2
+	bash GrabarBitacora.sh "$COMANDO" "Ocurrio un error al invocar al comando start-stop-daemon. No se pudo detener el proceso $PROCESS_NAME." 2
 fi
 
 exit "$STOP_RESULT";
