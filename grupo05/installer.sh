@@ -156,7 +156,8 @@ echo
 echo "¡Instalación completada exitosamente!"
 echo
 
-cd "$BINDIR"
 mv "$0" "$GRUPO""source/"
+cd /
+cd "$BINDIR"
 
 exit 0

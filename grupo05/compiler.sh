@@ -4,8 +4,8 @@ arch_comprimido=source.tar.gz
 
 mkdir source/
 
-cp -ar datos/MAEDIR source/
-cp -ar datos/ARRIDIR source/
+cp -ar data/MAEDIR source/
+cp -ar data/ARRIDIR source/
 mkdir source/BINDIR
 cp -a *{.pl,.sh} source/BINDIR
 tar -czf $arch_comprimido source/
