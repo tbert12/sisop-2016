@@ -73,7 +73,7 @@ rechazarArchivo() {
 	razon_rechazo="$2"
 
 	# mv
-	bash MoverArchivo.sh "$ARRIDIR$nom_arch_rechazado" "$NOKDIR$nom_arch_rechazado" "RecibirOfertas"
+	bash MoverArchivos.sh "$ARRIDIR$nom_arch_rechazado" "$NOKDIR" "RecibirOfertas"
 	RES_MOV=$?
 	if [ $RES_MOV -eq 0 ]
 	  then
@@ -92,6 +92,13 @@ nro_ciclo=0
 # daemon
 while :
 do
+	######
+	#echo
+	#echo
+	#echo "RecibirOfertas corre imprimidorDeVariables"
+	#bash imprimidorDeVariables.sh
+	######
+
 	# Incremento e imprimo el número de ciclo
 	nro_ciclo=$((nro_ciclo+1))
 	bash GrabarBitacora.sh "RecibirOfertas" "ciclo nro. $nro_ciclo"
@@ -130,7 +137,7 @@ do
 					if [ $(wc -c < "$linea_arch") -gt 1 ]   # semialternativa: [ -s "$linea_arch" ]
 					  then
 						# mv
-						bash MoverArchivo.sh "$linea_arch" "$OKDIR$nom_arch"
+						bash MoverArchivos.sh "$linea_arch" "$OKDIR"
 						RES_MOV=$?
 						if [ $RES_MOV -eq 0 ]
 						  then
@@ -158,12 +165,13 @@ do
 		if [ $RES_LNZ -eq 0 ]
 		  then
 			PID=$(pgrep bash | tail -n 1)
-			bash GrabarBitacora.sh "RecibirOfertas" "ProcesarOfertas corriendo bajo el no.: #PID"
+			bash GrabarBitacora.sh "RecibirOfertas" "ProcesarOfertas corriendo bajo el no.: $PID"
 		elif [ $RES_LNZ -eq 1 ]
 		  then
 			bash GrabarBitacora.sh "RecibirOfertas" "Invocación de ProcesarOfertas pospuesta para el siguiente ciclo" '1'
 		#else
 			# No se pudo ejecutar ProcesarOfertas
+		fi
 	fi
 
 	sleep $SLEEPTIME
