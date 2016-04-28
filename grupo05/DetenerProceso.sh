@@ -25,5 +25,5 @@ else
 	sh GrabarBitacora.sh "$COMANDO" "Ocurrio un error al invocar al comando start-stop-daemon. No se pudo detener el proceso $PROCESS_NAME." 2
 fi
 
-return "$STOP_RESULT";
+exit "$STOP_RESULT";
 

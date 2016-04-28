@@ -44,4 +44,4 @@ else
 	logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El ambiente no fue inicializado. El proceso \"$PROCESS\" no puede ser lanzado." "2"
 fi
 
-return "$RETVAL"
+exit "$RETVAL"

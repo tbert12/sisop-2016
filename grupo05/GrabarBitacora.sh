@@ -32,4 +32,4 @@ if [ -n "$MSG" ]; then		# Solo loggeo mensajes no vacios.
 	fi
 fi
 
-return 0
+exit 0

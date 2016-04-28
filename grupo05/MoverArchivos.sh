@@ -67,6 +67,6 @@ else
 	logMessage "$COMANDO" "El origen y destino especificados son el mismo. No se hace ningun movimiento." "2"
 fi
 
-return "$RETVAL"
+exit "$RETVAL"
 
 
