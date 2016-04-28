@@ -6,9 +6,7 @@ logMessage () {
 	if [ -z "$COMANDO" ]; then
 		echo "$MSG"
 	else
-		if [ ! -z "$COMANDO" ]; then
-			sh GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
-		fi
+		sh GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
 	fi
 }
 
