@@ -89,7 +89,6 @@ generarArchConfiguracion(){
 	echo "INFODIR=$INFODIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "LOGDIR=$LOGDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "NOKDIR=$NOKDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
-	echo "CONFDIR=$CONFDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"  # ignorado en el enunciado
 	echo "LOGSIZE=$LOGSIZE=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "SLEEPTIME=$SLEEPTIME=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 }
@@ -110,6 +109,9 @@ organizarArchivos(){
 
 	mv "$arch_comprimido" "$GRUPO""source/"
 	rm -rf "source/"
+
+	cp Readme.md "$GRUPO""source/"
+	mv Readme.md "$GRUPO"
 }
 
 
@@ -118,7 +120,7 @@ organizarArchivos(){
 # Chequea instalacion previa
 if [ -e "$ARCH_CNF" ]
   then
-	echo "Ya existe una instalacion previa. Para reinstalar, primero desinstale y limpia el directorio."
+	echo "Ya existe una instalación previa. Para reinstalar, primero corra \'bash $BINDIR""uninstall.sh\' y limpie el directorio."
 	return 1
 fi
 
