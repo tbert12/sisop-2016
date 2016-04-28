@@ -31,13 +31,13 @@ verificarScript() {
 	SCRIPT_DISPONIBLE=1
 	
 	if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then	
-		bash GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
+		bash GrabarBitacora.sh PrepararAmbiente "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion" 1
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
 		repararInstalacion "$NOMBRE_ARCHIVO" "BINDIR"
 		
 		if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then
-			bash GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
+			bash GrabarBitacora.sh PrepararAmbiente "Imposible reparar instalacion." 2
 			Echo "No fue posible reparar la instalacion. Debe realizarlo el administrador del sistema." # MAS INDICACIONES AL ADMIN?
 			SCRIPT_DISPONIBLE=0
 		fi
@@ -53,13 +53,13 @@ verificarArchivoMaestro() {
 	MAESTRO_DISPONIBLE=1
 	
 	if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then	
-		bash GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
+		bash GrabarBitacora.sh PrepararAmbiente "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion" 1
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
 		repararInstalacion "$NOMBRE_ARCHIVO" "MAEDIR"
 		
 		if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then
-			bash GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
+			bash GrabarBitacora.sh PrepararAmbiente "Imposible reparar instalacion." 2
 			Echo "No fue posible reparar la instalacion. Debe realizarlo el administrador del sistema" # MAS INDICACIONES? IDEM SCRIPTS
 			MAESTRO_DISPONIBLE=0
 		fi
@@ -141,12 +141,12 @@ verificarPermisosScripts() {
 	for SCRIPT in *
 	do
 		if [ ! -x $SCRIPT ]; then
-			bash GrabarBitacora PrepararAmbiente WAR "El script $SCRIPT no tiene permiso de ejecucion. Se intenta modificarlo."
+			bash GrabarBitacora.sh PrepararAmbiente "El script $SCRIPT no tiene permiso de ejecucion. Se intenta modificarlo." 1
 			echo "WARNING: El script $SCRIPT no tiene permiso de ejecucion. Se intenta modificarlo."
 			chmod +x $SCRIPT
 		fi
 		if [ ! -x $SCRIPT ]; then
-			bash GrabarBitacora PrepararAmbiente ERR "El script $SCRIPT no tiene permiso de ejecucion y no fue posible modificarlo."
+			bash GrabarBitacora.sh PrepararAmbiente "El script $SCRIPT no tiene permiso de ejecucion y no fue posible modificarlo." 2
 			echo "ERROR: No fue posible modificar el permiso."
 			PERMISOS_SCRIPTS=0
 		fi
@@ -167,12 +167,12 @@ verificarPermisosMaestros() {
 	for MAESTRO in *
 	do
 		if [ ! -r $MAESTRO ]; then
-			bash GrabarBitacora PrepararAmbiente WAR "El archivo $MAESTRO no tiene permiso de lectura. Se intenta modificarlo."
+			bash GrabarBitacora.sh PrepararAmbiente "El archivo $MAESTRO no tiene permiso de lectura. Se intenta modificarlo." 1
 			echo "WARNING: El archivo $MAESTRO no tiene permiso de lectura. Se intenta modificarlo."
 			chmod +r $MAESTRO
 		fi
 		if [ ! -r $MAESTRO ]; then
-			bash GrabarBitacora PrepararAmbiente ERR "El archivo $MAESTRO no tiene permiso de lectura y no fue posible modificarlo."
+			bash GrabarBitacora.sh PrepararAmbiente "El archivo $MAESTRO no tiene permiso de lectura y no fue posible modificarlo." 2
 			echo "ERROR: No fue posible modificar el permiso."
 			PERMISOS_MAESTRO=0
 		fi
@@ -187,7 +187,7 @@ verificarArchivoConfiguracion() {
 	CONFIG_EXISTE=1
 	
 	if [ ! -f "config/CIPAK.cnf" ]; then ######REVISAR: chequear si accedo bien a esta direccion
-		bash GrabarBitacora PrepararAmbiente ERR "El archivo de configuracion CIPAK.cnf no existe."
+		bash GrabarBitacora.sh PrepararAmbiente "El archivo de configuracion CIPAK.cnf no existe." 2
 		echo "ERROR: El archivo de configuracion CIPAK.cnf no existe. Debe instalar nuevamente el sistema."
 		CONFIG_EXISTE=0
 	fi
@@ -200,8 +200,8 @@ verificarAmbienteSinInicializar(){
 	AMBIENTE_SIN_INICIALIZAR=1
 	
 	#AMBIENTE_INICIALIZADO es la variable global.
-	if [ ${AMBIENTE_INICIALIZADO-0} -eq 0 ]; then
-		bash GrabarBitacora PrepararAmbiente ERR "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"
+	if [ ${AMBIENTE_INICIALIZADO-0} -eq 1 ]; then
+		bash GrabarBitacora.sh PrepararAmbiente "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente" 2
 		echo "ERROR: El ambiente ya se encuentra inicializado en esta sesion."
 		AMBIENTE_SIN_INICIALIZAR=0
 	fi
@@ -220,7 +220,7 @@ setearVariablesAmbiente() {
 	fi
 	
 	#Inicializo sistema:
-	bash GrabarBitacora PrepararAmbiente INFO "Estado del Sistema: INICIALIZADO."
+	bash GrabarBitacora.sh PrepararAmbiente "Estado del Sistema: INICIALIZADO."
 	echo "Estado del Sistema: INICIALIZADO."
 	echo
 	echo "A continuacion se muestran las variables de ambiente:"
@@ -231,7 +231,7 @@ setearVariablesAmbiente() {
 	while read VARIABLE VALOR USUARIO FECHA
 	do
 		export $VARIABLE=$VALOR
-		bash GrabarBitacora PrepararAmbiente INFO "Nombre de variable: $VARIABLE - Valor: $VALOR"
+		bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: $VARIABLE - Valor: $VALOR"
 		echo "Nombre de variable: $VARIABLE - Valor: $VALOR"
 	done <../config/CIPAK.cnf ######REVISAR: Chequear si accedo bien
 	IFS=$IFS_original
@@ -260,15 +260,15 @@ continuarEjecucion() {
 			#1 = Ya se estaba ejecutando
 			retornoLanzarProceso=$?
 			if [ $retornoLanzarProceso -eq 1 ]; then
-				bash GrabarBitacora PrepararAmbiente WAR "El comando RecibirOferta ya se encontraba activado y corriendo."
+				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta ya se encontraba activado y corriendo." 1
 				echo "El comando RecibirOferta fue activado anteriormente y se encuentra corriendo."
 			#2 = No se pudo ejecutar por algun error
 			elif [ $retornoLanzarProceso -eq 2 ]; then
-				bash GrabarBitacora PrepararAmbiente ERR "El comando RecibirOferta no puede ejecutarse."
+				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta no puede ejecutarse." 2
 				echo "El comando RecibirOferta no puede ejecutarse."
 			#0 = Se ejecuto correctamente
 			elif [ $retornoLanzarProceso -eq 0 ]; then
-				GrabarBitacora PrepararAmbiente INFO "El comando RecibirOferta fue activado."
+				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta fue activado."
 				############# VER COMO RECIBIR EL PID DE RECIBIR OFERTAS ##############
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: <Process Id de RecibirOfertas>"
 				echo "Para detenerlo utilizar la siguiente linea:"
@@ -305,6 +305,7 @@ borrarVariablesAmbiente() {
 ####### REVISAR: Chequear en que path estoy parado ######
 
 main() {
+	echo "estoy aca"
 	setearVariablesAmbiente
 
 	# Return 1 = Error: Ambiente ya inicializado
