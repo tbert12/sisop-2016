@@ -200,12 +200,11 @@ verificarAmbienteSinInicializar(){
 	AMBIENTE_SIN_INICIALIZAR=1
 	
 	#AMBIENTE_INICIALIZADO es la variable global.
-	if [ ${AMBIENTE_INICIALIZADO-0} -eq 1 ]; then
+	if [ ${AMBIENTE_INICIALIZADO-"0"} = "1" ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente" 2
 		echo "ERROR: El ambiente ya se encuentra inicializado en esta sesion."
 		AMBIENTE_SIN_INICIALIZAR=0
 	fi
-	
 	return $AMBIENTE_SIN_INICIALIZAR
 }
 
@@ -238,9 +237,9 @@ setearVariablesAmbiente() {
 	
 	#Otra variables necesarias (agregar mas de ser necesario):
 	AMBIENTE_INICIALIZADO=1
-	export $AMBIENTE_INICIALIZADO
+	export AMBIENTE_INICIALIZADO
 	PATH="$PATH:$BINDIR"
-	export $PATH
+	export PATH
 	
 	return $SETEO_CORRECTO
 }
@@ -254,7 +253,7 @@ continuarEjecucion() {
 		read RESPUESTA
 		if [ "$RESPUESTA" = "Si" ]; then
 			#Lanzo el comando recibirOferta:
-			bash LanzarProceso.sh "bash RecibirOfertas.sh" PrepararAmbiente ####REVISAR LLAMADA
+			bash LanzarProceso.sh "bash RecibirOfertas.sh" PrepararAmbiente
 			
 			#Chequeo si ya se estaba ejecutando anteriormente:
 			#1 = Ya se estaba ejecutando
@@ -269,8 +268,9 @@ continuarEjecucion() {
 			#0 = Se ejecuto correctamente
 			elif [ $retornoLanzarProceso -eq 0 ]; then
 				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta fue activado."
-				############# VER COMO RECIBIR EL PID DE RECIBIR OFERTAS ##############
-				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: <Process Id de RecibirOfertas>"
+				PID=$(pgrep "bash RecibirOfertas.sh")
+				echo
+				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
 				echo "bash DetenerProceso xxxxxxxxxxxxx"######### REVISAR
 			fi
@@ -305,7 +305,6 @@ borrarVariablesAmbiente() {
 ####### REVISAR: Chequear en que path estoy parado ######
 
 main() {
-	echo "estoy aca"
 	setearVariablesAmbiente
 
 	# Return 1 = Error: Ambiente ya inicializado
@@ -333,13 +332,15 @@ main() {
 	retornoScripts=$?
 	verificarPermisosMaestros
 	retornoMaestros=$?
-	if [ retornoScripts -eq 0 -o retornoMaestros -eq 0 ]; then
-		borrarVariablesAmbiente
-		return 4
-	fi
+	#DESCOMENTAR ESTO CUANDO EL PREPAMB.LOG SE GUARDE EN BITACORAS:
+	#if [ $retornoScripts -eq 0 -o $retornoMaestros -eq 0 ]; then
+	#	borrarVariablesAmbiente
+	#	return 4
+	#fi
 
 	continuarEjecucion
 }
 
 main
+
 
