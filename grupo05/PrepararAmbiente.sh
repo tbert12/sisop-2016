@@ -272,7 +272,7 @@ continuarEjecucion() {
 				echo
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
-				echo "bash DetenerProceso xxxxxxxxxxxxx"######### REVISAR
+				echo "bash DetenerProceso xxxxxxxxxxxxx" ######### REVISAR
 			fi
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
@@ -337,6 +337,13 @@ main() {
 	#	borrarVariablesAmbiente
 	#	return 4
 	#fi
+
+	###########codigo de prueba
+	echo
+	echo
+	echo "Corriendo imprimidorDeVariables"
+	bash imprimidorDeVariables.sh
+	###########
 
 	continuarEjecucion
 }
