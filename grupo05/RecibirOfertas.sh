@@ -158,7 +158,7 @@ do
 		if [ $RES_LNZ -eq 0 ]
 		  then
 			PID=$(pgrep bash | tail -n 1)
-			bash GrabarBitacora.sh "RecibirOfertas" "ProcesarOfertas corriendo bajo el no.: #PID"
+			bash GrabarBitacora.sh "RecibirOfertas" "ProcesarOfertas corriendo bajo el no.: $PID"
 		elif [ $RES_LNZ -eq 1 ]
 		  then
 			bash GrabarBitacora.sh "RecibirOfertas" "Invocación de ProcesarOfertas pospuesta para el siguiente ciclo" '1'
