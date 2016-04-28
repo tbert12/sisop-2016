@@ -22,7 +22,7 @@ else
 	CALLED_FROM_COMMANDLINE=true
 fi
 
-if [ "$AMBIENTE_INICIALIZADO" -eq 0 ]; then	# Variable de entorno booleana.
+if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
 	PID=`pgrep "$PROCESS"`
 	if [ -z "$PID" ]; then
 		$PROCESS &
