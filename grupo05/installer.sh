@@ -101,7 +101,7 @@ organizarArchivos(){
 		exit 1
 	fi
 
-	tar -xvzf source.tar.gz > /dev/null # Ignorar output
+	tar -xzf source.tar.gz
 
 	### de alguna forma usar MoverArchivo.sh ?
 	mv source/ARRIDIR/* "$ARRIDIR"
