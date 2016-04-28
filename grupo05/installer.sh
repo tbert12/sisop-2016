@@ -136,7 +136,10 @@ echo
 echo "~ Inicio de instalación del sistema CIPAK ~"
 echo "-------------------------------------------"
 echo
-seteoVariables
+if [ ! "$1" -eq '-d' ]
+  then
+	seteoVariables
+fi
 echo
 echo "-------------------------------------------"
 echo
@@ -153,6 +156,7 @@ echo
 echo "¡Instalación completada exitosamente!"
 echo
 
+cd "$BINDIR"
 mv "$0" "$GRUPO""source/"
 
 exit 0

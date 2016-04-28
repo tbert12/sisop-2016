@@ -1,6 +1,6 @@
 # README #
 
-75.08 - SistemasOperativos Trapabajo Practico Grupo 5. Primer cuatrimestre Año 2016 
+75.08 - SistemasOperativos Trabajo Practico Grupo 5. Primer cuatrimestre Año 2016 
 
 ### Resumen ###
 
