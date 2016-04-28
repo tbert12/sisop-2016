@@ -26,13 +26,10 @@ NC='\033[0m'
 # De acuerdo al grupo: 
 #	monto_minimo = valor_de_cuota_pura * cantidad_de_cuotas_para_licitacion
 #	monto_maximo = valor_de_cuota_puta * cantidad_de_cuotas_pendientes
-# --PASOS-- []log
 
 function rechazarRegistro {
-	# 6. RECHAZAR REGISTRO (**ver campos)
-	#	Si alguna de las validaciones da error, rechazar el registro grabandolo en Archivo de ofertas rechazadas
-	#	Incrementar los contadores adecuados
-	#	Continuar con el siguiente registro.
+	# Si alguna de las validaciones da error, rechazar el registro grabandolo en Archivo de ofertas rechazadas
+	# -Incrementar los contadores adecuados
 	
 	#FORMATO (campos)
 	# Fuente				Nombre del archivo de input
@@ -47,7 +44,7 @@ function rechazarRegistro {
 	FECHA=`date +%d/%m/%Y" "%H:%M:%S`
 	
 	echo "RECHAZADO funcion rechazarRegistro( '$MENSAJE_DE_RECHAZO' )"
-	#echo "$archivo;$MENSAJE_DE_RECHAZO;$REGISTRO;$USER;$FECHA" ">>" "$PROCDIR/rechazadas/$CONCECIONARIO.rech"
+	#TODO: echo "$archivo;$MENSAJE_DE_RECHAZO;$REGISTRO;$USER;$FECHA" ">>" "$PROCDIR/rechazadas/$CONCECIONARIO.rech"
 	
 	REGISTROS_RECHAZADOS=$[$REGISTROS_RECHAZADOS +1]
 	
@@ -56,7 +53,9 @@ function rechazarRegistro {
 }
 
 function proximaFechaDeAdjudicacion {
-	#Proxima fecha a FECHA DE ARCHIVO ( incluye el mismo dia ) 
+	#Proxima fecha a FECHA DE ARCHIVO ( incluye el mismo dia )
+	# La fecha de adjudicacion del nombre del archivo a grabar se obtiene de la Tabla de Fechas de adjudicacion MAEDIR/fechas_adj.csv 
+	# corresponde con la fecha del próximo acto de adjudicación dado la fecha del archivo que contiene al registro
 	local ANO=${FECHA_ARCHIVO:0:4}
 	local MES=${FECHA_ARCHIVO:4:2}
 	local DIA=${FECHA_ARCHIVO:6:8}
@@ -66,37 +65,42 @@ function proximaFechaDeAdjudicacion {
 		return 0
 	fi
 	#Busco la mas cercana <== Ya se que no esta
-	#FORMATO de FechasAdj.csv [dia/mes/ano;Lugar]
+	# FORMATO de FechasAdj.csv [dia/mes/ano;Lugar]
 	local diferenciaMin=0
 	local diferenciaActual=0
 	local PROX=""
+	# La comparacion la realizo con todas las fechas. De todos modos el archivo de fechas esta ordenado
+	# Me seria suficiente encontrar la primera fecha MAYOR
 	while read fecha; do
 		local FechaRow=`echo $fecha | tr ";" "\n" | head -n 1 | tr "/" "\n"`
 		read fDIA fMES fANO <<< $FechaRow
 		local FechaSEP=$fANO$fMES$fDIA
 		if [ $FechaSEP -gt $FECHA_ARCHIVO ]; then
-			#Si estoy aca -> FechaSep > FECHA_ARCHIVO
+			#Si estoy aca es porque FechaSEP > FECHA_ARCHIVO
 			diferenciaActual=$(( $FechaSEP-$FECHA_ARCHIVO ))
 			if [  "$diferenciaActual" -lt "$diferenciaMin" ] || [ $diferenciaMin -eq 0 ]; then
 				#Esta mas cerca que una fecha comparada anteriormente || Todavia no se comparo ninguna
 				diferenciaMin=$diferenciaActual
-				PROX=$fANO$fMES$fDIA
+				PROX=$FechaSEP
 			fi
 		fi
 	done <$MAEDIR/FechasAdj.csv
 	
-	#Aigno a la global
+	#Asigno a la global
 	FECHA_DE_ADJUDICACION=$PROX #ANOMESDIA
+	
+	#TODO: Que pasa si no hay proxima
 	
 	return 0
 }
 
 
 SELF=`basename ${0%.*}`
+
+#TODO: Integrar con el ambiente
 OKDIR="datos/OKDIR"
 PROCDIR="datos/PROCDIR"
 MAEDIR="datos/MAEDIR"
-
 #SON PARAMETROS ??
 CANT_CAMPOS_ARCHIVO=2
 SEPARADOR=";"
@@ -107,12 +111,12 @@ SEPARADOR=";"
 #		[Inicio de ProcesarOfertas]
 #		[Cantidad de archivos a procesar:<cantidad>]
 
-#sh GrabarBitacora.sh "$SELF" "Inicio de ProcesarOfertas" "INFO"
+#TODO: bash GrabarBitacora.sh "$SELF" "Inicio de ProcesarOfertas" "INFO"
 echo "Inicio de ProcesarOfertas"
 
 FILES=(`ls -1p $OKDIR/ | grep -v "/\$" | sort -n -t _ -k 2`) #Ordeno por fecha -n (numerico), -t (split con _), -k split[2]
 
-#sh GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar:  ${#FILES[@]}" "INFO"
+#TODO: bash GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar:  ${#FILES[@]}" "INFO"
 printf "Cantidad de archivos a procesar: ${GREEN}${#FILES[@]}${NC}\n"
 
 ARCHIVOS_ACEPTADOS=0
@@ -121,6 +125,7 @@ ARCHIVOS_RECHAZADOS=0
 #Recorro archivos
 for archivo in ${FILES[@]}
 do
+	echo $archivo
 	ARCHIVO_NAME=`basename $archivo`
 	FILE_PATH=$OKDIR/$archivo
 	
@@ -131,34 +136,32 @@ do
 	# 2.1 Verificar que no sea un archivo duplicado
 	#	Cada vez que se procesa un archivo, se lo mueve tal cual fue recibido y con el mismo nombre a PROCDIR/procesadas
 	#	Desde el directorio se puede verificar si ya existe, si existe moverlo a NOKDIR
-	#		[Se rechaza el archivo por estar DUPLICADO]
 	if [ -f "$PROCDIR/procesadas/$ARCHIVO_NAME" ]; then
 		echo "El archivo [$ARCHIVO_NAME] se rechaza porque ya esta en procesadas" 
 		ARCHIVOS_RECHAZADOS=$[$ARCHIVOS_RECHAZADOS +1]
-		#sh GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME por estar DUPLICADO" "WAR"
-		#sh MoverArchivos.sh "$FILE_PATH" "$NOKDIR" "$SELF"
+		#TODO: bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME por estar DUPLICADO" "WAR"
+		#TODO: bash MoverArchivos.sh "$FILE_PATH" "$NOKDIR" "$SELF"
 		continue
 	fi
 	
 	# 2.2 Verificar la cantidad de campos del primer registro
-	#	Si la cantidad de campos del primer registro no se corresponde con el formato establecido, 
-	#	asumir que el archivo esta daniado
+	#	Si la cantidad de campos del primer registro no se corresponde con el formato establecido asumir que el archivo esta daniado
 	#	Si no cumple mover a NOKDIR
-	#		[Se rechaza el archivo porque su estructura no se corresponde con el formato esperado]
+	# FORMATO: []
 	NUMERO_CAMPOS=`head -n 1 $FILE_PATH | tr "$SEPARADOR" "\n" | wc -l`
 
 	if [ "$NUMERO_CAMPOS" -ne "$CANT_CAMPOS_ARCHIVO" ]; then
 		echo "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado"
 		ARCHIVOS_RECHAZADOS=$[$ARCHIVOS_RECHAZADOS +1]
-		#sh MoverArchivos.sh "$FILE_PATH" "$NOKDIR" "$SELF"
-		#sh GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado" "WAR" 
+		#TODO: bash MoverArchivos.sh "$FILE_PATH" "$NOKDIR" "$SELF"
+		#TODO: bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado" "WAR" 
 		continue
 	fi
 
 	# 3. Si se puede procesar el archivo (pasa el 2)
 	#		[Archivo a procesar: <nombre del archivo a procesar>]
 	printf "Archivo a procesar: ${GREEN}$ARCHIVO_NAME${NC}\n"
-	#sh GrabarBitacora.sh "$SELF" "Archivo a procesar: $ARCHIVO_NAME" "INFO"
+	#TODO: bash GrabarBitacora.sh "$SELF" "Archivo a procesar: $ARCHIVO_NAME" "INFO"
 	ARCHIVOS_ACEPTADOS=$[$ARCHIVOS_ACEPTADOS +1]
 	
 	#Me ahorro y defino ahora la proxima fecha de adjudicacion para el archivo que estoy haciendo
@@ -190,6 +193,7 @@ do
 		GRUPO=${CONTRATO_FUSIONADO:0:4}
 		ORDEN=${CONTRATO_FUSIONADO:4:3}
 
+		#Este parser de una linea del CSV a un array elimina los campos VACIOS. (No genera problemas)
 		SUSCRIPTOR=(`grep "^$GRUPO;$ORDEN" $MAEDIR/temaK_padron.csv | tr ";" "\n"`)
 		CONCECIONARIO=${SUSCRIPTOR[3]}
 
@@ -271,10 +275,10 @@ do
 	done <$FILE_PATH
 	# 7. Fin de Archivo
 	#	Para evitar el reprocesamiento de un mismo archivo, mover el archivo procesado a: PROCDIR/procesadas
-	#sh MoverArchivos.sh "$FILE_PATH" "$PROCDIR/procesadas" "$SELF"
+	#TODO: bash MoverArchivos.sh "$FILE_PATH" "$PROCDIR/procesadas" "$SELF"
 	
 	#	[Registros leidos = aaa: cantidad de ofertas validas bbb cantidad de ofertas rechazadas = ccc]
-	#sh GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas $REGISTROS_VALIDOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
+	#TODO: bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas $REGISTROS_VALIDOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
 	echo Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS
 					
 	# 8. Llevar a cero todos los contadores de registros
@@ -283,6 +287,7 @@ do
 	REGISTROS_RECHAZADOS=0
 		
 	# 9. Continuar con el siguiente archivo
+	
 	# 10. Repetir hasta que se terminen todos los archivos.
 done
 
@@ -292,8 +297,8 @@ done
 echo cantidad de archivos procesados $ARCHIVOS_ACEPTADOS
 echo cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS
 echo Fin de ProcesarOfertas
-#sh GrabarBitacora.sh "$SELF" "cantidad de archivos procesados $ARCHIVOS_ACEPTADOS" "INFO"
-#sh GrabarBitacora.sh "$SELF" "cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS" "INFO"
-#sh GrabarBitacora.sh "$SELF" "Fin de ProcesarOfertas" "INFO"
+#TODO: GrabarBitacora.sh "$SELF" "cantidad de archivos procesados $ARCHIVOS_ACEPTADOS" "INFO"
+#TODO: GrabarBitacora.sh "$SELF" "cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS" "INFO"
+#TODO: GrabarBitacora.sh "$SELF" "Fin de ProcesarOfertas" "INFO"
 
 
