@@ -1,4 +1,4 @@
-###
+# Valores de ambiente por default
 GRUPO=$(pwd)"/Grupo05/"
 
 BINDIR="$GRUPO""binarios/"
@@ -14,7 +14,7 @@ CONFDIR="$GRUPO""config/"
 
 LOGSIZE=50000
 SLEEPTIME=10
-###
+# --------------------------------
 
 arch_comprimido="source.tar.gz"
 
@@ -80,6 +80,8 @@ generarArchConfiguracion(){
 	echo "Creando archivo de configuración en $ARCH_CNF..."
 	fecha_y_hora=$(date "+%d/%m/%Y %H:%M:%S")
 
+	echo "LOGDIR=$LOGDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
+	echo "LOGSIZE=$LOGSIZE=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "GRUPO=$GRUPO=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "BINDIR=$BINDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "MAEDIR=$MAEDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
@@ -87,9 +89,7 @@ generarArchConfiguracion(){
 	echo "OKDIR=$OKDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "PROCDIR=$PROCDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "INFODIR=$INFODIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
-	echo "LOGDIR=$LOGDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "NOKDIR=$NOKDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
-	echo "LOGSIZE=$LOGSIZE=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "SLEEPTIME=$SLEEPTIME=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 }
 

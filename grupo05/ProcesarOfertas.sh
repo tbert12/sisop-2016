@@ -217,24 +217,24 @@ do
 		
 		
 		# Importe (2do Campo)
-		IMPORTE=`echo ${CAMPOS[1]} | tr "," "."`
+		IMPORTE=${CAMPOS[1]}
 
-		VALOR_CUOTA_PURA=`echo ${GRUPO[3]} | tr "," "."` #Reemplazo comma por punto (en distros de EEUU se usa punto)
-		CANTIDAD_CUOTAS_PARA_LICITACION=`echo ${GRUPO[5]} | tr "," "."`
-		CANTIDAD_CUOTAS_PENDIENTES=`echo ${GRUPO[4]} | tr "," "."`
+		VALOR_CUOTA_PURA=${GRUPO[3]} #Reemplazo comma por punto (en distros de EEUU se usa punto)
+		CANTIDAD_CUOTAS_PARA_LICITACION=${GRUPO[5]}
+		CANTIDAD_CUOTAS_PENDIENTES=${GRUPO[4]}
 		
-		MONTO_MINIMO=`bc -l <<< "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PARA_LICITACION"`
+		MONTO_MINIMO=`echo "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PARA_LICITACION" | tr "," "." | tr -d $'\r' | bc -l`
 		
 		# 4.3 monto_minimo (valor de cuota pura * cantidad de cuotas para licitación) <= IMPORTE
-		if [ `echo $MONTO_MINIMO'>'$IMPORTE | bc -l` -eq 1 ]; then
+		if [ `echo $MONTO_MINIMO'>'$IMPORTE | tr "," "." | tr -d $'\r' | bc -l` == 1 ]; then
 			# No alcanza el monto Minimo
 			rechazarRegistro "No alcanza el monto Minimo"
 			continue
 		fi
 		
 		# 4.4 IMPORTE <= monto_maximo (valor de cuota pura * cantidad de cuotas pendientes)
-		MONTO_MAXIMO=`bc -l <<< "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PENDIENTES"`
-		if [ `echo $IMPORTE'>'$MONTO_MAXIMO | bc -l` -eq 1 ]; then
+		MONTO_MAXIMO=`echo "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PENDIENTES" | tr "," "." | tr -d $'\r' | bc -l`
+		if [ `echo $IMPORTE'>'$MONTO_MAXIMO | tr "," "." | tr -d $'\r' | bc -l` == 1 ]; then
 			# Supera el monto maximo
 			rechazarRegistro "Supera el monto maximo"
 			continue

@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #####De prueba
-ARRIDIR="ARRIDIR/"
-MAEDIR="MAEDIR/"
-NOKDIR="NOKDIR/"
-OKDIR="OKDIR/"
-SLEEPTIME=10 #segundos
+#ARRIDIR="ARRIDIR/"
+#MAEDIR="MAEDIR/"
+#NOKDIR="NOKDIR/"
+#OKDIR="OKDIR/"
+#SLEEPTIME=10 #segundos
 #####
 
 
@@ -48,8 +48,8 @@ obtenerFechaUltAdjudicacion() {
 			fi
 		done < fechas_adj_inversoAUX.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
 	else
-		#####cdp
-		bash GrabarBitacora.sh "$0" "COME FIND ME, I NEED YOU OBI WAN KENOBI" '1'  # No hay archivo de adjudicacion no vacio
+		#####solo salta si falta el archivo, lo cual no debería
+		bash GrabarBitacora.sh "RecibirOfertas" "COME FIND ME, OBI WAN KENOBI" '1'  # No hay archivo de adjudicacion no vacio
 		###echo "YOURE MY ONLY HOPE"
 		ret_val=2
 	fi
@@ -61,7 +61,7 @@ obtenerFechaUltAdjudicacion() {
 
 	if [ $ret_val -gt 0 ]
 	  then
-		bash GrabarBitacora.sh "$0" "No se encontro fecha de adjudicacion pasada"
+		bash GrabarBitacora.sh "RecibirOfertas" "No se encontro fecha de adjudicacion pasada"
 	fi
 	return $ret_val
 }
@@ -73,10 +73,12 @@ rechazarArchivo() {
 	razon_rechazo="$2"
 
 	# mv
-	bash MoverArchivo.sh "$ARRIDIR$nom_arch_rechazado" "$NOKDIR$nom_arch_rechazado"
+	bash MoverArchivo.sh "$ARRIDIR$nom_arch_rechazado" "$NOKDIR$nom_arch_rechazado" "RecibirOfertas"
 	RES_MOV=$?
-	### Verificar "$?" igual 0?, hablar con buby
-	bash GrabarBitacora.sh "RecibirOfertas.sh" "Archivo $ARRIDIR$nom_arch_rechazado rechazado y movido a $NOKDIR$nom_arch_rechazado, por $razon_rechazo"
+	if [ $RES_MOV -eq 0 ]
+	  then
+		bash GrabarBitacora.sh "RecibirOfertas.sh" "Archivo $ARRIDIR$nom_arch_rechazado rechazado y movido a $NOKDIR$nom_arch_rechazado, por $razon_rechazo"
+	fi
 }
 
 
@@ -92,7 +94,7 @@ while :
 do
 	# Incremento e imprimo el número de ciclo
 	nro_ciclo=$((nro_ciclo+1))
-	bash GrabarBitacora.sh "$0" "ciclo nro. $nro_ciclo"
+	bash GrabarBitacora.sh "RecibirOfertas" "ciclo nro. $nro_ciclo"
 	##echo "ciclo nro. $nro_ciclo"
 
 	# Obtengo fecha de ultima adjudicacion y fecha de hoy para comparaciones
@@ -130,35 +132,38 @@ do
 						# mv
 						bash MoverArchivo.sh "$linea_arch" "$OKDIR$nom_arch"
 						RES_MOV=$?
-						### Verificar "$?" igual a 0?, hablar con buby
-						bash GrabarBitacora.sh "$0" "Archivo $linea_arch aceptado y movido a $OKDIR$nom_arch"
+						if [ $RES_MOV -eq 0 ]
+						  then
+							bash GrabarBitacora.sh "RecibirOfertas" "Archivo $linea_arch aceptado y movido a $OKDIR$nom_arch"
+						fi
 					else
-						rechazarArchivo "$nom_arch" "encontrarse vacio"
+						rechazarArchivo "$nom_arch" "encontrarse vacío"
 					fi
 				else
-					rechazarArchivo "$nom_arch" "codigo de concesionario desconocido"
+					rechazarArchivo "$nom_arch" "código de concesionario desconocido"
 				fi
 			else
-				rechazarArchivo "$nom_arch" "fecha invalida o anterior a la ultima adjudicacion"
+				rechazarArchivo "$nom_arch" "fecha inválida o anterior a la última adjudicación"
 			fi
 		else
-			rechazarArchivo "$nom_arch" "invalido tipo o nombre del archivo"
+			rechazarArchivo "$nom_arch" "inválido tipo o nombre del archivo"
 		fi
 	done < RecibirOfertasAUX.aux
 	rm RecibirOfertasAUX.aux
 
 	if [ "$(ls -A "$OKDIR")" ]	### DOBLES QUOTES: pueden fallar, en cuyo caso buscar otra forma de hacer este chequeo
 	  then # hay archivos aceptados en $OKDIR para procesar
-		##echo "Llamaria PO.sh"
-		# Lanza ProcesarOfertas sin ningun parametro
-		bash LanzarProceso.sh "bash ProcesarOfertas.sh" "$0"
-		if [ $? -eq 0 ] ### Chequear con buby
+		bash LanzarProceso.sh "bash ProcesarOfertas.sh" "RecibirOfertas"
+		RES_LNZ=$?
+		if [ $RES_LNZ -eq 0 ]
 		  then
-			bash GrabarBitacora.sh "$0" "ProcesarOfertas corriendo bajo el no.: " ###NECESITO EL PID DE P.O.
-		elif [ $? -eq 1 ]
-			bash GrabarBitacora.sh "$0" "B" #'X' ####
-		else
-			bash GrabarBitacora.sh "$0" "C" #'X' ####
+			PID=$(pgrep bash | tail -n 1)
+			bash GrabarBitacora.sh "RecibirOfertas" "ProcesarOfertas corriendo bajo el no.: #PID"
+		elif [ $RES_LNZ -eq 1 ]
+		  then
+			bash GrabarBitacora.sh "RecibirOfertas" "Invocación de ProcesarOfertas pospuesta para el siguiente ciclo" '1'
+		#else
+			# No se pudo ejecutar ProcesarOfertas
 	fi
 
 	sleep $SLEEPTIME
