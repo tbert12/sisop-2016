@@ -32,7 +32,7 @@ generarSorteo() {
 	NUMEROS_SORTEO=($(seq 168 | shuf))
 
 	#Archivo a guardar
-	FILE="$PROCDIR""sorteos/$SORTEOID""_""$FECHAADJ.csv"
+	FILE="$PROCDIR""sorteos/$SORTEOID""_""$FECHAADJ.srt"
 
 	#si el directorio PROCDIR/sorteos no existe lo creo
 	if [ ! -d $PROCDIR"sorteos" ]
@@ -54,7 +54,7 @@ generarSorteo() {
 		bash GrabarBitacora.sh GenerarSorteo "Numero de orden: $i le corresponde el numero de sorteo: ${NUMEROS_SORTEO[$i]}"
 
 		#Guardo en archivo
-		echo $i","${NUMEROS_SORTEO[$((i-1))]} >> $FILE
+		echo $i";"${NUMEROS_SORTEO[$((i-1))]} >> $FILE
 	done
 
 	#Finalizo el log grabando "Fin de Sorteo"
@@ -65,9 +65,9 @@ generarSorteo() {
 generarId() {
 	FECHA=$1
 
-	if [ -f *_$FECHA".csv" ] #hay un archivo nn_FECHA -> ID = nn + 1
+	if [ -f *_$FECHA".srt" ] #hay un archivo nn_FECHA -> ID = nn + 1
 		then
-			ARCHIVOS=(`ls *_$FECHA".csv" | sort -r`)
+			ARCHIVOS=(`ls *_$FECHA".srt" | sort -r`)
 			ULT=${ARCHIVOS:0:1}
 			ID=$(expr $ULT + 1)
 			echo $ID
@@ -97,6 +97,6 @@ if [ -r "$ARCH_FECHAS_ADJ" ]
 		done < $ARCH_FECHAS_ADJ  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
 	exit 0
 else
-	bash GrabarBitacora.sh "GenerarSorteo" '1' "No hay archivo de adjudicacion"
+	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion" 2
 	exit 1
 fi
