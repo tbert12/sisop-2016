@@ -26,3 +26,23 @@
 
 #Datos
 [Drive con todos los csv](https://drive.google.com/open?id=0B5miVOLotTY5Mm1md2xTS3AydjQ)
+
+-----------------------------------------------------------------------------------------
+# README FINAL
+
+### Instalar
+
+Para instalar el sistema CIPAK en su computadora, elija un directorio y descomprima allí
+el archivo CIPAK-G5.tgz (puede hacerlo mediante clic derecho, y la opción "Extract here"),
+y corra el instalador dentro de la carpeta, mediante la siguiente línea de comando:
+`(...)/CIPAK-G5$ bash installer.sh`
+
+
+### Desinstalar
+
+Para desinstalar el sistema, vaya a la carpeta de binarios (por default, Grupo05/binarios/)
+y corra el uninstaller.sh, lo cual puede hacer mediante:
+`(...)/Grupo05/binarios/$ bash uninstaller.sh`
+
+
+### [SEGUIR]
