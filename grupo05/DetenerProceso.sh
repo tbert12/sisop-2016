@@ -3,11 +3,12 @@ COMANDO=$2	# Comando desde donde se invoca este script.
 
 if [ -z ${3+x} ]; then	# PID optativo, para detener un unico proceso cuando hay varios con el mismo nombre.
 	OUTPUT=`start-stop-daemon --stop --name "$PROCESS_NAME"`
+	STOP_RESULT=$?
 else
 	PID=$3
 	OUTPUT=`start-stop-daemon --stop --name "$PROCESS_NAME" --pid "$PID"`
+	STOP_RESULT=$?
 fi
-STOP_RESULT=$?
 
 if [ "$STOP_RESULT" -eq 0 ]; then
 	if [ -z ${PID+x} ]; then
