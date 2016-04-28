@@ -10,6 +10,10 @@
 #################### FUNCIONES AUXILIARES #########################
 ###################################################################
 
+# En las funciones auxiliares, los valores de retorno son:
+# 0 = Exito
+# 1 = Error
+
 #Arreglar instalacion de scripts o maestros:
 repararInstalacion() {
 	NOMBRE_ARCHIVO=$1
@@ -24,7 +28,7 @@ repararInstalacion() {
 verificarScript() {
 	NOMBRE_ARCHIVO=$1
 	
-	SCRIPT_DISPONIBLE=true
+	SCRIPT_DISPONIBLE=0
 	
 	if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then	
 		sh GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
@@ -35,7 +39,7 @@ verificarScript() {
 		if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then
 			sh GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
 			Echo "No fue posible reparar la instalacion. Debe realizarlo el administrador del sistema." # MAS INDICACIONES AL ADMIN?
-			SCRIPT_DISPONIBLE=false
+			SCRIPT_DISPONIBLE=1
 		fi
 	fi
 	
@@ -46,7 +50,7 @@ verificarScript() {
 verificarArchivoMaestro() {
 	NOMBRE_ARCHIVO=$1
 	
-	MAESTRO_DISPONIBLE=true
+	MAESTRO_DISPONIBLE=0
 	
 	if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then	
 		sh GrabarBitacora PrepararAmbiente WAR "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion"
@@ -57,7 +61,7 @@ verificarArchivoMaestro() {
 		if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then
 			sh GrabarBitacora PrepararAmbiente ERR "Imposible reparar instalacion."
 			Echo "No fue posible reparar la instalacion. Debe realizarlo el administrador del sistema" # MAS INDICACIONES? IDEM SCRIPTS
-			MAESTRO_DISPONIBLE=false
+			MAESTRO_DISPONIBLE=1
 		fi
 	fi
 	
@@ -65,62 +69,62 @@ verificarArchivoMaestro() {
 }
 
 verificarScripts() {
-	SCRIPT_OK=true
+	SCRIPT_OK=0
 	
 	verificarScript "MoverArchivos.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "LanzarProceso.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "DetenerProceso.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "GrabarBitacora.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "MostrarBitacora.pl"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "RecibirOfertas.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "ProcesarOfertas.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 	verificarScript "GenerarSorteo.sh"
-	if [ $? = "false" ]; then
-		SCRIPT_OK=false
+	if [ $? -eq 1 ]; then
+		SCRIPT_OK=1
 	fi
 		
 	return $SCRIPT_OK
 }
 
 verificarArchivosMaestros() {
-	MAESTRO_OK=true
+	MAESTRO_OK=0
 	
 	verificarArchivoMaestro "concesionarios.csv"
-	if [ $? = "false" ]; then
-		MAESTRO_OK=false
+	if [ $? -eq 1 ]; then
+		MAESTRO_OK=1
 	fi
 	verificarArchivoMaestro "grupos.csv"
-	if [ $? = "false" ]; then
-		MAESTRO_OK=false
+	if [ $? -eq 1 ]; then
+		MAESTRO_OK=1
 	fi
 	verificarArchivoMaestro "FechasAdj.csv"
-	if [ $? = "false" ]; then
-		MAESTRO_OK=false
+	if [ $? -eq 1 ]; then
+		MAESTRO_OK=1
 	fi
 	verificarArchivoMaestro "temaK_padron.csv"
-	if [ $? = "false" ]; then
-		MAESTRO_OK=false
+	if [ $? -eq 1 ]; then
+		MAESTRO_OK=1
 	fi
 		
 	return $MAESTRO_OK
@@ -128,7 +132,7 @@ verificarArchivosMaestros() {
 
 #Verificar permisos de ejecucion de los scripts en BINDIR:
 verificarPermisosScripts() {
-	PERMISOS_SCRIPTS=true
+	PERMISOS_SCRIPTS=0
 	
 	#Ingreso al path de los scripts:
 	cd $BINDIR ####REVISAR: chequear que esto se haga bien
@@ -144,7 +148,7 @@ verificarPermisosScripts() {
 		if [ ! -x $SCRIPT ]; then
 			sh GrabarBitacora PrepararAmbiente ERR "El script $SCRIPT no tiene permiso de ejecucion y no fue posible modificarlo."
 			echo "ERROR: No fue posible modificar el permiso."
-			PERMISOS_SCRIPTS=false
+			PERMISOS_SCRIPTS=1
 		fi
 	done
 	
@@ -154,7 +158,7 @@ verificarPermisosScripts() {
 
 #Verificar permisos de lectura de los archivos maestros en MAEDIR:
 verificarPermisosMaestros() {
-	PERMISOS_MAESTROS=true
+	PERMISOS_MAESTROS=0
 	
 	#Ingreso al path de los archivos maestros:
 	cd $MAEDIR ######REVISAR: Chequear que esto se haga bien
@@ -170,7 +174,7 @@ verificarPermisosMaestros() {
 		if [ ! -r $MAESTRO ]; then
 			sh GrabarBitacora PrepararAmbiente ERR "El archivo $MAESTRO no tiene permiso de lectura y no fue posible modificarlo."
 			echo "ERROR: No fue posible modificar el permiso."
-			PERMISOS_MAESTRO=false
+			PERMISOS_MAESTRO=1
 		fi
 	done
 	
@@ -180,12 +184,12 @@ verificarPermisosMaestros() {
 
 #Chequeo existencia del archivo de configuracion:
 verificarArchivoConfiguracion() {
-	CONFIG_EXISTE=true
+	CONFIG_EXISTE=0
 	
 	if [ ! -f "config/CIPAK.cnf" ]; then ######REVISAR: chequear si accedo bien a esta direccion
 		sh GrabarBitacora PrepararAmbiente ERR "El archivo de configuracion CIPAK.cnf no existe."
 		echo "ERROR: El archivo de configuracion CIPAK.cnf no existe. Debe instalar nuevamente el sistema."
-		CONFIG_EXISTE=false
+		CONFIG_EXISTE=1
 	fi
 	
 	return $CONFIG_EXISTE
@@ -193,25 +197,25 @@ verificarArchivoConfiguracion() {
 
 #Chequeo si ya se inicializo el ambiente en esta sesion.
 verificarAmbienteSinInicializar(){
-	AMBIENTE_SIN_INICIALIZAR=true
+	AMBIENTE_SIN_INICIALIZAR=0
 	
 	#AMBIENTE_INICIALIZADO es la variable global.
-	if [ ${AMBIENTE_INICIALIZADO-false} = true ]; then
+	if [ ${AMBIENTE_INICIALIZADO-1} -eq 1 ]; then
 		sh GrabarBitacora PrepararAmbiente ERR "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"
 		echo "ERROR: El ambiente ya se encuentra inicializado en esta sesion."
-		AMBIENTE_SIN_INICIALIZAR=false
+		AMBIENTE_SIN_INICIALIZAR=1
 	fi
 	
 	return $AMBIENTE_SIN_INICIALIZAR
 }
 
 setearVariablesAmbiente() {	
-	SETEO_CORRECTO=true
+	SETEO_CORRECTO=0
 	
 	# Chequeo que el ambiente no se encuentre inicializado:
 	verificarAmbienteSinInicializar
-	if [ $? = "false" ]; then
-		SETEO_CORRECTO=false
+	if [ $? -eq 1 ]; then
+		SETEO_CORRECTO=1
 		return $SETEO_CORRECTO
 	fi
 	
@@ -233,7 +237,7 @@ setearVariablesAmbiente() {
 	IFS=$IFS_original
 	
 	#Otra variables necesarias (agregar mas de ser necesario):
-	AMBIENTE_INICIALIZADO=true
+	AMBIENTE_INICIALIZADO=0
 	export $AMBIENTE_INICIALIZADO
 	######REVISAR: FALTA SETEAR LA VARIABLE PATH, NO SE BIEN QUE SERIA.
 	
@@ -299,32 +303,32 @@ borrarVariablesAmbiente() {
 main() {
 	setearVariablesAmbiente
 
-	# 1 = Error: Ambiente ya inicializado
-	if [ $? = "false" ]; then
+	# Return 1 = Error: Ambiente ya inicializado
+	if [ $? -eq 1 ]; then
 		borrarVariablesAmbiente
 		return 1
 	fi
 
-	# 2 = Error: No se poseen todos los scripts
+	# Return 2 = Error: No se poseen todos los scripts
 	verificarScripts
-	if [ $? = "false" ]; then
+	if [ $? -eq 1 ]; then
 		borrarVariablesAmbiente
 		return 2
 	fi
 	
-	# 3 = Error: No se poseen todos los archivos maestros
+	# Return 3 = Error: No se poseen todos los archivos maestros
 	verificarArchivosMaestros
-	if [ $? = "false" ]; then
+	if [ $? -eq 1 ]; then
 		borrarVariablesAmbiente
 		return 3
 	fi
 
-	# 4 = Error: No se tienen los permisos necesarios en los scripts o archivos maestros
+	# Return 4 = Error: No se tienen los permisos necesarios en los scripts o archivos maestros
 	verificarPermisosScripts
 	retornoScripts=$?
 	verificarPermisosMaestros
 	retornoMaestros=$?
-	if [ retornoScripts = "false" -o retornoMaestros = "false" ]; then
+	if [ retornoScripts -eq 1 -o retornoMaestros -eq 1 ]; then
 		borrarVariablesAmbiente
 		return 4
 	fi
