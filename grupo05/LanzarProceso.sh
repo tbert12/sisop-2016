@@ -8,7 +8,7 @@ logMessage () {
 		echo "$MSG"
 	else
 		if [ ! -z "$COMANDO" ]; then
-			sh GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
+			bash GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
 		fi
 	fi
 }
@@ -22,7 +22,7 @@ else
 	CALLED_FROM_COMMANDLINE=true
 fi
 
-if [ "$AMBIENTE_INICIALIZADO" = true ]; then	# Variable de entorno.
+if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
 	PID=`pgrep "$PROCESS"`
 	if [ -z "$PID" ]; then
 		$PROCESS &

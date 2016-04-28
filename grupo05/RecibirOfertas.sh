@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #####De prueba
 ARRIDIR="ARRIDIR/"
@@ -49,7 +49,7 @@ obtenerFechaUltAdjudicacion() {
 		done < fechas_adj_inversoAUX.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
 	else
 		#####cdp
-		sh GrabarBitacora.sh "$0" "COME FIND ME, I NEED YOU OBI WAN KENOBI" '1'  # No hay archivo de adjudicacion no vacio
+		bash GrabarBitacora.sh "$0" "COME FIND ME, I NEED YOU OBI WAN KENOBI" '1'  # No hay archivo de adjudicacion no vacio
 		###echo "YOURE MY ONLY HOPE"
 		ret_val=2
 	fi
@@ -61,7 +61,7 @@ obtenerFechaUltAdjudicacion() {
 
 	if [ $ret_val -gt 0 ]
 	  then
-		sh GrabarBitacora.sh "$0" "No se encontro fecha de adjudicacion pasada"
+		bash GrabarBitacora.sh "$0" "No se encontro fecha de adjudicacion pasada"
 	fi
 	return $ret_val
 }
@@ -72,11 +72,11 @@ rechazarArchivo() {
 	nom_arch_rechazado="$1"
 	razon_rechazo="$2"
 
-	##sh MoverArchivo.sh
-	mv "$ARRIDIR$nom_arch_rechazado" "$NOKDIR$nom_arch_rechazado"
+	# mv
+	bash MoverArchivo.sh "$ARRIDIR$nom_arch_rechazado" "$NOKDIR$nom_arch_rechazado"
 	RES_MOV=$?
 	### Verificar "$?" igual 0?, hablar con buby
-	sh GrabarBitacora.sh "RecibirOfertas.sh" "Archivo $ARRIDIR$nom_arch_rechazado rechazado y movido a $NOKDIR$nom_arch_rechazado, por $razon_rechazo"
+	bash GrabarBitacora.sh "RecibirOfertas.sh" "Archivo $ARRIDIR$nom_arch_rechazado rechazado y movido a $NOKDIR$nom_arch_rechazado, por $razon_rechazo"
 }
 
 
@@ -92,7 +92,7 @@ while :
 do
 	# Incremento e imprimo el número de ciclo
 	nro_ciclo=$((nro_ciclo+1))
-	sh GrabarBitacora.sh "$0" "ciclo nro. $nro_ciclo"
+	bash GrabarBitacora.sh "$0" "ciclo nro. $nro_ciclo"
 	##echo "ciclo nro. $nro_ciclo"
 
 	# Obtengo fecha de ultima adjudicacion y fecha de hoy para comparaciones
@@ -127,11 +127,11 @@ do
 					# Chequeo tamanio del archivo mayor a 0
 					if [ $(wc -c < "$linea_arch") -gt 1 ]   # semialternativa: [ -s "$linea_arch" ]
 					  then
-						##sh MoverArchivo.sh
-						mv "$linea_arch" "$OKDIR$nom_arch"
+						# mv
+						bash MoverArchivo.sh "$linea_arch" "$OKDIR$nom_arch"
 						RES_MOV=$?
 						### Verificar "$?" igual a 0?, hablar con buby
-						sh GrabarBitacora.sh "$0" "Archivo $linea_arch aceptado y movido a $OKDIR$nom_arch"
+						bash GrabarBitacora.sh "$0" "Archivo $linea_arch aceptado y movido a $OKDIR$nom_arch"
 					else
 						rechazarArchivo "$nom_arch" "encontrarse vacio"
 					fi
@@ -151,14 +151,14 @@ do
 	  then # hay archivos aceptados en $OKDIR para procesar
 		##echo "Llamaria PO.sh"
 		# Lanza ProcesarOfertas sin ningun parametro
-		sh LanzarProceso.sh "sh ProcesarOfertas.sh" "$0"
+		bash LanzarProceso.sh "bash ProcesarOfertas.sh" "$0"
 		if [ $? -eq 0 ] ### Chequear con buby
 		  then
-			sh GrabarBitacora.sh "$0" "ProcesarOfertas corriendo bajo el no.: " ###NECESITO EL PID DE P.O.
+			bash GrabarBitacora.sh "$0" "ProcesarOfertas corriendo bajo el no.: " ###NECESITO EL PID DE P.O.
 		elif [ $? -eq 1 ]
-			sh GrabarBitacora.sh "$0" "B" #'X' ####
+			bash GrabarBitacora.sh "$0" "B" #'X' ####
 		else
-			sh GrabarBitacora.sh "$0" "C" #'X' ####
+			bash GrabarBitacora.sh "$0" "C" #'X' ####
 	fi
 
 	sleep $SLEEPTIME

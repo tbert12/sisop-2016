@@ -16,7 +16,7 @@ fi
 
 
 mv "$GRUPO""source/*" "$GRUPO.." 2> /dev/null
-mv "$GRUPO""source/README" "$GRUPO.." 2> /dev/null
+mv "$GRUPO""source/Readme.md" "$GRUPO.." 2> /dev/null
 mv "$GRUPO""source/installer.sh" "$GRUPO.." 2> /dev/null
 mv "$GRUPO""source/source.tar.gz" "$GRUPO.." 2> /dev/null
 
@@ -31,6 +31,7 @@ if [ "$(ls -A "$GRUPO"'source/')" ]
 fi
 
 
+cd "$GRUPO.."
 rm -rf "$GRUPO"
 
 echo "Desinstalación completa"
