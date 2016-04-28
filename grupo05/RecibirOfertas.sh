@@ -93,10 +93,10 @@ nro_ciclo=0
 while :
 do
 	######
-	echo
-	echo
-	echo "RecibirOfertas corre imprimidorDeVariables"
-	bash imprimidorDeVariables.sh
+	#echo
+	#echo
+	#echo "RecibirOfertas corre imprimidorDeVariables"
+	#bash imprimidorDeVariables.sh
 	######
 
 	# Incremento e imprimo el número de ciclo

@@ -339,10 +339,10 @@ main() {
 	#fi
 
 	###########codigo de prueba
-	echo
-	echo
-	echo "Corriendo imprimidorDeVariables"
-	bash imprimidorDeVariables.sh
+	#echo
+	#echo
+	#echo "Corriendo imprimidorDeVariables"
+	#bash imprimidorDeVariables.sh
 	###########
 
 	continuarEjecucion
