@@ -15,13 +15,9 @@
 #		Archivos de sorteos PROCDIR/sorteos/<sorteoId>_<fecha de adjudicación>
 # 		Log del Comando LOGDIR/GenerarSorteo.log
 #
-#Entorno -> hay que ver como lo definimos ?
-MAEDIR="MAEDIR/"
-PROCDIR="PROCDIR/"
-#FIN Entorni
+
 
 #funcion que genera un sorteo para una fecha y un ID
-
 generarSorteo() {
 	
 	#Fecha de adjudicacion
@@ -30,7 +26,7 @@ generarSorteo() {
 	SORTEOID=$2
 
 	#Inicio el log grabando "Inicio de Sorteo"
-	sh GrabarBitacora GenerarSorteo "Inicio de Sorteo Numero: $SORTEOID de la fecha: $FECHAADJ"
+	bash GrabarBitacora.sh GenerarSorteo "Inicio de Sorteo Numero: $SORTEOID de la fecha: $FECHAADJ"
 
 	#genera en NUMEROS_SORTEO un array con la secuencia de 1 a 168 random
 	NUMEROS_SORTEO=($(seq 168 | shuf))
@@ -55,14 +51,14 @@ generarSorteo() {
 	for i in $(seq 1 168)
 	do
 	    #Log con numero de sorteo y numero de orden
-		sh GrabarBitacora GenerarSorteo "Numero de orden: $i le corresponde el numero de sorteo: ${NUMEROS_SORTEO[$i]}"
+		bash GrabarBitacora.sh GenerarSorteo "Numero de orden: $i le corresponde el numero de sorteo: ${NUMEROS_SORTEO[$i]}"
 
 		#Guardo en archivo
 		echo $i","${NUMEROS_SORTEO[$((i-1))]} >> $FILE
 	done
 
 	#Finalizo el log grabando "Fin de Sorteo"
-	sh GrabarBitacora GenerarSorteo "Fin de Sorteo"
+	bash GrabarBitacora.sh GenerarSorteo "Fin de Sorteo"
 }
 
 #genera el id correspondiente para la fecha
@@ -99,6 +95,8 @@ if [ -r "$ARCH_FECHAS_ADJ" ]
 				generarSorteo $fecha_adj $(generarId "$fecha_adj")
 			fi
 		done < $ARCH_FECHAS_ADJ  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
+	exit 0
 else
-	sh GrabarBitacora.sh "GenerarSorteo" '1' "No hay archivo de adjudicacion"
+	bash GrabarBitacora.sh "GenerarSorteo" '1' "No hay archivo de adjudicacion"
+	exit 1
 fi
