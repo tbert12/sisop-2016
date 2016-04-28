@@ -68,35 +68,35 @@ verificarScripts() {
 	SCRIPT_OK=true
 	
 	verificarScript "MoverArchivos.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "LanzarProceso.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "DetenerProceso.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "GrabarBitacora.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "MostrarBitacora.pl"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "RecibirOfertas.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "ProcesarOfertas.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 	verificarScript "GenerarSorteo.sh"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		SCRIPT_OK=false
 	fi
 		
@@ -107,19 +107,19 @@ verificarArchivosMaestros() {
 	MAESTRO_OK=true
 	
 	verificarArchivoMaestro "concesionarios.csv"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		MAESTRO_OK=false
 	fi
 	verificarArchivoMaestro "grupos.csv"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		MAESTRO_OK=false
 	fi
 	verificarArchivoMaestro "FechasAdj.csv"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		MAESTRO_OK=false
 	fi
 	verificarArchivoMaestro "temaK_padron.csv"
-	if [ $0 = "false" ]; then
+	if [ $? = "false" ]; then
 		MAESTRO_OK=false
 	fi
 		
