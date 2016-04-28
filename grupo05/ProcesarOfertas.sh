@@ -98,9 +98,9 @@ function proximaFechaDeAdjudicacion {
 SELF=`basename ${0%.*}`
 
 #TODO: Integrar con el ambiente
-OKDIR="datos/OKDIR"
-PROCDIR="datos/PROCDIR"
-MAEDIR="datos/MAEDIR"
+#OKDIR="datos/OKDIR"
+#PROCDIR="datos/PROCDIR"
+#MAEDIR="datos/MAEDIR"
 #SON PARAMETROS ??
 CANT_CAMPOS_ARCHIVO=2
 SEPARADOR=";"
@@ -275,8 +275,9 @@ do
 	done <$FILE_PATH
 	# 7. Fin de Archivo
 	#	Para evitar el reprocesamiento de un mismo archivo, mover el archivo procesado a: PROCDIR/procesadas
-	#TODO: bash MoverArchivos.sh "$FILE_PATH" "$PROCDIR/procesadas" "$SELF"
-	
+	bash MoverArchivos.sh "$FILE_PATH" "$PROCDIR/procesadas" "$SELF"
+	# TODO ^
+
 	#	[Registros leidos = aaa: cantidad de ofertas validas bbb cantidad de ofertas rechazadas = ccc]
 	#TODO: bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas $REGISTROS_VALIDOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
 	echo Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS
