@@ -53,7 +53,7 @@ function proximaFechaDeAdjudicacion {
 	local ANO=${FECHA_ARCHIVO:0:4}
 	local MES=${FECHA_ARCHIVO:4:2}
 	local DIA=${FECHA_ARCHIVO:6:8}
-	if grep -q "$DIA/$MES/$ANO" $MAEDIR/FechasAdj.csv; then
+	if grep -q "$DIA/$MES/$ANO" "$MAEDIR"FechasAdj.csv; then
 		#La fecha esta en el archiv - "es hoy la proxima adjudicacion"
 		FECHA_DE_ADJUDICACION=$FECHA_ARCHIVO #ANOMESDIA
 		return 0
@@ -78,7 +78,7 @@ function proximaFechaDeAdjudicacion {
 				PROX=$FechaSEP
 			fi
 		fi
-	done <$MAEDIR/FechasAdj.csv
+	done < "$MAEDIR"FechasAdj.csv
 	
 	#Asigno a la global
 	FECHA_DE_ADJUDICACION=$PROX #ANOMESDIA
@@ -116,7 +116,7 @@ mkdir -p "$RECHAZADAS_DIR"
 bash GrabarBitacora.sh "$SELF" "Inicio de ProcesarOfertas" "INFO"
 #echo "Inicio de ProcesarOfertas"
 
-FILES=(`ls -1p $OKDIR/ | grep -v "/\$" | sort -n -t _ -k 2`) #Ordeno por fecha -n (numerico), -t (split con _), -k split[2]
+FILES=(`ls -1p "$OKDIR" | grep -v "/\$" | sort -n -t _ -k 2`) #Ordeno por fecha -n (numerico), -t (split con _), -k split[2]
 
 #echo "Cantidad de archivos a procesar: ${#FILES[@]}"
 bash GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar:  ${#FILES[@]}" "INFO"
@@ -129,7 +129,7 @@ for archivo in ${FILES[@]}
 do
 	
 	ARCHIVO_NAME=`basename $archivo`
-	FILE_PATH=$OKDIR/$archivo
+	FILE_PATH="$OKDIR$archivo"
 	
 	# 2. Procesar Un Archivo
 	#	Procesar un archivo es procesar todos los registros que contiene ese archivo
@@ -138,7 +138,7 @@ do
 	# 2.1 Verificar que no sea un archivo duplicado
 	#	Cada vez que se procesa un archivo, se lo mueve tal cual fue recibido y con el mismo nombre a PROCDIR/procesadas
 	#	Desde el directorio se puede verificar si ya existe, si existe moverlo a NOKDIR
-	if [ -f "$PROCESADAS_DIR/$ARCHIVO_NAME" ]; then
+	if [ -f "$PROCESADAS_DIR""$ARCHIVO_NAME" ]; then
 		#echo "El archivo [$ARCHIVO_NAME] se rechaza porque ya esta en procesadas" 
 		ARCHIVOS_RECHAZADOS=$[$ARCHIVOS_RECHAZADOS +1]
 		bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME por estar DUPLICADO" "WAR"
@@ -196,7 +196,7 @@ do
 		ORDEN=${CONTRATO_FUSIONADO:4:3}
 
 		#Este parser de una linea del CSV a un array elimina los campos VACIOS. (No genera problemas)
-		SUSCRIPTOR=(`grep "^$GRUPO;$ORDEN" $MAEDIR/temaK_padron.csv | tr ";" "\n"`)
+		SUSCRIPTOR=(`grep "^$GRUPO;$ORDEN" "$MAEDIR"temaK_padron.csv | tr ";" "\n"`)
 		CONCESIONARIO=${SUSCRIPTOR[3]}
 
 		if [ "${#SUSCRIPTOR[@]}" -eq 0 ]; then 
@@ -208,7 +208,7 @@ do
 		# Si llego aca, el grupo existe (esta en temaK_padron.csv).
 
 		# Numero de grupo [4]: Se debe validar contra el archivo de Grupos: MAEDIR/Grupos.csv (Estado del grupo ABIERTO o NUEVO) 
-		GRUPO=(`grep "^$GRUPO" $MAEDIR/grupos.csv | tr "$SEPARADOR" "\n"`)
+		GRUPO=(`grep "^$GRUPO" "$MAEDIR"grupos.csv | tr "$SEPARADOR" "\n"`)
 		
 		# 4.2 Estado es GRUPO[1] - ver tabla
 		if [ "${GRUPO[1]}" == "CERRADO" ]; then

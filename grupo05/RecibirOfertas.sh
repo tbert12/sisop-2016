@@ -77,7 +77,7 @@ rechazarArchivo() {
 	RES_MOV=$?
 	if [ $RES_MOV -eq 0 ]
 	  then
-		bash GrabarBitacora.sh "RecibirOfertas.sh" "Archivo $ARRIDIR$nom_arch_rechazado rechazado y movido a $NOKDIR$nom_arch_rechazado, por $razon_rechazo"
+		bash GrabarBitacora.sh "RecibirOfertas" "Archivo $ARRIDIR$nom_arch_rechazado rechazado y movido a $NOKDIR$nom_arch_rechazado, por $razon_rechazo"
 	fi
 }
 
@@ -160,11 +160,11 @@ do
 
 	if [ "$(ls -A "$OKDIR")" ]	### DOBLES QUOTES: pueden fallar, en cuyo caso buscar otra forma de hacer este chequeo
 	  then # hay archivos aceptados en $OKDIR para procesar
-		bash LanzarProceso.sh "bash ProcesarOfertas.sh" "RecibirOfertas"
+		bash LanzarProceso.sh "ProcesarOfertas.sh" "RecibirOfertas" ###MC: Saqué 'bash' del comando a ejecutar
 		RES_LNZ=$?
 		if [ $RES_LNZ -eq 0 ]
 		  then
-			PID=$(pgrep bash | tail -n 1)
+			PID=$(pgrep "ProcesarOfertas" | tail -n 1)
 			bash GrabarBitacora.sh "RecibirOfertas" "ProcesarOfertas corriendo bajo el no.: $PID"
 		elif [ $RES_LNZ -eq 1 ]
 		  then
