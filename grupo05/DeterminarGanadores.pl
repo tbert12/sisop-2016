@@ -304,7 +304,7 @@ sub ganadores_por_licitacion{
 }
 
 sub resultados_grupo{
-	listar_archivos("arch_prueba/");
+	listar_archivos($ENV{'PROCDIR']."sorteos/");
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	my $hash_datos = {};
