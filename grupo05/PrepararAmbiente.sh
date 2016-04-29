@@ -226,7 +226,7 @@ setearVariablesAmbiente() {
 		export $VARIABLE=$VALOR
 		bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: $VARIABLE - Valor: $VALOR"
 		echo "Nombre de variable: $VARIABLE - Valor: $VALOR"
-	done <../config/CIPAK.cnf ######REVISAR: Chequear si accedo bien
+	done <../config/CIPAK.cnf ######REVISAR: Chequear si accedo bien. Por el momento si
 	IFS=$IFS_original
 	
 	#Otra variables necesarias (agregar mas de ser necesario):
@@ -276,7 +276,7 @@ continuarEjecucion() {
 				echo
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
-				echo "bash DetenerProceso xxxxxxxxxxxxx" ######### REVISAR
+				echo "bash DetenerProceso xxxxxxxxxxxxx" ######### REVISAR. Poner la expresion correcta
 			fi
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
@@ -305,8 +305,6 @@ borrarVariablesAmbiente() {
 ###################################################################
 #################### EJECUCION DEL PROGRAMA #######################
 ###################################################################
-
-####### REVISAR: Chequear en que path estoy parado ######
 
 main() {
 	setearVariablesAmbiente
