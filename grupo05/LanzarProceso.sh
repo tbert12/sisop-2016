@@ -4,7 +4,7 @@ logMessage () {
 	MSG=$3
 	MSG_TYPE=$4
 
-	if [ "$CALLED_FROM_COMMANDLINE" = true ]; then
+	if [ "$CALLED_FROM_COMMANDLINE" -ne 0 ]; then
 		echo "$MSG"
 	else
 		if [ ! -z "$COMANDO" ]; then
@@ -17,13 +17,14 @@ PROCESS=$1
 COMANDO=$2
 
 if [ $(readlink -f /proc/$(ps -o ppid:1= -p $$)/exe) != $(readlink -f "$SHELL") ]; then
-	CALLED_FROM_COMMANDLINE=false
+	CALLED_FROM_COMMANDLINE=0	# 0 = false
 else
-	CALLED_FROM_COMMANDLINE=true
+	CALLED_FROM_COMMANDLINE=1	# 1 = true
 fi
 
 if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
-	PID=`pgrep "$PROCESS"`
+	PROCESS_NAME=`echo "$PROCESS" | awk '{print $1;}'`
+	PID=$(pgrep "$PROCESS_NAME" | tail -n 1)
 	if [ -z "$PID" ]; then
 		$PROCESS &
 		START_RESULT=$?

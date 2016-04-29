@@ -1,6 +1,9 @@
-###
-#GRUPO= ##No tiene esta variable global todavía
-###
+#
+if [ $(($AMBIENTE_INICIALIZADO)) -eq 0 ]
+  then
+	GRUPO="$PWD/../"
+fi
+#
 
 echo
 echo "DESINSTALADOR ~ Está usted TOTAL E IRREVOCABLEMENTE SEGURO de querer eliminar el sistema con toda la carpeta $GRUPO, los registros, reportes, configuración y demases?"
@@ -14,14 +17,18 @@ if [ "$respuesta" != "y" -a "$respuesta" != "yes" ]
 	exit 1
 fi
 
+echo
+echo "Recreando instalador..."
 
-mv "$GRUPO""source/*" "$GRUPO.." 2> /dev/null
-mv "$GRUPO""source/Readme.md" "$GRUPO.." 2> /dev/null
-mv "$GRUPO""source/installer.sh" "$GRUPO.." 2> /dev/null
-mv "$GRUPO""source/source.tar.gz" "$GRUPO.." 2> /dev/null
+cd "$GRUPO"
+
+mv "source/*" "$GRUPO.." 2> /dev/null
+mv "source/Readme.md" "$GRUPO.." 2> /dev/null
+mv "source/installer.sh" "$GRUPO.." 2> /dev/null
+mv "source/source.tar.gz" "$GRUPO.." 2> /dev/null
 
 
-if [ "$(ls -A "$GRUPO"'source/')" ]
+if [ "$(ls -A 'source/')" ]
   then
 	echo "Este desinstalador no ha logrado mover todos los archivos fuente"
 	echo "Por favor, mover manualmente los archivos de la carpeta $GRUPO""source/ a algún lugar seguro, por si quisiera instalar nuevamente el sistema"
@@ -30,11 +37,14 @@ if [ "$(ls -A "$GRUPO"'source/')" ]
 	exit 1
 fi
 
+echo "Desinstalando sistema CIPAK..."
 
-cd "$GRUPO.."
+GRUPO="$PWD"
+cd ..
 rm -rf "$GRUPO"
 
-echo "Desinstalación completa"
+echo
+echo "¡Desinstalación completada!"
 echo
 
-exit 0
+return 0

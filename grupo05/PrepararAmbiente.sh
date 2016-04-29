@@ -257,7 +257,7 @@ continuarEjecucion() {
 		read RESPUESTA
 		if [ "$RESPUESTA" = "Si" ]; then
 			#Lanzo el comando recibirOferta:
-			bash LanzarProceso.sh "bash RecibirOfertas.sh" PrepararAmbiente
+			bash LanzarProceso.sh "RecibirOfertas.sh" PrepararAmbiente
 			
 			#Chequeo si ya se estaba ejecutando anteriormente:
 			#1 = Ya se estaba ejecutando
@@ -272,11 +272,11 @@ continuarEjecucion() {
 			#0 = Se ejecuto correctamente
 			elif [ $retornoLanzarProceso -eq 0 ]; then
 				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta fue activado."
-				PID=$(pgrep bash | tail -n 1)
+				PID=$(pgrep "RecibirOfertas.sh")
 				echo
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
-				echo "bash DetenerProceso xxxxxxxxxxxxx"######### REVISAR
+				echo "bash DetenerProceso xxxxxxxxxxxxx" ######### REVISAR
 			fi
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
@@ -340,7 +340,7 @@ main() {
 		borrarVariablesAmbiente
 		return 4
 	fi
-	
+
 	continuarEjecucion
 }
 

@@ -103,6 +103,8 @@ organizarArchivos(){
 	tar -xzf source.tar.gz
 
 	### de alguna forma usar MoverArchivo.sh ?
+	cp -ar source/ARRIDIR/ "$DATDIR"
+	cp -ar source/MAEDIR/ "$DATDIR"
 	mv source/ARRIDIR/* "$ARRIDIR"
 	mv source/MAEDIR/* "$MAEDIR"
 	mv source/BINDIR/* "$BINDIR"
@@ -136,12 +138,12 @@ echo
 echo "~ Inicio de instalación del sistema CIPAK ~"
 echo "-------------------------------------------"
 echo
-if [ ! "$1" -eq '-d' ]
+if [ ! "$1" = "-d" ]
   then
 	seteoVariables
+	echo
+	echo "-------------------------------------------"
 fi
-echo
-echo "-------------------------------------------"
 echo
 echo "Instalando..."
 echo
@@ -156,8 +158,8 @@ echo
 echo "¡Instalación completada exitosamente!"
 echo
 
-mv "$0" "$GRUPO""source/"
-cd /
+mv "installer.sh" "$GRUPO""source/"
+
 cd "$BINDIR"
 
-exit 0
+return 0
