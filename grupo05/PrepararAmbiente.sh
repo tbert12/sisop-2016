@@ -2,8 +2,6 @@
 
 #Cosas a revisar:
 # Todas los llamados a GrabarBitacora, LanzarProceso y DetenerProceso.
-# Obtener PID del proceso RecibirOfertas cuando se lanza el proceso.
-# Falta setear variable PATH pedida por enunciado.
 # Ver todos los ####REVISAR y demas comentarios.
 
 ###################################################################
@@ -135,7 +133,7 @@ verificarPermisosScripts() {
 	PERMISOS_SCRIPTS=1
 	
 	#Ingreso al path de los scripts:
-	cd $BINDIR ####REVISAR: chequear que esto se haga bien
+	cd $BINDIR
 	
 	#Recorro scripts y chequeo permisos:
 	for SCRIPT in *
@@ -150,9 +148,9 @@ verificarPermisosScripts() {
 			echo "ERROR: No fue posible modificar el permiso."
 			PERMISOS_SCRIPTS=0
 		fi
-	done
+	done	
+	cd ..
 	
-	cd .. ###### REVISAR: Chequear esto. Vuelvo a $GRUPO.
 	return $PERMISOS_SCRIPTS
 }
 
@@ -161,7 +159,7 @@ verificarPermisosMaestros() {
 	PERMISOS_MAESTROS=1
 	
 	#Ingreso al path de los archivos maestros:
-	cd $MAEDIR ######REVISAR: Chequear que esto se haga bien
+	cd $MAEDIR
 	
 	#Recorro archivos maestros y chequeo permisos:
 	for MAESTRO in *
@@ -174,19 +172,19 @@ verificarPermisosMaestros() {
 		if [ ! -r $MAESTRO ]; then
 			bash GrabarBitacora.sh PrepararAmbiente "El archivo $MAESTRO no tiene permiso de lectura y no fue posible modificarlo." 2
 			echo "ERROR: No fue posible modificar el permiso."
-			PERMISOS_MAESTRO=0
+			PERMISOS_MAESTROS=0
 		fi
 	done
+	cd ..
 	
-	cd .. ######REVISAR: Chequear esto. Vuelvo a $GRUPO
-	return $PERMISOS_MAESTRO
+	return $PERMISOS_MAESTROS
 }
 
 #Chequeo existencia del archivo de configuracion:
 verificarArchivoConfiguracion() {
 	CONFIG_EXISTE=1
 	
-	if [ ! -f "config/CIPAK.cnf" ]; then ######REVISAR: chequear si accedo bien a esta direccion
+	if [ ! -f "config/CIPAK.cnf" ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "El archivo de configuracion CIPAK.cnf no existe." 2
 		echo "ERROR: El archivo de configuracion CIPAK.cnf no existe. Debe instalar nuevamente el sistema."
 		CONFIG_EXISTE=0
@@ -200,7 +198,7 @@ verificarAmbienteSinInicializar(){
 	AMBIENTE_SIN_INICIALIZAR=1
 	
 	#AMBIENTE_INICIALIZADO es la variable global.
-	if [ ${AMBIENTE_INICIALIZADO-"0"} = "1" ]; then
+	if [ ${AMBIENTE_INICIALIZADO-0} -eq 1 ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente" 2
 		echo "ERROR: El ambiente ya se encuentra inicializado en esta sesion."
 		AMBIENTE_SIN_INICIALIZAR=0
@@ -218,13 +216,9 @@ setearVariablesAmbiente() {
 		return $SETEO_CORRECTO
 	fi
 	
-	#Inicializo sistema:
-	bash GrabarBitacora.sh PrepararAmbiente "Estado del Sistema: INICIALIZADO."
-	echo "Estado del Sistema: INICIALIZADO."
-	echo
-	echo "A continuacion se muestran las variables de ambiente:"
-	
-	#Parseo el archivo config para setear las variables:	
+	#Parseo el archivo config para setear las variables:
+	echo "Arrancando la inicializacion del sistema. A continuacion se muestran y setean las variables de ambiente:"
+	echo	
 	IFS_original=$IFS 
 	IFS="="
 	while read VARIABLE VALOR USUARIO FECHA
@@ -237,9 +231,19 @@ setearVariablesAmbiente() {
 	
 	#Otra variables necesarias (agregar mas de ser necesario):
 	AMBIENTE_INICIALIZADO=1
+	bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: AMBIENTE_INICIALIZADO - Valor: $AMBIENTE_INICIALIZADO"
+	echo "Nombre de variable: AMBIENTE_INICIALIZADO - Valor: $AMBIENTE_INICIALIZADO"
 	export AMBIENTE_INICIALIZADO
+
 	PATH="$PATH:$BINDIR"
+	bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: PATH - Valor: $PATH"
+	echo "Nombre de variable: PATH - Valor: $PATH"
 	export PATH
+	
+	#Confirmo sistema inicializado correctamente:
+	bash GrabarBitacora.sh PrepararAmbiente "Estado del Sistema: INICIALIZADO CORRECTAMENTE."
+	echo "Estado del Sistema: INICIALIZADO CORRECTAMENTE."
+	echo
 	
 	return $SETEO_CORRECTO
 }
@@ -268,7 +272,7 @@ continuarEjecucion() {
 			#0 = Se ejecuto correctamente
 			elif [ $retornoLanzarProceso -eq 0 ]; then
 				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta fue activado."
-				PID=$(pgrep "bash RecibirOfertas.sh")
+				PID=$(pgrep bash | tail -n 1)
 				echo
 				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
@@ -309,7 +313,6 @@ main() {
 
 	# Return 1 = Error: Ambiente ya inicializado
 	if [ $? -eq 0 ]; then
-		borrarVariablesAmbiente
 		return 1
 	fi
 
@@ -332,15 +335,13 @@ main() {
 	retornoScripts=$?
 	verificarPermisosMaestros
 	retornoMaestros=$?
-	#DESCOMENTAR ESTO CUANDO EL PREPAMB.LOG SE GUARDE EN BITACORAS:
-	#if [ $retornoScripts -eq 0 -o $retornoMaestros -eq 0 ]; then
-	#	borrarVariablesAmbiente
-	#	return 4
-	#fi
-
+	
+	if [ $retornoScripts -eq 0 -o $retornoMaestros -eq 0 ]; then
+		borrarVariablesAmbiente
+		return 4
+	fi
+	
 	continuarEjecucion
 }
 
 main
-
-
