@@ -184,7 +184,7 @@ verificarPermisosMaestros() {
 verificarArchivoConfiguracion() {
 	CONFIG_EXISTE=1
 	
-	if [ ! -f "config/CIPAK.cnf" ]; then
+	if [ ! -f "../config/CIPAK.cnf" ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "El archivo de configuracion CIPAK.cnf no existe." 2
 		echo "ERROR: El archivo de configuracion CIPAK.cnf no existe. Debe instalar nuevamente el sistema."
 		CONFIG_EXISTE=0
