@@ -216,6 +216,13 @@ setearVariablesAmbiente() {
 		return $SETEO_CORRECTO
 	fi
 	
+	# Chequeo que el archivo de configuracion se encuentre disponible:
+	verificarArchivoConfiguracion
+	if [ $? -eq 0 ]; then
+		SETEO_CORRECTO=0
+		return $SETEO_CORRECTO
+	fi
+	
 	#Parseo el archivo config para setear las variables:
 	echo "Arrancando la inicializacion del sistema. A continuacion se muestran y setean las variables de ambiente:"
 	echo	
