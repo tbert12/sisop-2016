@@ -103,6 +103,8 @@ organizarArchivos(){
 	tar -xzf source.tar.gz
 
 	### de alguna forma usar MoverArchivo.sh ?
+	cp -ar source/ARRIDIR/ "$DATDIR"
+	cp -ar source/MAEDIR/ "$DATDIR"
 	mv source/ARRIDIR/* "$ARRIDIR"
 	mv source/MAEDIR/* "$MAEDIR"
 	mv source/BINDIR/* "$BINDIR"
@@ -139,9 +141,9 @@ echo
 if [ ! "$1" = "-d" ]
   then
 	seteoVariables
+	echo
+	echo "-------------------------------------------"
 fi
-echo
-echo "-------------------------------------------"
 echo
 echo "Instalando..."
 echo
