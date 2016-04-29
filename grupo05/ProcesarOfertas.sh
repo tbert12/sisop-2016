@@ -14,9 +14,6 @@
 #	Archivos rechazados (archivo completo) NOKDIR/<nombre del archivo>
 #	Log del Comando LOGDIR/ProcesarOfertas.log
 
-# Opciones y Parametros
-#	A especificar por el desarrollador
-
 # Licitar consiste en ofertar una suma de dinero a criterio de cada suscriptor 
 # dentro de un monto minimo y maximo establecido por la Sociedad Administradora.
 # Los montos minimos y maximos dependen del grupo, del valor de la cuota pura y de la cantidad de cuotas que restan hasta terminar el plan de ahorro.
@@ -33,7 +30,7 @@ function rechazarRegistro {
 	# Motivo				Motivo por el cual se rechaza ESTA oferta
 	# Registro de Oferta	Registro Original COMPLETO
 	# usuario				Login del usuario que graba el registro
-	# fecha					Fecha y hora de grabación del registro rechazado, en el formato que se desee
+	# fecha					Fecha y hora de grabacion del registro rechazado, en el formato que se desee
 	
 	MENSAJE_DE_RECHAZO=$1
 	
@@ -41,7 +38,7 @@ function rechazarRegistro {
 	FECHA=`date +%d/%m/%Y" "%H:%M:%S`
 	
 	#echo "RECHAZADO funcion rechazarRegistro( '$MENSAJE_DE_RECHAZO' )"
-	echo "$archivo;$MENSAJE_DE_RECHAZO;$REGISTRO;$USER;$FECHA" >> "$RECHAZADAS_DIR/$CONCECIONARIO.rech"
+	echo "$archivo;$MENSAJE_DE_RECHAZO;$REGISTRO;$USER;$FECHA" >> "$RECHAZADAS_DIR/$CONCESIONARIO.rech"
 	
 	REGISTROS_RECHAZADOS=$[$REGISTROS_RECHAZADOS +1]
 	
@@ -52,7 +49,7 @@ function rechazarRegistro {
 function proximaFechaDeAdjudicacion {
 	#Proxima fecha a FECHA DE ARCHIVO ( incluye el mismo dia )
 	# La fecha de adjudicacion del nombre del archivo a grabar se obtiene de la Tabla de Fechas de adjudicacion MAEDIR/fechas_adj.csv 
-	# corresponde con la fecha del próximo acto de adjudicación dado la fecha del archivo que contiene al registro
+	# corresponde con la fecha del prï¿½ximo acto de adjudicaciï¿½n dado la fecha del archivo que contiene al registro
 	local ANO=${FECHA_ARCHIVO:0:4}
 	local MES=${FECHA_ARCHIVO:4:2}
 	local DIA=${FECHA_ARCHIVO:6:8}
@@ -200,7 +197,7 @@ do
 
 		#Este parser de una linea del CSV a un array elimina los campos VACIOS. (No genera problemas)
 		SUSCRIPTOR=(`grep "^$GRUPO;$ORDEN" $MAEDIR/temaK_padron.csv | tr ";" "\n"`)
-		CONCECIONARIO=${SUSCRIPTOR[3]}
+		CONCESIONARIO=${SUSCRIPTOR[3]}
 
 		if [ "${#SUSCRIPTOR[@]}" -eq 0 ]; then 
 			# Contrato no encontrado Grupo+Orden
@@ -230,7 +227,7 @@ do
 		
 		MONTO_MINIMO=`echo "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PARA_LICITACION" | tr "," "." | tr -d $'\r' | bc -l`
 		
-		# 4.3 monto_minimo (valor de cuota pura * cantidad de cuotas para licitación) <= IMPORTE
+		# 4.3 monto_minimo (valor de cuota pura * cantidad de cuotas para licitaciï¿½n) <= IMPORTE
 		if [ `echo $MONTO_MINIMO'>'$IMPORTE | tr "," "." | tr -d $'\r' | bc -l` == 1 ]; then
 			# No alcanza el monto Minimo
 			rechazarRegistro "No alcanza el monto Minimo"
@@ -259,20 +256,20 @@ do
 		#	-Continuar con el siguiente registro.
 		
 		#Formato
-		# Código de Concesionario	Código de concesionario proveniente del nombre del archivo
-		# Fecha del archivo			Fecha del nombre del archivo, formato a elección
+		# Codigo de Concesionario	Codigo de concesionario proveniente del nombre del archivo
+		# Fecha del archivo			Fecha del nombre del archivo, formato a eleccion
 		# Contrato Fusionado		proveniente del archivo de ofertas
 		# Grupo						Primeros 4 caracteres del Contrato
-		# Nro de Orden				Últimos 3 caracteres del Contrato
+		# Nro de Orden				Ultimos 3 caracteres del Contrato
 		# Importe Ofertado			Importe proveniente del archivo de ofertas
-		# Nombre del Suscriptor		Apellido y nombre del suscriptor, proveniente del padrón de suscriptores
+		# Nombre del Suscriptor		Apellido y nombre del suscriptor, proveniente del padron de suscriptores
 		# usuario					Login del usuario que graba el registro
-		# fecha						Fecha y hora de grabación del registro, en el formato que se desee
+		# fecha						Fecha y hora de grabacion del registro, en el formato que se desee
 		
 		NOMBRE=${SUSCRIPTOR[2]}
 		FECHA=`date +%d/%m/%Y" "%H:%M:%S`
 		#echo "ACEPTADA"
-		`echo "$CONCECIONARIO;$FECHA_ARCHIVO;$CONTRATO_FUSIONADO;$GRUPO;$ORDEN;$IMPORTE;$NOMBRE;$USER;$FECHA" >> $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt`
+		`echo "$CONCESIONARIO;$FECHA_ARCHIVO;$CONTRATO_FUSIONADO;$GRUPO;$ORDEN;$IMPORTE;$NOMBRE;$USER;$FECHA" >> $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt`
 		
 		# Si llego aca, esta aceptado
 		REGISTROS_ACEPTADOS=$[$REGISTROS_ACEPTADOS +1]
