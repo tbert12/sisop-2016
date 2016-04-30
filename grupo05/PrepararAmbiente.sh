@@ -17,9 +17,17 @@ repararInstalacion() {
 	NOMBRE_ARCHIVO=$1
 	TIPO=$2 #BINDIR o MAEDIR
 	
-	tar -xvzf "$GRUPO""source/source.tar.gz"
-	bash MoverArchivos.sh "$GRUPO""source/source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
-	rm -rf "$GRUPO""source/source/" #####REVISAR: Borra todo o solo los archivos?
+	#Ingreso al path de resguardo:
+	cd "$RESGDIR"
+	
+	if [ -f  "source.tar.gz" ]; then
+		tar -xzf "source.tar.gz"
+		bash MoverArchivos.sh "$RESGDIR""source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
+		rm "source.tar.gz"
+		cd ..
+	else
+		bash MoverArchivos.sh "$GRUPO""source/source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
+	fi
 }
 
 #Verificar la disponibilidad de los scripts necesarios para la ejecucion del programa:
@@ -28,10 +36,11 @@ verificarScript() {
 	
 	SCRIPT_DISPONIBLE=1
 	
-	if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then	
+	if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion" 1
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
+		echo
 		repararInstalacion "$NOMBRE_ARCHIVO" "BINDIR"
 		
 		if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then
@@ -50,7 +59,7 @@ verificarArchivoMaestro() {
 	
 	MAESTRO_DISPONIBLE=1
 	
-	if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then	
+	if [ ! -f "$MAEDIR/$NOMBRE_ARCHIVO" ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion" 1
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
@@ -258,11 +267,19 @@ setearVariablesAmbiente() {
 #Ofrecer continuar la ejecucion con RECIBIR OFERTAS.
 continuarEjecucion() {
 	RESPUESTA=""
-	while [ "$RESPUESTA" != "Si" -a "$RESPUESTA" != "No" ]
+	while [ "$RESPUESTA" != "Sí" -a "$RESPUESTA" != "No" ]
 	do
-		echo "¿Desea efectuar la activacion de RecibirOfertas? Si - No"
+		echo "Puede iniciar ahora la recepción de nuevas ofertas corriendo RecibirOfertas."
+		echo
+		echo "[Aviso: RecibirOfertas es un \"demonio\" y por lo tanto correrá en el background."
+		echo "Para frenarlo, cierre la terminal o corra: 'DetenerProceso.sh RecibirOfertas.sh'.]"
+		echo
+		echo "¿Desea efectuar la activación de RecibirOfertas ahora? 	Sí - No"
 		read RESPUESTA
-		if [ "$RESPUESTA" = "Si" ]; then
+		echo
+		RESPUESTA="$(echo "$RESPUESTA" | sed -r 's-^[Ss]+[iíIÍ]*$-Sí-')"
+		if [ "$RESPUESTA" = "Sí" ]; then
+			echo "Iniciando daemon RecibirOfertas..."
 			#Lanzo el comando recibirOferta:
 			bash LanzarProceso.sh "RecibirOfertas.sh" PrepararAmbiente
 			
@@ -279,18 +296,21 @@ continuarEjecucion() {
 			#0 = Se ejecuto correctamente
 			elif [ $retornoLanzarProceso -eq 0 ]; then
 				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta fue activado."
-				PID=$(pgrep "RecibirOfertas.sh")
+				PID=$(pgrep "RecibirOfertas.")  #Hardcodeo de RecibirOfertas.sh acortado a 15 caracteres
 				echo
-				echo "El comando RecibirOferta fue activado. RecibirOfertas esta corriendo bajo el No: $PID"
+				echo "El comando RecibirOferta fue activado. RecibirOfertas está corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
-				echo "bash DetenerProceso xxxxxxxxxxxxx" ######### REVISAR. Poner la expresion correcta
+				echo "DetenerProceso.sh RecibirOfertas.sh"
 			fi
+			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
-			echo "bash LanzarProceso.sh bash RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?
+			echo "bash LanzarProceso.sh RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?   # En otro comando debería decir MANUAL? O nada?
+			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 			return 0
 		fi
+		echo
 	done
 }
 

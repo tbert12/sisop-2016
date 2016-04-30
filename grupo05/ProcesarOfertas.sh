@@ -34,7 +34,8 @@ function rechazarRegistro {
 	
 	MENSAJE_DE_RECHAZO=$1
 	
-	REGISTRO=`echo $registro | tr "$SEPARADOR" ","`
+	#Elimino el salto de linea que viene por defecto en el csv
+	REGISTRO=`echo $registro | tr "$SEPARADOR" "," | tr -d "\n" | tr -d $'\r'`
 	FECHA=`date +%d/%m/%Y" "%H:%M:%S`
 	
 	#echo "RECHAZADO funcion rechazarRegistro( '$MENSAJE_DE_RECHAZO' )"
@@ -66,7 +67,7 @@ function proximaFechaDeAdjudicacion {
 	# La comparacion la realizo con todas las fechas. De todos modos el archivo de fechas esta ordenado
 	# Me seria suficiente encontrar la primera fecha MAYOR
 	while read fecha; do
-		local FechaRow=`echo $fecha | tr ";" "\n" | head -n 1 | tr "/" "\n"`
+		local FechaRow=`echo "$fecha" | tr ";" "\n" | head -n 1 | tr "/" "\n"`
 		read fDIA fMES fANO <<< $FechaRow
 		local FechaSEP=$fANO$fMES$fDIA
 		if [ $FechaSEP -gt $FECHA_ARCHIVO ]; then
@@ -81,21 +82,18 @@ function proximaFechaDeAdjudicacion {
 	done < "$MAEDIR"FechasAdj.csv
 	
 	#Asigno a la global
+	#Es imposible que PROXIMA quede vacio ya RecibirOfertas se encarga de que no me pase eso
 	FECHA_DE_ADJUDICACION=$PROX #ANOMESDIA
-	
-	#TODO: Que pasa si no hay proxima
 	
 	return 0
 }
 
+###cdp
+###echo "Inicio PO"
 
 SELF=`basename ${0%.*}`
 
-#TODO: Integrar con el ambiente
-#OKDIR="datos/OKDIR"
-#PROCDIR="datos/PROCDIR"
-#MAEDIR="datos/MAEDIR"
-#SON PARAMETROS ??
+#FORTMATO QUE ESPERO DE LOS ARCHIVOS QUE SE LEEN
 CANT_CAMPOS_ARCHIVO=2
 SEPARADOR=";"
 
@@ -150,7 +148,7 @@ do
 	#	Si la cantidad de campos del primer registro no se corresponde con el formato establecido asumir que el archivo esta daniado
 	#	Si no cumple mover a NOKDIR
 	# FORMATO: []
-	NUMERO_CAMPOS=`head -n 1 $FILE_PATH | tr "$SEPARADOR" "\n" | wc -l`
+	NUMERO_CAMPOS=`head -n 1 "$FILE_PATH" | tr "$SEPARADOR" "\n" | wc -l`
 
 	if [ "$NUMERO_CAMPOS" -ne "$CANT_CAMPOS_ARCHIVO" ]; then
 		#echo "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado"
@@ -177,9 +175,10 @@ do
 	#RECORRO REGISTROS
 	while read registro; do
 		REGISTROS_LEIDOS=$[$REGISTROS_LEIDOS +1]
-		# Espero 2 campos (Contrato fusionado, Importe de la Oferta)
-		CAMPOS=(`echo $registro | tr "$SEPARADOR" "\n"`) 
-		#TODO: Verifico que sean 2 ?
+		# Espero 2 campos (Contrato fusionado, Importe de la Oferta), le quito el salto de linea
+		CAMPOS=(`echo $registro | tr "$SEPARADOR" "\n" | tr -d $'\r'`) 
+		
+		#TODO: Verifico que sean 2?
 		
 		# 4. Validar oferta (si no pasa los campos rechazar)
 		# MOTIVOS DE RECHAZO:
@@ -219,7 +218,7 @@ do
 		
 		
 		# Importe (2do Campo)
-		IMPORTE=${CAMPOS[1]}
+		IMPORTE=`echo "${CAMPOS[1]}" | tr -d "\n"`
 
 		VALOR_CUOTA_PURA=${GRUPO[3]} #Reemplazo comma por punto (en distros de EEUU se usa punto)
 		CANTIDAD_CUOTAS_PARA_LICITACION=${GRUPO[5]}
@@ -278,7 +277,6 @@ do
 	# 7. Fin de Archivo
 	#	Para evitar el reprocesamiento de un mismo archivo, mover el archivo procesado a: PROCDIR/procesadas
 	bash MoverArchivos.sh "$FILE_PATH" "$PROCESADAS_DIR" "$SELF"
-	# TODO ^
 
 	#	[Registros leidos = aaa: cantidad de ofertas validas bbb cantidad de ofertas rechazadas = ccc]
 	# echo Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS
@@ -305,3 +303,5 @@ bash GrabarBitacora.sh "$SELF" "cantidad de archivos rechazados $ARCHIVOS_RECHAZ
 bash GrabarBitacora.sh "$SELF" "Fin de ProcesarOfertas" "INFO"
 
 
+###cdp
+###echo "Fin PO"
