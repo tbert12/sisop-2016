@@ -34,4 +34,6 @@ Esto genera los archivos necesarios para poder determinar los ganadores.
 
 ### Determinar ganadores
 
-............
+Habiendo preparado el ambiente, y posteriormente generado el sorteo correspondiente
+Posicionarse en `(...)/Grupo05/binarios/` y ejecutar el comando mediante la sentencia
+`$ ./DeterminarGanadores.pl`. Se accederá entonces al menu correspondiente a las consultas
