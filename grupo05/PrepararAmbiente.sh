@@ -285,10 +285,12 @@ continuarEjecucion() {
 				echo "Para detenerlo utilizar la siguiente linea:"
 				echo "bash DetenerProceso xxxxxxxxxxxxx" ######### REVISAR. Poner la expresion correcta
 			fi
+			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
 			echo "bash LanzarProceso.sh bash RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?
+			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 			return 0
 		fi
 	done
