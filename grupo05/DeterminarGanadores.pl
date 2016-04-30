@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use Data::Dumper;
-use warnings;
+#use warnings;
 #definicion subrutinas
 sub recibir_parametros{
 	#print "Bienvenido al CIPAK.\nPara ayuda, ingrese -a\n";
@@ -17,6 +17,7 @@ sub recibir_parametros{
 		hacer_consulta($modo);
 	} elsif ($modo =~ /-a/){
 		ejecutar_ayuda();
+		exit 0;
 	}
 	
 }
@@ -52,7 +53,7 @@ sub listar_archivos{
 	my $dir = $_[0];
 	opendir(my $dh, $dir) or die "No es válido el directorio [$!] \n";
 	while (my $file = readdir($dh)){
-		if ($file =~ /\d_.+/){
+		if ($file =~ /\d_.+\.srt$/){
 			print "$file \n";	
 		
 		}
@@ -172,13 +173,13 @@ sub ganadores_por_sorteo{
 		my $grupo = $grupo_recibido_parametro;
 		if (!exists$hash_datos->{$grupo}){
 			print "No existe el grupo en los datos. Por favor ingrese un grupo válido \n";
-			recibir_grupo();	
+			hacer_consulta();	
 		}
 		my $ordenes_a_ordenar = $hash_datos->{$grupo};
 		$nombre_archivo_a_guardar = $sorteo_a_mostrar. "_Grd".$grupo."- Gr".$grupo . ".txt";
 		@ordenados = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} }keys %$ordenes_a_ordenar;
 		foreach my $num_orden_del_grupo (@ordenados){
-			$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,".$hash_datos->{$num_grupo}->{$num_orden_del_grupo}[6]."(Numero de sorteo %.3d) \n",$num_grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
+			$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,".$hash_datos->{$num_grupo}->{$num_orden_del_grupo}[6]."(Numero de sorteo %.3d) \n",$grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
 			print $linea_a_guardar;
 			last;
 		}
@@ -288,6 +289,7 @@ sub ganadores_por_licitacion{
 		@ordenes_ordenadas_por_licitacion = sort {$hash_datos->{$num_grupo}->{$b}[5] <=> $hash_datos->{$num_grupo}->{$a}[5] or $hash_sorteo->{$a} <=> $hash_sorteo->{$b}} @las_keys;
 		@ordenes_ordenadas_por_sorteo = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @las_keys;
 		my $tam_array = @ordenes_ordenadas_por_licitacion;
+		print "En este grupo hay $tam_array participantes";
 		if ($ordenes_ordenadas_por_sorteo[0] eq $ordenes_ordenadas_por_licitacion[0] && $tam_array >= 2){
 			 $i = 1;
 		}else{
@@ -360,20 +362,23 @@ sub recibir_grupo{
 		$modo_comando = "v";
 		}
 		
-	if ($grupo_recibido_parametro == ""){
+	if ($grupo_recibido_parametro eq ""){
 
 		$modo_comando = "t";
 		}	
 	if ($grupo_recibido_parametro =~ /^\b[a-zA-Z0-9_]+\b$/){
-		#uno solo
-		#print "ENTRA AL MODO COMANDO U \n";
+		
 		$modo_comando = "u"; 
 	}
 	}
 sub ejecutar_ayuda(){
 	print "Esta es la ayuda del comando determinarGanador. \n";
 	print "Toma mis 10 maquinola \n";
-
+	print "Se tienen las siguientes consultas disponibles:\n";
+	print "A entrega el numero ganador del sorteo correspondiente a la fecha de adjudicación indicada por parámetro\n";
+	print "B indica, dentro de los grupos especificados por el usuario, qué numero de orden resulto ganador del sorteo \n";
+	print "C indica, dentro de los grupos especificados por el usuario, qué numero de orden resulto ganador de la licitación, tomando en cuenta al ganador del sorteo\n";
+	print "D indica, para un grupo en particular, los ganadores por sorteo y licitación\n";
 }
 while( 1){
 recibir_parametros();
