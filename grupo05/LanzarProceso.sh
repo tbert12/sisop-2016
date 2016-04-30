@@ -4,10 +4,10 @@ logMessage () {
 	MSG=$3
 	MSG_TYPE=$4
 
-	if [ "$CALLED_FROM_COMMANDLINE" -ne 0 -a -z "$COMANDO" ]; then	## DISCUTIR esta 2da condición
+	if [ "$CALLED_FROM_COMMANDLINE" -eq 1 ]; then
 		echo "$MSG"
 	else
-		if [ ! -z "$COMANDO" ]; then
+		if [ -n "$COMANDO" ]; then
 			bash GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
 		fi
 	fi
@@ -16,10 +16,10 @@ logMessage () {
 PROCESS=$1
 COMANDO=$2
 
-if [ $(readlink -f /proc/$(ps -o ppid:1= -p $$)/exe) != $(readlink -f "$SHELL") ]; then
-	CALLED_FROM_COMMANDLINE=0	# 0 = false
-else
+if [[ $0 == LanzarProceso.sh ]]; then
 	CALLED_FROM_COMMANDLINE=1	# 1 = true
+else
+	CALLED_FROM_COMMANDLINE=0	# 0 = false
 fi
 
 if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
