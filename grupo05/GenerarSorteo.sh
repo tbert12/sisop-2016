@@ -26,7 +26,7 @@ generarSorteo() {
 	SORTEOID=$2
 
 	#Inicio el log grabando "Inicio de Sorteo"
-	bash GrabarBitacora.sh GenerarSorteo "Inicio de Sorteo Numero: $SORTEOID de la fecha: $FECHAADJ"
+	bash GrabarBitacora.sh GenerarSorteo "Inicio de Sorteo Numero: $SORTEOID de la fecha: $(echo $FECHAADJ | cut -c7-8)/$(echo $FECHAADJ | cut -c5-6)/$(echo $FECHAADJ | cut -c1-4)"
 
 	#genera en NUMEROS_SORTEO un array con la secuencia de 1 a 168 random
 	NUMEROS_SORTEO=($(seq 168 | shuf))
@@ -45,6 +45,9 @@ generarSorteo() {
 		then
 		#Si ya esta creado lo renombra con .backup
 		mv $FILE $FILE".backup"
+
+		#Avisa en el log
+		bash GrabarBitacora.sh GenerarSorteo "El archivo: $FILE ya existia, se renombro por: $FILE.backup para no sobreescribirlo" 2
 	fi
 
 	#for guardando en sorteo y logueando.
@@ -58,7 +61,7 @@ generarSorteo() {
 	done
 
 	#Finalizo el log grabando "Fin de Sorteo"
-	bash GrabarBitacora.sh GenerarSorteo "Fin de Sorteo"
+	bash GrabarBitacora.sh GenerarSorteo "Fin de Sorteo Numero: $SORTEOID de la fecha: $(echo $FECHAADJ | cut -c7-8)/$(echo $FECHAADJ | cut -c5-6)/$(echo $FECHAADJ | cut -c1-4)"
 }
 
 #genera el id correspondiente para la fecha
@@ -97,6 +100,6 @@ if [ -r "$ARCH_FECHAS_ADJ" ]
 		done < $ARCH_FECHAS_ADJ  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
 	exit 0
 else
-	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion" 2
+	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion, el proceso no se realizo" 3
 	exit 1
 fi

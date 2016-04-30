@@ -13,7 +13,7 @@ NOKDIR="$GRUPO""rechazados/"
 CONFDIR="$GRUPO""config/"
 RESGDIR="$GRUPO""source/"
 
-LOGSIZE=50000
+LOGSIZE=500000
 SLEEPTIME=10
 # --------------------------------
 
