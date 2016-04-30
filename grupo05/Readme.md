@@ -36,4 +36,7 @@ Esto genera los archivos necesarios para poder determinar los ganadores.
 
 Habiendo preparado el ambiente, y posteriormente generado el sorteo correspondiente
 Posicionarse en `(...)/Grupo05/binarios/` y ejecutar el comando mediante la sentencia
-`$ ./DeterminarGanadores.pl`. Se accederá entonces al menu correspondiente a las consultas
+`$ ./DeterminarGanadores.pl`. Se accederá entonces al menu correspondiente a las consultas.
+Dentro de las opciones del comando, usted puede utilizar:
+`-g` para grabar las consultas realizadas en un archivo de texto. `$ ./DeterminarGanadores.pl -g`
+`-a` para acceder a la ayuda correspondiente al comando. `$ ./DeterminarGanadores.pl -a`
