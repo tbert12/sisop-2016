@@ -4,7 +4,7 @@ logMessage () {
 	MSG=$3
 	MSG_TYPE=$4
 
-	if [ "$CALLED_FROM_COMMANDLINE" -ne 0 ]; then
+	if [ "$CALLED_FROM_COMMANDLINE" -ne 0 -a -z "$COMANDO" ]; then	## DISCUTIR esta 2da condición
 		echo "$MSG"
 	else
 		if [ ! -z "$COMANDO" ]; then
@@ -23,7 +23,8 @@ else
 fi
 
 if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
-	PROCESS_NAME=`echo "$PROCESS" | awk '{print $1;}'`
+	#PROCESS_NAME=`echo "$PROCESS" | awk '{print $1;}'`
+	PROCESS_NAME="${PROCESS:0:15}"
 	PID=$(pgrep "$PROCESS_NAME" | tail -n 1)
 	if [ -z "$PID" ]; then
 		$PROCESS &
@@ -38,7 +39,7 @@ if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
 		fi
 	else
 		RETVAL=1
-		logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El proceso $PROCESS ya esta en ejecucion. El PID es $PID" "1"
+		logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El proceso $PROCESS ya está en ejecución. Su PID es $PID" "1"
 	fi
 else
 	RETVAL=2
