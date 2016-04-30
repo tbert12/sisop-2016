@@ -11,6 +11,7 @@ INFODIR="$GRUPO""informes/"
 LOGDIR="$GRUPO""bitacoras/"
 NOKDIR="$GRUPO""rechazados/"
 CONFDIR="$GRUPO""config/"
+RESGDIR="$GRUPO""source/"
 
 LOGSIZE=50000
 SLEEPTIME=10
@@ -63,6 +64,10 @@ seteoVariables() {
 	printf "\$CONFDIR (default $CONFDIR): "
 	read input
 	if [ "$input" != "" ]; then CONFDIR="$GRUPO""$input/"; fi
+	
+	printf "\$RESGDIR (default $RESGDIR): "
+	read input
+	if [ "$input" != "" ]; then CONFDIR="$GRUPO""$input/"; fi
 
 	echo
 
@@ -89,6 +94,7 @@ generarArchConfiguracion(){
 	echo "OKDIR=$OKDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "PROCDIR=$PROCDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "INFODIR=$INFODIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
+	echo "RESGDIR=$RESGDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "NOKDIR=$NOKDIR=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 	echo "SLEEPTIME=$SLEEPTIME=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 }
@@ -109,10 +115,10 @@ organizarArchivos(){
 	mv source/MAEDIR/* "$MAEDIR"
 	mv source/BINDIR/* "$BINDIR"
 
-	mv "$arch_comprimido" "$GRUPO""source/"
+	mv "$arch_comprimido" "$RESGDIR"
 	rm -rf "source/"
 
-	cp Readme.md "$GRUPO""source/"
+	cp Readme.md "$RESGDIR"
 	mv Readme.md "$GRUPO"
 }
 
@@ -148,7 +154,7 @@ echo
 echo "Instalando..."
 echo
 
-mkdir --parents "$BINDIR" "$MAEDIR" "$ARRIDIR" "$DATDIR" "$OKDIR" "$PROCDIR" "$INFODIR" "$LOGDIR" "$NOKDIR" "$CONFDIR" "$GRUPO""source/"
+mkdir --parents "$BINDIR" "$MAEDIR" "$ARRIDIR" "$DATDIR" "$OKDIR" "$PROCDIR" "$INFODIR" "$LOGDIR" "$NOKDIR" "$CONFDIR" "$RESGDIR"
 
 generarArchConfiguracion
 
@@ -158,7 +164,7 @@ echo
 echo "¡Instalación completada exitosamente!"
 echo
 
-mv "installer.sh" "$GRUPO""source/"
+mv "installer.sh" "$RESGDIR"
 
 cd "$BINDIR"
 

@@ -17,9 +17,17 @@ repararInstalacion() {
 	NOMBRE_ARCHIVO=$1
 	TIPO=$2 #BINDIR o MAEDIR
 	
-	tar -xvzf "$GRUPO""source/source.tar.gz"
-	bash MoverArchivos.sh "$GRUPO""source/source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
-	rm -rf "$GRUPO""source/source/" #####REVISAR: Borra todo o solo los archivos?
+	#Ingreso al path de resguardo:
+	cd "$RESGDIR"
+	
+	if [ -f  "source.tar.gz" ]; then
+		tar -xzf "source.tar.gz"
+		bash MoverArchivos.sh "$RESGDIR""source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
+		rm "source.tar.gz"
+		cd ..
+	else
+		bash MoverArchivos.sh "$GRUPO""source/source/$TIPO/$NOMBRE_ARCHIVO" "${!TIPO}"
+	fi
 }
 
 #Verificar la disponibilidad de los scripts necesarios para la ejecucion del programa:
@@ -32,6 +40,7 @@ verificarScript() {
 		bash GrabarBitacora.sh PrepararAmbiente "El archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe. Se procede a reparar instalacion" 1
 		echo "WARNING: el archivo $NOMBRE_ARCHIVO esta mal ubicado o no existe."
 		echo "Se procede a reparar la instalacion."
+		echo
 		repararInstalacion "$NOMBRE_ARCHIVO" "BINDIR"
 		
 		if [ ! -f "$BINDIR/$NOMBRE_ARCHIVO" ]; then
