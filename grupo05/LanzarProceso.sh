@@ -4,12 +4,12 @@ logMessage () {
 	MSG=$3
 	MSG_TYPE=$4
 
-	if [ "$CALLED_FROM_COMMANDLINE" -eq 1 ]; then
+	if [ -n "$COMANDO" ]; then
+		bash GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
+	fi
+
+	if [ "$CALLED_FROM_COMMANDLINE" -ne 0 ]; then
 		echo "$MSG"
-	else
-		if [ -n "$COMANDO" ]; then
-			bash GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
-		fi
 	fi
 }
 
