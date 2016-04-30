@@ -23,8 +23,8 @@ else
 fi
 
 if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
-	#PROCESS_NAME=`echo "$PROCESS" | awk '{print $1;}'`
-	PROCESS_NAME="${PROCESS:0:15}"
+	PROCESS_NAME=`echo "$PROCESS" | awk '{print $1;}'`
+	PROCESS_NAME="${PROCESS_NAME:0:15}"
 	PID=$(pgrep "$PROCESS_NAME" | tail -n 1)
 	if [ -z "$PID" ]; then
 		$PROCESS &
