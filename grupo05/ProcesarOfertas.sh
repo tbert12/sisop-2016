@@ -168,6 +168,9 @@ do
 	FECHA_ARCHIVO=`echo ${ARCHIVO_NAME/.*} | tr "_" "\n" | tail -n 1` #Me quedo con el aniomesdia del nombre del archivo 
 	proximaFechaDeAdjudicacion
 	
+	#ME guardo el numero de concesionario, lo voy a utilizar para los registros
+	CONCESIONARIO=`echo "$ARCHIVO_NAME" | tr "_" "\n" | head -n 1`
+	
 	REGISTROS_LEIDOS=0
 	REGISTROS_ACEPTADOS=0
 	REGISTROS_RECHAZADOS=0
@@ -196,7 +199,6 @@ do
 
 		#Este parser de una linea del CSV a un array elimina los campos VACIOS. (No genera problemas)
 		SUSCRIPTOR=(`grep "^$GRUPO;$ORDEN" "$MAEDIR"temaK_padron.csv | tr ";" "\n"`)
-		CONCESIONARIO=${SUSCRIPTOR[3]}
 
 		if [ "${#SUSCRIPTOR[@]}" -eq 0 ]; then 
 			# Contrato no encontrado Grupo+Orden
