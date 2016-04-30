@@ -1,23 +1,23 @@
 #!/usr/bin/perl
 use Data::Dumper;
+use warnings;
 #definicion subrutinas
 sub recibir_parametros{
 	#print "Bienvenido al CIPAK.\nPara ayuda, ingrese -a\n";
 	#print "Para habilitar la opcion de grabado, ingrese -g\n";
 	#print "Para proseguir con la consulta, presione enter\n";
-	$modo = @ARGV[0];
+	if (@ARGV eq 0){
+		$modo = '';
+		hacer_consulta();
+ 	}
+	$modo = $ARGV[0];
 	if ($modo =~ /-g/){
-		$sorteo_id = @ARGV[1];
-		$grupo_recibido_parametro = @ARGV[2];
+		$sorteo_a_mostrar = $ARGV[1];
+		$grupo_recibido_parametro = $ARGV[2];
 		hacer_consulta($modo);
 	} elsif ($modo =~ /-a/){
 		ejecutar_ayuda();
-	}else{
-		$modo = "";
-		$sorteo_id = @ARGV[0];
-		$grupo_recibido_parametro = @ARGV[1];
-		hacer_consulta();
- 	}
+	}
 	
 }
 
@@ -49,7 +49,7 @@ sub recibir_idsorteo_fecha{
 }
 
 sub listar_archivos{
-	my $dir = @_[0];
+	my $dir = $_[0];
 	opendir(my $dh, $dir) or die "No es válido el directorio [$!] \n";
 	while (my $file = readdir($dh)){
 		if ($file =~ /\d_.+/){
@@ -72,7 +72,7 @@ sub resultado_general{
 	while (my $linea = <$fh>){
 		chomp $linea;
 		my @campos = split(/;/,$linea);
-		$hash_datos{@campos[0]}[0] = @campos[1];
+		$hash_datos{$campos[0]}[0] = $campos[1];
 	}
 	close $fh;
 	foreach my $numero_orden (sort {$hash_datos{$a}[0] <=> $hash_datos{$b}[0] } keys %hash_datos){
@@ -92,7 +92,7 @@ sub generar_hash_sorteo{
 	while (my $linea =<$fh>){
 		chomp $linea;
 		my @campos = split(/;/,$linea);
-		$hash_sorteo->{@campos[0]} = @campos[1];
+		$hash_sorteo->{$campos[0]} = $campos[1];
 	}
 	close $fh;
 }
@@ -104,12 +104,12 @@ sub generar_hash_datos{
 		chomp $linea;
 		#print $linea."\n";
 		my @campos = split(/;/,$linea);
-		if (not defined($hash_datos->{@campos[3]})){
-			@campos[4] =~ s/0*(\d+)/$1/; #normalizo el formato de orden
-			$hash_datos->{@campos[3]} = {@campos[4] => [@campos]};
+		if (not defined($hash_datos->{$campos[3]})){
+			$campos[4] =~ s/0*(\d+)/$1/; #normalizo el formato de orden
+			$hash_datos->{$campos[3]} = {$campos[4] => [@campos]};
 		}
-		@campos[4] =~ s/0*(\d+)/$1/;
-		$hash_datos->{@campos[3]}->{@campos[4]} = [@campos];
+		$campos[4] =~ s/0*(\d+)/$1/;
+		$hash_datos->{$campos[3]}->{$campos[4]} = [@campos];
 		}
 	close $fh;
 }
@@ -141,8 +141,8 @@ sub ganadores_por_sorteo{
 	generar_hash_sorteo($hash_sorteo);
 	if ($modo_comando eq "r"){
 		my @rango_de_grupos = split(/-/,$grupo_recibido_parametro);
-		@rango_de_grupos = (@rango_de_grupos[0]..@rango_de_grupos[1]);
-		$nombre_archivo_a_guardar = $sorteo_a_mostrar . "_Grd".@rango_de_grupos[0]."- Gr".@rango_de_grupos[-1]  . ".txt";
+		@rango_de_grupos = ($rango_de_grupos[0]..$rango_de_grupos[1]);
+		$nombre_archivo_a_guardar = $sorteo_a_mostrar . "_Grd".$rango_de_grupos[0]."- Gr".$rango_de_grupos[-1]  . ".txt";
 		foreach my $num_grupo (@rango_de_grupos){
 			my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
 			if (exists $hash_datos->{$num_grupo}){
@@ -189,7 +189,7 @@ sub ganadores_por_sorteo{
 	if ($modo_comando eq "v"){
 		my @grupos = split(/,/,$grupo_recibido_parametro);
 		@grupos = sort{ $a > $b } @grupos;
-		$nombre_archivo_a_guardar = $sorteo_a_mostrar . "_Grd".@grupos[0]."- Gr".@grupos[-1]  . ".txt";
+		$nombre_archivo_a_guardar = $sorteo_a_mostrar . "_Grd".$grupos[0]."- Gr".$grupos[-1]  . ".txt";
 		foreach my $num_grupo (@grupos){
 			my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
 			if (exists $hash_datos->{$num_grupo} ){
@@ -208,7 +208,7 @@ sub ganadores_por_sorteo{
 				last;
 			}
 		}
-			if ($modo ne "" && length(@lineas_a_grabar) >= 1){
+			if ($modo ne "" && (@lineas_a_grabar) >= 1){
 			grabar_a_archivo($nombre_archivo_a_guardar,@lineas_a_grabar);
 			}
 	
@@ -267,7 +267,7 @@ sub ganadores_por_licitacion{
 	}
 	if ($modo_comando eq "r"){
 		@grupos = split(/-/,$grupo_recibido_parametro);
-		@grupos = (@grupos[0]..@grupos[-1])
+		@grupos = ($grupos[0]..$grupos[-1])
 	}
 	if ($modo_comando eq "v"){
 		@grupos = split(/,/,$grupo_recibido_parametro);
@@ -275,7 +275,7 @@ sub ganadores_por_licitacion{
 	if ($modo_comando eq "u"){
 		@grupos = ($grupo_recibido_parametro);
 	}
-	my $nombre_archivo_a_guardar = $sorteo_a_mostrar."_Grd".@grupos[0]."-Grh".@grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
+	my $nombre_archivo_a_guardar = $sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
 	@grupos = sort {$a <=> $b} @grupos;
 	foreach my $num_grupo (@grupos){
 		if (!exists($hash_datos->{$num_grupo})){
