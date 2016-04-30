@@ -8,6 +8,15 @@
 * [Enunciado del TP](http://materias.fi.uba.ar/7508/Practica-2016/SO7508_TP_TemaK_2016-1c.pdf)
 * Version 0
 
+### Pa' correr ###
+
+```
+cd grupo05/
+bash compiler.sh
+cd CIPAK_O5/
+. installer.sh
+. PrepararAmbiente.sh
+```
 ### Como configuro el repo? ###
 
 * Pullear
@@ -21,3 +30,4 @@
 * Guido Negri
 * Martin Cura
 * Tomas Bert
+
