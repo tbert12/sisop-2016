@@ -67,7 +67,7 @@ seteoVariables() {
 	
 	printf "\$RESGDIR (default $RESGDIR): "
 	read input
-	if [ "$input" != "" ]; then CONFDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then RESGDIR="$GRUPO""$input/"; fi
 
 	echo
 
