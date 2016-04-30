@@ -137,7 +137,7 @@ do
 					if [ $(wc -c < "$linea_arch") -gt 1 ]   # semialternativa: [ -s "$linea_arch" ]
 					  then
 						# mv
-						bash MoverArchivos.sh "$linea_arch" "$OKDIR"
+						bash MoverArchivos.sh "$linea_arch" "$OKDIR" "RecibirOfertas"
 						RES_MOV=$?
 						if [ $RES_MOV -eq 0 ]
 						  then
@@ -160,7 +160,7 @@ do
 
 	if [ "$(ls -A "$OKDIR")" ]	### DOBLES QUOTES: pueden fallar, en cuyo caso buscar otra forma de hacer este chequeo
 	  then # hay archivos aceptados en $OKDIR para procesar
-		bash LanzarProceso.sh "ProcesarOfertas.sh" "RecibirOfertas" ###MC: Saqué 'bash' del comando a ejecutar
+		bash LanzarProceso.sh "ProcesarOfertas.sh" "RecibirOfertas"
 		RES_LNZ=$?
 		if [ $RES_LNZ -eq 0 ]
 		  then

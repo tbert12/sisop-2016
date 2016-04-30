@@ -14,6 +14,7 @@ COMANDO=$2	# Comando desde donde se invoca este script.
 
 if [ -z ${3+x} ]; then	# PID optativo, para detener un unico proceso cuando hay varios con el mismo nombre.
 	PROCESS_NAME_FIRSTWORD=`echo "$PROCESS_NAME" | awk '{print $1;}'`
+	PROCESS_NAME_FIRSTWORD="${PROCESS_NAME_FIRSTWORD:0:15}"
 	PID=$(pgrep "$PROCESS_NAME_FIRSTWORD" | tail -n 1)
 else
 	PID=$3
@@ -34,7 +35,7 @@ if [ "$STOP_RESULT" -eq 0 ]; then
 	fi
 else
 	if [ -z "$PID" ]; then
-		logMessage "$COMANDO" "El proceso $PROCESS_NAME no pudo ser detenido." "2"
+		logMessage "$COMANDO" "El proceso $PROCESS_NAME no pudo ser detenido. Verifique el nombre ingresado." "2"
 	else
 		logMessage "$COMANDO" "El proceso $PROCESS_NAME con $PID no pudo ser detenido." "2"
 	fi
