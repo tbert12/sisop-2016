@@ -13,7 +13,7 @@ logMessage () {
 		bash GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
 	fi
 
-	if [ "$CALLED_FROM_COMMANDLINE" -eq $TRUE ]; then
+	if [ $CALLED_FROM_COMMANDLINE -eq $TRUE ]; then
 		echo "$MSG"
 	fi
 }
@@ -21,7 +21,7 @@ logMessage () {
 PROCESS=$1
 COMANDO=$2
 
-if [[ $0 == LanzarProceso.sh ]]; then
+if [ "$0" == "LanzarProceso.sh" -o "$0" == "./LanzarProceso.sh" ]; then
 	CALLED_FROM_COMMANDLINE=$TRUE
 else
 	CALLED_FROM_COMMANDLINE=$FALSE
@@ -51,4 +51,8 @@ else
 	logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El ambiente no fue inicializado. El proceso \"$PROCESS\" no puede ser lanzado." "2"
 fi
 
-return "$RETVAL"
+if [ $CALLED_FROM_COMMANDLINE -eq $TRUE ]; then
+	exit "$RETVAL"
+else
+	return "$RETVAL"
+fi

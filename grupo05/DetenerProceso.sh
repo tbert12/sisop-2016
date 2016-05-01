@@ -43,5 +43,5 @@ else
 	fi
 fi
 
-return "$STOP_RESULT";
+exit "$STOP_RESULT";
 
