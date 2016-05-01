@@ -37,7 +37,7 @@ if [ "$DESTINO" != "." -a "$ORIGEN" != "$DESTINO" -a "$ORIGEN_PATH" != "$DESTINO
 			if [ ! -e "$DESTINO$ORIGEN" ]; then
 				RETVAL=0
 				mv "$ORIGEN" "$DESTINO"
-				logMessage "$COMANDO" "El archivo \"$ORIGEN\" se movio exitosamente al destino \"$DESTINO\"." "0"
+				logMessage "$COMANDO" "El archivo \"$ORIGEN\" se movió exitosamente al destino \"$DESTINO\"." "0"
 			else
 				RETVAL=1
 				logMessage "$COMANDO" "El archivo a mover \"$ORIGEN\" ya existe en el directorio destino \"$DESTINO\". Los archivos duplicados se guardan en la carpeta \"$DPLDIR\" dentro del directorio destino." "1"
@@ -49,7 +49,7 @@ if [ "$DESTINO" != "." -a "$ORIGEN" != "$DESTINO" -a "$ORIGEN_PATH" != "$DESTINO
 				else 
 					mkdir "$DESTINO$DPLDIR"
 					mv "$ORIGEN" "$DESTINO$DPLDIR"
-					logMessage "$COMANDO" "Se creo el directorio \"$DPLDIR\" y se movio adentro el archivo." "0"
+					logMessage "$COMANDO" "Se creo el directorio \"$DPLDIR\" y se movió adentro el archivo." "0"
 				fi
 			fi
 		else

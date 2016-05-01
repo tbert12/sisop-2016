@@ -1,3 +1,8 @@
+#!/bin/bash
+
+TRUE=1
+FALSE=0
+
 logMessage () {
 	CALLED_FROM_COMMANDLINE=$1
 	COMANDO=$2
@@ -8,7 +13,7 @@ logMessage () {
 		bash GrabarBitacora.sh "$COMANDO" "$MSG" "$MSG_TYPE"
 	fi
 
-	if [ "$CALLED_FROM_COMMANDLINE" -ne 0 ]; then
+	if [ "$CALLED_FROM_COMMANDLINE" -eq $TRUE ]; then
 		echo "$MSG"
 	fi
 }
@@ -17,13 +22,13 @@ PROCESS=$1
 COMANDO=$2
 
 if [[ $0 == LanzarProceso.sh ]]; then
-	CALLED_FROM_COMMANDLINE=1	# 1 = true
+	CALLED_FROM_COMMANDLINE=$TRUE
 else
-	CALLED_FROM_COMMANDLINE=0	# 0 = false
+	CALLED_FROM_COMMANDLINE=$FALSE
 fi
 
-if [ "$AMBIENTE_INICIALIZADO" -ne 0 ]; then	# Variable de entorno booleana.
-	PROCESS_NAME=`echo "$PROCESS" | awk '{print $1;}'`
+if [ "$AMBIENTE_INICIALIZADO" -ne $FALSE ]; then	# Variable de entorno booleana.
+	PROCESS_NAME=`echo "${PROCESS##*/}" | awk '{print $1;}'`
 	PROCESS_NAME="${PROCESS_NAME:0:15}"
 	PID=$(pgrep "$PROCESS_NAME" | tail -n 1)
 	if [ -z "$PID" ]; then
@@ -46,4 +51,4 @@ else
 	logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El ambiente no fue inicializado. El proceso \"$PROCESS\" no puede ser lanzado." "2"
 fi
 
-exit "$RETVAL"
+return "$RETVAL"

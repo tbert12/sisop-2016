@@ -281,7 +281,7 @@ continuarEjecucion() {
 		if [ "$RESPUESTA" = "Sí" ]; then
 			echo "Iniciando daemon RecibirOfertas..."
 			#Lanzo el comando recibirOferta:
-			bash LanzarProceso.sh "RecibirOfertas.sh" PrepararAmbiente
+			. "$BINDIR"LanzarProceso.sh "$BINDIR""RecibirOfertas.sh" PrepararAmbiente
 			
 			#Chequeo si ya se estaba ejecutando anteriormente:
 			#1 = Ya se estaba ejecutando
@@ -306,7 +306,7 @@ continuarEjecucion() {
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
-			echo "bash LanzarProceso.sh RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?   # En otro comando debería decir MANUAL? O nada?
+			echo "bash LanzarProceso.sh RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?   # En otroComando debería decir MANUAL? O nada?
 			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 			return 0
 		fi

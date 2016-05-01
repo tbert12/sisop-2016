@@ -3,6 +3,12 @@ if [ $(($AMBIENTE_INICIALIZADO)) -eq 0 ]
   then
 	GRUPO="$PWD/../"
 fi
+
+if [ ! -e "$GRUPO"Readme.md ]
+  then
+	echo "Por seguridad, esta desinstalación se abortará automáticamente."
+	return 1
+fi
 #
 
 echo
@@ -14,7 +20,7 @@ read respuesta
 if [ "$respuesta" != "y" -a "$respuesta" != "yes" ]
   then
 	echo "Cancelado"
-	exit 1
+	return 1
 fi
 
 start-stop-daemon --stop --name "RecibirOfertas." > /dev/null
@@ -37,8 +43,11 @@ if [ "$(ls -A 'source/')" ]
 	echo "Por favor, mover manualmente los archivos de la carpeta $GRUPO""source/ a algún lugar seguro, por si quisiera instalar nuevamente el sistema"
 	echo "Una vez hecho eso, vuelva a correr este desinstalador"
 
-	exit 1
+	return 1
 fi
+
+AMBIENTE_INICIALIZADO=0
+export AMBIENTE_INICIALIZADO
 
 echo "Desinstalando sistema CIPAK..."
 

@@ -61,7 +61,7 @@ obtenerFechaUltAdjudicacion() {
 
 	if [ $ret_val -gt 0 ]
 	  then
-		bash GrabarBitacora.sh "RecibirOfertas" "No se encontro fecha de adjudicacion pasada"
+		bash GrabarBitacora.sh "RecibirOfertas" "No se encontró fecha de adjudicación pasada"
 	fi
 	return $ret_val
 }
@@ -92,19 +92,12 @@ nro_ciclo=0
 # daemon
 while :
 do
-	######
-	#echo
-	#echo
-	#echo "RecibirOfertas corre imprimidorDeVariables"
-	#bash imprimidorDeVariables.sh
-	######
-
 	# Incremento e imprimo el número de ciclo
 	nro_ciclo=$((nro_ciclo+1))
 	bash GrabarBitacora.sh "RecibirOfertas" "ciclo nro. $nro_ciclo"
 	##echo "ciclo nro. $nro_ciclo"
 
-	# Obtengo fecha de ultima adjudicacion y fecha de hoy para comparaciones
+	# Obtengo fecha de última adjudicación y fecha de hoy para comparaciones
 	fecha_hoy=$(date +%Y%m%d)
 	fecha_ult_adj=0
 	obtenerFechaUltAdjudicacion  # modifica $fecha_ult_adj
@@ -115,7 +108,7 @@ do
 	# Por cada archivo encontrado...
 	while read -r linea_arch
 	do
-		# Chequeo que el tipo archivo sea del archivo mencione ´text´
+		# Chequeo que el tipo del archivo mencione ´text´
 		text=$(file "$linea_arch" | grep "text")
 		# Extraigo nombre de archivo sin directorios
 		nom_arch=$(echo "$linea_arch" | sed 's-.*/\([^/]*\)$-\1-g')
@@ -126,7 +119,7 @@ do
 			fecha_arch=$(echo $nom_arch | cut -c6-13)  # Formato YYYYMMDD
 			fecha_valida=$(date -d "$fecha_arch")
 
-			# Hago los chequeos de fecha valida, menor o igual a hoy, y mayor a la de adj. obtenida
+			# Hago los chequeos de fecha válida, menor o igual a hoy, y mayor a la de adj. obtenida
 			if [ -n "$fecha_valida" -a $fecha_arch -gt $fecha_ult_adj -a $fecha_hoy -ge $fecha_arch ]
 			  then
 				# Chequeo existencia del concesionario
@@ -160,7 +153,7 @@ do
 
 	if [ "$(ls -A "$OKDIR")" ]	### DOBLES QUOTES: pueden fallar, en cuyo caso buscar otra forma de hacer este chequeo
 	  then # hay archivos aceptados en $OKDIR para procesar
-		bash LanzarProceso.sh "ProcesarOfertas.sh" "RecibirOfertas"
+		. "$BINDIR"LanzarProceso.sh "$BINDIR""ProcesarOfertas.sh" "RecibirOfertas"
 		RES_LNZ=$?
 		if [ $RES_LNZ -eq 0 ]
 		  then

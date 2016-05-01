@@ -111,7 +111,7 @@ organizarArchivos(){
 	### de alguna forma usar MoverArchivo.sh ?
 	cp -ar source/ARRIDIR/ "$DATDIR"
 	cp -ar source/MAEDIR/ "$DATDIR"
-	mv source/ARRIDIR/* "$ARRIDIR"
+	mv source/ARRIDIR/* "$ARRIDIR"  ## Esta línea puede deber comentarse
 	mv source/MAEDIR/* "$MAEDIR"
 	mv source/BINDIR/* "$BINDIR"
 

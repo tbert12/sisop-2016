@@ -1,3 +1,5 @@
+#!/bin/bash
+
 logMessage () {
 	COMANDO=$1
 	MSG=$2
@@ -13,7 +15,7 @@ PROCESS_NAME=$1		# Nombre del proceso a matar.
 COMANDO=$2	# Comando desde donde se invoca este script.
 
 if [ -z ${3+x} ]; then	# PID optativo, para detener un unico proceso cuando hay varios con el mismo nombre.
-	PROCESS_NAME_FIRSTWORD=`echo "$PROCESS_NAME" | awk '{print $1;}'`
+	PROCESS_NAME_FIRSTWORD=`echo "${PROCESS_NAME##*/}" | awk '{print $1;}'`
 	PROCESS_NAME_FIRSTWORD="${PROCESS_NAME_FIRSTWORD:0:15}"
 	PID=$(pgrep "$PROCESS_NAME_FIRSTWORD" | tail -n 1)
 else
@@ -41,5 +43,5 @@ else
 	fi
 fi
 
-exit "$STOP_RESULT";
+return "$STOP_RESULT";
 
