@@ -34,7 +34,8 @@ con lo cual se iniciará en un segundo plano el proceso que medie la recepción 
 
 ### Procesar ofertas
 
-... [Será iniciado automáticamente bla bla bla]
+ProcesarOfertas es llamado por RecibirOfertas cuando hay novedades.
+Una vez finalizado se pueden ver los resultados en los outputs correspondientes referenciados en la documentación.
 
 
 
@@ -53,4 +54,5 @@ Posicionarse en `.../Grupo05/binarios/` y ejecutar el comando mediante la senten
 Dentro de las opciones del comando, usted puede utilizar:<br />
 `-g` para grabar las consultas realizadas en un archivo de texto. `$ ./DeterminarGanadores.pl -g`<br />
 `-a` para acceder a la ayuda correspondiente al comando. `$ ./DeterminarGanadores.pl -a`<br />
+
 
