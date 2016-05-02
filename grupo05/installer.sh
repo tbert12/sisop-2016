@@ -25,57 +25,67 @@ seteoVariables() {
 	echo "Ingrese un nuevo valor (en caso de carpetas, solo el nombre de la misma) o solo ENTER para mantener el valor por defecto."
 	echo
 
-	printf "\$GRUPO (default $GRUPO): "
+	printf "\$GRUPO (directorio base; el valor por default es $GRUPO): "
 	read input
 	if [ "$input" != "" ]; then GRUPO="$PWD""$input/"; fi
 
-	printf "\$BINDIR (default $BINDIR): "
+	dirSinBarra="${BINDIR%/*}"
+	printf "\$BINDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then BINDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then BINDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$ARRIDIR (default $ARRIDIR): "
+	dirSinBarra="${ARRIDIR%/*}"
+	printf "\$ARRIDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then ARRIDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then ARRIDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$DATDIR (default $DATDIR): "
+	dirSinBarra="${DATDIR%/*}"
+	printf "\$DATDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then DATDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then DATDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$OKDIR (default $OKDIR): "
+	dirSinBarra="${OKDIR%/*}"
+	printf "\$OKDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then OKDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then OKDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$PROCDIR (default $PROCDIR): "
+	dirSinBarra="${PROCDIR%/*}"
+	printf "\$PROCDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then PROCDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then PROCDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$INFODIR (default $INFODIR): "
+	dirSinBarra="${INFODIR%/*}"
+	printf "\$INFODIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then INFODIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then INFODIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$LOGDIR (default $LOGDIR): "
+	dirSinBarra="${LOGDIR%/*}"
+	printf "\$LOGDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then LOGDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then LOGDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$NOKDIR (default $NOKDIR): "
+	dirSinBarra="${NOKDIR%/*}"
+	printf "\$NOKDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then NOKDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then NOKDIR="$GRUPO""${input%/*}/"; fi
 
-	printf "\$CONFDIR (default $CONFDIR): "
+	dirSinBarra="${CONFDIR%/*}"
+	printf "\$CONFDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then CONFDIR="$GRUPO""$input/"; fi
-	
-	printf "\$RESGDIR (default $RESGDIR): "
+	if [ "$input" != "" ]; then CONFDIR="$GRUPO""${input%/*}/"; fi
+
+	dirSinBarra="${RESGDIR%/*}"
+	printf "\$RESGDIR (default: ${dirSinBarra##*/}/): "
 	read input
-	if [ "$input" != "" ]; then RESGDIR="$GRUPO""$input/"; fi
+	if [ "$input" != "" ]; then RESGDIR="$GRUPO""${input%/*}/"; fi
 
 	echo
 
-	printf "\$LOGSIZE (default $LOGSIZE bytes): "
+	printf "\$LOGSIZE (tamaño límite para cada log; default: $LOGSIZE bytes): "
 	read input
 	if [ "$input" != "" -a "$input" -eq "$input" -a "$input" -gt 0 ] 2> /dev/null; then LOGSIZE="$input"; else echo "Mantengo default"; fi
 
-	printf "\$SLEEPTIME (default $SLEEPTIME segundos): "
+	printf "\$SLEEPTIME (para el demonio; default: $SLEEPTIME segundos): "
 	read input
 	if [ "$input" != "" -a "$input" -eq "$input" -a "$input" -ge 0 ] 2> /dev/null; then SLEEPTIME="$input"; else echo "Mantengo default"; fi
 }
