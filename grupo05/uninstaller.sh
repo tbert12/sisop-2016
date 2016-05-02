@@ -24,7 +24,8 @@ if [ "$respuesta" != "y" -a "$respuesta" != "yes" ]
 fi
 
 start-stop-daemon --stop --name "RecibirOfertas." > /dev/null
-### ¿Qué otros scripts haría falta asegurarse de matar?
+### Este es el único daemon...
+### ¿Haría falta asegurarse de matar algún otro script?
 
 echo
 echo "Recreando instalador..."

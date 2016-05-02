@@ -151,7 +151,7 @@ do
 	done < RecibirOfertasAUX.aux
 	rm RecibirOfertasAUX.aux
 
-	if [ "$(ls -A "$OKDIR")" ]	### DOBLES QUOTES: pueden fallar, en cuyo caso buscar otra forma de hacer este chequeo
+	if [ "$(ls -A "$OKDIR")" ]
 	  then # hay archivos aceptados en $OKDIR para procesar
 		. "$BINDIR"LanzarProceso.sh "$BINDIR""ProcesarOfertas.sh" "RecibirOfertas"
 		RES_LNZ=$?
