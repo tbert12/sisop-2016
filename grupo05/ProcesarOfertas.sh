@@ -282,7 +282,7 @@ do
 
 	#	[Registros leidos = aaa: cantidad de ofertas validas bbb cantidad de ofertas rechazadas = ccc]
 	# echo Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS
-	bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas $REGISTROS_VALIDOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
+	bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
 					
 	# 8. Llevar a cero todos los contadores de registros
 	REGISTROS_LEIDOS=0

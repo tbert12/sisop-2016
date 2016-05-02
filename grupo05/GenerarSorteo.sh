@@ -16,7 +16,6 @@
 # 		Log del Comando LOGDIR/GenerarSorteo.log
 #
 
-
 #funcion que genera un sorteo para una fecha y un ID
 generarSorteo() {
 	
@@ -66,12 +65,15 @@ generarSorteo() {
 
 #genera el id correspondiente para la fecha
 generarId() {
-	FECHA=$1
-
-	if [ -f *_$FECHA".srt" ] #hay un archivo nn_FECHA -> ID = nn + 1
+	local FECHA=$1
+	#echo "$PROCDIR"sorteos/*_$FECHA.srt
+	
+	#CUANDO HAY MAS DE UN ARCHIVO FALLA COMO ESCOPETA VIEJA
+	if [ -f "$PROCDIR"sorteos/1_$FECHA.srt ] #hay un archivo 1_FECHA -> hay una secuecia de ID = nn + 1
 		then
-			ARCHIVOS=(`ls *_$FECHA".srt" | sort -r`)
-			ULT=${ARCHIVOS:0:1}
+			ARCHIVOS=(`ls "$PROCDIR"sorteos/*_$FECHA.srt | sort -r`)
+			ULT="${ARCHIVOS##*/}"
+			ULT=${ULT:0:1}
 			ID=$(expr $ULT + 1)
 			echo $ID
 	else
@@ -79,6 +81,38 @@ generarId() {
 		echo 1
 	fi
 }
+
+#detecta la fecha de adjudicacion proxima y la aloja en FECHA_PROX_ADJ
+fechaProximaAdjudicacion() {
+	
+	hoy=$(date +'%Y%m%d')
+	local diferenciaMin=0
+	local diferenciaActual=0
+	local PROX=""
+
+	while read -r linea 
+	do
+		if [ -n "$linea" ]
+			then
+			# Extraigo la fecha y reformateo a YYYYMMDD
+			fecha_actual=$(echo "$linea" | cut -c7-10)$(echo "$linea" | cut -c4-5)$(echo "$linea" | cut -c1-2)
+			
+			#fecha de la linea del archivo es mayor que la de hoy
+			if [ $fecha_actual -gt $hoy ] 
+				then
+					diferenciaActual=$(( $fecha_actual-$hoy ))
+					if [  "$diferenciaActual" -lt "$diferenciaMin" ] || [ $diferenciaMin -eq 0 ]
+						then
+							#Esta mas cerca que una fecha comparada anteriormente || Todavia no se comparo ninguna
+							diferenciaMin=$diferenciaActual
+							PROX=$fecha_actual
+					fi
+			fi
+		fi
+	done < $ARCH_FECHAS_ADJ
+	echo $PROX
+}
+
 
 # Inicializacion de Variables
 #Tabla de fechas de adj
@@ -88,18 +122,13 @@ ARCH_FECHAS_ADJ="$MAEDIR""FechasAdj.csv"
 #For de las fechas de adjudicacion
 if [ -r "$ARCH_FECHAS_ADJ" ]
 	then
-		while read -r linea_adj
-		do
-			if [ -n "$linea_adj" ]
-			  then
-				# Extraigo la fecha y reformateo a YYYYMMDD
-				fecha_adj=$(echo "$linea_adj" | cut -c7-10)$(echo "$linea_adj" | cut -c4-5)$(echo "$linea_adj" | cut -c1-2)
-				
-				generarSorteo $fecha_adj $(generarId "$fecha_adj")
-			fi
-		done < $ARCH_FECHAS_ADJ  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
-	exit 0
+		# Extraigo la fecha de la proxima adjudicacion y reformateo a YYYYMMDD
+		fecha_adj=$(fechaProximaAdjudicacion)
+		
+		#genero el sorteo
+		generarSorteo $fecha_adj $(generarId "$fecha_adj")
+	#exit 0
 else
 	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion, el proceso no se realizo" 3
-	exit 1
+	#exit 1
 fi
