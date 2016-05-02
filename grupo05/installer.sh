@@ -13,7 +13,7 @@ NOKDIR="$GRUPO""rechazados/"
 CONFDIR="$GRUPO""config/"
 RESGDIR="$GRUPO""source/"
 
-LOGSIZE=500000
+LOGSIZE=500
 SLEEPTIME=10
 # --------------------------------
 
@@ -81,7 +81,7 @@ seteoVariables() {
 
 	echo
 
-	printf "\$LOGSIZE (tamaño límite para cada log; default: $LOGSIZE bytes): "
+	printf "\$LOGSIZE (tamaño límite para cada log; default: $LOGSIZE Kbytes): "
 	read input
 	if [ "$input" != "" -a "$input" -eq "$input" -a "$input" -gt 0 ] 2> /dev/null; then LOGSIZE="$input"; else echo "Mantengo default"; fi
 
@@ -118,7 +118,6 @@ organizarArchivos(){
 
 	tar -xzf source.tar.gz
 
-	### de alguna forma usar MoverArchivo.sh ?
 	cp -ar source/ARRIDIR/ "$DATDIR"
 	cp -ar source/MAEDIR/ "$DATDIR"
 	mv source/ARRIDIR/* "$ARRIDIR"  ## Esta línea puede deber comentarse
