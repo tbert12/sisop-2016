@@ -304,6 +304,5 @@ bash GrabarBitacora.sh "$SELF" "cantidad de archivos procesados $ARCHIVOS_ACEPTA
 bash GrabarBitacora.sh "$SELF" "cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS" "INFO"
 bash GrabarBitacora.sh "$SELF" "Fin de ProcesarOfertas" "INFO"
 
-return 0
 ###cdp
 ###echo "Fin PO"
