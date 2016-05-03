@@ -55,6 +55,10 @@ Dentro de las opciones del comando, usted puede utilizar:<br />
 `-g` para grabar las consultas realizadas en un archivo de texto. `$ ./DeterminarGanadores.pl -g`<br />
 `-a` para acceder a la ayuda correspondiente al comando. `$ ./DeterminarGanadores.pl -a`<br />
 
+### Lanzar y detener procesos
+
+Toda la lógica de ejecución de procesos está centralizada en las funciones **LanzarProceso** y **DetenerProceso**. Los procesos son ejecutados en background, demonizados. La única excepción en la que no DEBE llamarse a **LanzarProceso** para ejecutar otro proceso es en el caso de la función de **PrepararAmbiente** pues, por requerimiento, un proceso no puede ser lanzado sin estar inicializado el ambiente.<br />
+
 ## Modo de uso de scripts
 
 
@@ -74,7 +78,7 @@ Opcionalmente, se puede utilizar el flag `-d` para predefinir que se utilicen to
 ### uninstaller.sh
 
 El desinstalador no utiliza ningún parámetro. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la desinstalación se realice en el mismo proceso que la terminal, y, más importante, con el *working directory* posicionado en la carpeta del script, de forma que pueda garantizarse su total funcionamiento:
-`. uninstaller.sh`
+`. uninstaller.sh`<br />
 
 
 ### PrepararAmbiente.sh
@@ -84,31 +88,31 @@ El script necesita imperiosamente de los siguientes archivos para lograr su come
 * Archivo de Configuración: *CONFDIR/CIPAK.cnf*
 * Scripts ejecutables: *BINDIR/{script}.sh/.pl*
 * Archivos maestros: *MAEDIR/{maestro}.csv*
-* Directorio de resguardo: A definir por el instalador.
+* Directorio de resguardo: A definir por el instalador.<br />
 
 El script define las siguientes variables de ambiente:
 * Por enunciado:
-** GRUPO
-** MAEDIR
-** ARRIDIR
-** OKDIR
-** PROCDIR
-** INFODIR
-** LOGDIR
-** NOKDIR
-** LOGSIZE
-** SLEEPTIME
-** PATH
+	* GRUPO
+	* MAEDIR
+	* ARRIDIR
+	* OKDIR
+	* PROCDIR
+	* INFODIR
+	* LOGDIR
+	* NOKDIR
+	* LOGSIZE
+	* SLEEPTIME
+	* PATH
 * Agregadas:
-** REGSDIR: Donde se encuentra el repositorio de resguardo.
-** AMBIENTE_INICIALIZADO: flag para informar que el ambiente fue inicializado correctamente.
+	* REGSDIR: Donde se encuentra el repositorio de resguardo.
+	* AMBIENTE_INICIALIZADO: flag para informar que el ambiente fue inicializado correctamente.<br />
 
 El script devuelve alguno de los siguientes valores:
 * **0**: Éxito. El usuario decide no continuar la ejecución del sistema con **RecibirOfertas**.
 * **1**: Error. No se inicializó el sistema (falta el archivo de configuración o ya se encuentra inicializado).
 * **2**: Error. No se poseen todos los scripts obligatorios.
 * **3**: Error. No se poseen todos los archivos maestros obligatorios.
-* **4**: Error. No se poseen todos los permisos necesarios en los scripts o los archivos maestros.
+* **4**: Error. No se poseen todos los permisos necesarios en los scripts o los archivos maestros.<br />
 
 
 ### RecibirOfertas.sh
@@ -120,10 +124,10 @@ Si el ambiente no había sido inicializado, de cualquier manera, el programa no 
 El script necesita imperiosamente de los siguientes archivos para lograr su cometido:
 * Archivos de oferta: *ARRIDIR/{cod_concesionario}_{aniomesdia}.csv*
 * Tabla de fechas de adjudicación: *MAEDIR/FechasAdj.csv*
-* Registro de concesionarios: *MAEDIR/concesionarios.csv*
+* Registro de concesionarios: *MAEDIR/concesionarios.csv*<br />
 El resultado de un ciclo del programa es la separación de los archivos de oferta de *input* en aquellos válidos e inválidos según una serie de criterios:
 * Archivos de oferta válidos: *OKDIR/{cod_concesionario}_{aniomesdia}.csv*
-* Archivos de oferta inválidos: *NOKDIR/{cod_concesionario}_{aniomesdia}.csv*
+* Archivos de oferta inválidos: *NOKDIR/{cod_concesionario}_{aniomesdia}.csv*<br />
 
 
 ### ProcesarOfertas.sh
@@ -134,12 +138,12 @@ El script necesita imperiosamente de los siguientes archivos para lograr su come
 * Archivo de Ofertas: *OKDIR/{cod_concesionario}_{aniomesdia}.csv*
 * Padrón de Suscriptores: *MAEDIR/temaK_padron.csv*
 * Tabla de Fechas de adjudicación: *MAEDIR/fechas_adj.csv*
-* Tabla de Grupos: *MAEDIR/grupos.csv*
+* Tabla de Grupos: *MAEDIR/grupos.csv*<br />
 Desde estos input genera como resultado-output:
 * Archivo de ofertas válidas: *PROCDIR/validas/{fecha_de_adjudicacion}.txt*
 * Archivos procesados: *PROCDIR/procesadas/{nombre del archivo}*
 * Archivos de ofertas rechazadas: *PROCDIR/rechazadas/{cod_concesionario}.rech*
-* Archivos rechazados (archivo completo): *NOKDIR/{nombre del archivo}*
+* Archivos rechazados (archivo completo): *NOKDIR/{nombre del archivo}*<br />
 
 
 ### GenerarSorteo.sh
@@ -147,9 +151,9 @@ Desde estos input genera como resultado-output:
 No recibe parámetros.<br />
 
 El script necesita imperiosamente del siguiente archivo para lograr su cometido:
-* Tabla de Fechas de adjudicación: *MAEDIR/FechasAdj.csv*
+* Tabla de Fechas de adjudicación: *MAEDIR/FechasAdj.csv*<br />
 Desde este input genera como resultado-output:
-* Archivos de sorteos: *PROCDIR/sorteos/{sorteoId}{fecha_de_adjudicacion}.csv*, donde se indica para cada una de las 168 órdenes el número aleatorio que se le asignó.
+* Archivos de sorteos: *PROCDIR/sorteos/{sorteoId}{fecha_de_adjudicacion}.csv*, donde se indica para cada una de las 168 órdenes el número aleatorio que se le asignó.<br />
 
 En caso de realizarse un flow completo del script, es decir que llegue al final de su ejecución sin ningún inconveniente, generará un archivo SRT para la fecha más próxima alojada en la Tabla de Fechas de adjudicación.<br />
 
@@ -158,19 +162,19 @@ En caso de realizarse un flow completo del script, es decir que llegue al final 
 
 El script acepta 2 flags diferentes:
 1. `-a`: Ayuda. Se imprime en pantalla la ayuda del comando, esto es qué significa cada opción y cómo navegar a través del script.
-2. `-g`: Modo grabar. Es la opción para grabar los resultados de las consultas en archivos, cuyos nombres son representativos de las consultas realizadas. Por salida estándar se avisará que las consultas se están grabando en disco.
+2. `-g`: Modo grabar. Es la opción para grabar los resultados de las consultas en archivos, cuyos nombres son representativos de las consultas realizadas. Por salida estándar se avisará que las consultas se están grabando en disco.<br />
 En caso de llamarse sin argumentos al comando, se realizan consultas de tipo provisorias, es decir sólo se ven en pantalla y no persisten en el disco.<br />
 
 El script necesita imperiosamente de los siguientes archivos para funcionar correctamente:
 * Padrón de Suscriptores: *MAEDIR/temaK_padron.csv*
 * Tabla de Grupos: *MAEDIR/grupos.csv*
 * Archivo de ofertas válidas: *PROCDIR/validas/{fecha_de_adjudicacion}.txt*
-* Archivos de sorteos: *PROCDIR/sorteos/{sorteoId}_{fecha_de_adjudicacion}.srt*
+* Archivos de sorteos: *PROCDIR/sorteos/{sorteoId}_{fecha_de_adjudicacion}.srt*<br />
 Si se corre en modo grabar (`-g`), desde estos input se genera como resultado-output:
 * Resultado general del sorteo: *INFODIR/{sorteoId}_{fecha_de_adjudicacion}.txt*
 * Ganadores por Sorteo: *INFODIR/{sorteoId}_Grdxxxx-Grhyyyy_{fecha_de_adjudicacion}*
 * Ganadores por Licitación: *INFODIR/{sorteoId}_Grdxxxx-Grhyyyy_{fecha_de_adjudicacion}*
-* Resultados por grupo: *INFODIR/{sorteoId}_Grupoxxxx_{fecha_de_adjudicacion}*
+* Resultados por grupo: *INFODIR/{sorteoId}_Grupoxxxx_{fecha_de_adjudicacion}*<br />
 
 
 ### MoverArchivos.sh
@@ -178,26 +182,26 @@ Si se corre en modo grabar (`-g`), desde estos input se genera como resultado-ou
 El script acepta hasta 3 argumentos distintos:
 1. **ORIGEN** *(Requerido)*. Nombre del archivo a mover.
 2. **DESTINO** *(Requerido)*. Nombre del directorio adonde se quiere mover el archivo origen.
-3. **COMANDO** *(Opcional)*. Indica el nombre del comando invocador, utilizado dentro del script para loggear en la bitácora correspondiente la información pertinente. Si no se especifica, la información de ejecución se imprime por *STDOUT*.
+3. **COMANDO** *(Opcional)*. Indica el nombre del comando invocador, utilizado dentro del script para loggear en la bitácora correspondiente la información pertinente. Si no se especifica, la información de ejecución se imprime por *STDOUT*.<br />
 
 El script devuelve alguno de los siguientes valores:
 * **0**: Éxito. El archivo fue movida del origen al destino sin necesidad de realizar duplicados o colocarlo en una carpeta auxiliar.
 * **1**: Éxito. El archivo pudo ser movido exitosamente pero debió guardarse como copia en la carpeta auxiliar *dpl/*.
 * **2**: Error. El destino corresponde al mismo directorio donde se halla actualmente el archivo origen y por lo tanto no se puede mover el archivo.
 * **3**: Error. El archivo origen no se encuentra en el directorio específicado.
-* **4**: Error. El directorio destino no existe.
+* **4**: Error. El directorio destino no existe.<br />
 
 ### GrabarBitacora.sh
 
 El script acepta hasta 3 argumentos distintos:
 1. **COMANDO** *(Requerido)*. Nombre del comando invocador del script. El archivo de bitácora donde se plasmarán los registros se llamará *{COMANDO}.log*.
 2. **MENSAJE** *(Requerido)*. El mensaje a registrar en la bitácora.
-3. **TIPO DE MENSAJE** *(Opcional)*. Indica la categoría del mensaje a registrar en la bitácora. Puede ser INFO, WARNING o ERROR. Si no se define este parámetro, el valor por defecto es INFO.
+3. **TIPO DE MENSAJE** *(Opcional)*. Indica la categoría del mensaje a registrar en la bitácora. Puede ser INFO, WARNING o ERROR. Si no se define este parámetro, el valor por defecto es INFO.<br />
 
 Se utilizan las siguientes variables de ambiente:
 * *LOGDIR*: Directorio donde se crearán los archivos de log.
 * *USER*: Usuario actual que escribe el registro en la bitácora.
-* *LOGSIZE*: Tamaño máximo de los archivos de log en KBytes.
+* *LOGSIZE*: Tamaño máximo de los archivos de log en KBytes.<br />
 
 
 ### MostrarBitacora.pl
@@ -205,7 +209,7 @@ Se utilizan las siguientes variables de ambiente:
 El script acepta hasta 3 argumentos distintos:
 1. **COMANDO** *(Requerido)*. Nombre del comando invocador del script. El archivo de bitácora sobre el cual se realizará la consulta se llamará *{COMANDO}.log*.
 2. **QUERY** *(Opcional)*. Puede ser tanto una cadena de texto normal como una expresión regular. Funciona como filtro puesto que se mostrarán sólo las líneas de la bitácora correspondiente que matcheen con la query ingresada. En caso de no indicarse este parámetro, se mostrarán todas las líneas de la bitácora.
-3. **ARCHIVO DE SALIDA** *(Opcional)*. Es el nombre y extensión del archivo en el cual se imprimirán las líneas de la bitácora matcheadas por la query. En caso de no indicarse, obviamente se imprimirán por *STDOUT* por defecto. El archivo tendrá ubicación relativa al directorio donde se está ejecutando el script. Si el archivo de salida especificado no existe, lo crea; si ya existe, las líneas se insertan al final del mismo, en orden.
+3. **ARCHIVO DE SALIDA** *(Opcional)*. Es el nombre y extensión del archivo en el cual se imprimirán las líneas de la bitácora matcheadas por la query. En caso de no indicarse, obviamente se imprimirán por *STDOUT* por defecto. El archivo tendrá ubicación relativa al directorio donde se está ejecutando el script. Si el archivo de salida especificado no existe, lo crea; si ya existe, las líneas se insertan al final del mismo, en orden.<br />
 
 El script considera la gran mayoría de los casos como casos de éxito. Esto es, ya sea que se haya encontrado un match para nuestra consulta en la bitácora especificada o si, por el contrario, no se hallaron coincidencias, en ambos casos el valor de retorno es 0.<br />
 Casos de excepción son aquellos en los que el flow normal del programa se ve interrumpido por agentes no tenidos en cuenta o cuando se mata el proceso pues falla la llamada al sistema para grabar en la bitácora información sobre la ejecución del script.<br />
@@ -214,16 +218,18 @@ Utiliza únicamente la variable de entorno *LOGDIR* para ver dónde deberá busc
 
 ### LanzarProceso.sh
 
+Es necesario que la variable de ambiente `AMBIENTE_INICIALIZADO` esté setteada como verdadera (1) para poder lanzar cualquier proceso.<br /> 
+
 El script acepta hasta 2 argumentos distintos:
 1. **PROCESO** *(Requerido)*. Nombre completo del proceso a lanzar, incluidos todos los parámetros que este reciba. Debemos imaginar este argumento como un comando cualquiera que queramos ejecutar en una línea de shell en la terminal.
-2. **COMANDO** *(Opcional)*. Indica el comando desde el cual se invoca al script. En caso de no pasarse este argumento, en caso de querer registrarse algo en la bitácora no se podrá puesto que no estará especificado el comando correspondiente a la misma.
+2. **COMANDO** *(Opcional)*. Indica el comando desde el cual se invoca al script. En caso de no pasarse este argumento, en caso de querer registrarse algo en la bitácora no se podrá puesto que no estará especificado el comando correspondiente a la misma.<br />
 
 Se recomienda invocar este comando como `bash LanzarProceso.sh "{PROCESO}"` cuando se lo quiera llamar desde la línea de comandos. Por el contrario, se sugiere hacerlo *source* (alias `.`) en aquellos casos en los que se lo ejecute desde otro script: `. LanzarProceso.sh "{PROCESO}"`. El porqué de esta diferenciación tiene que ver con cómo deberá manejar el script el registro de errores e información.<br />
 
 El script devuelve alguno de los siguientes valores:
 * **0**: Éxito. El proceso especificado pudo ser lanzado correctamente.
 * **1**: Error. El proceso a lanzar ya está en ejecución.
-* **2**: Error. Ante cualquier otro error al querer lanzar el proceso en background.
+* **2**: Error. Ante cualquier otro error al querer lanzar el proceso en background.<br />
 
 
 ### DetenerProceso.sh
@@ -231,10 +237,10 @@ El script devuelve alguno de los siguientes valores:
 El script acepta hasta 3 argumentos distintos:
 1. **PROCESO** *(Requerido)*. Nombre completo del proceso a detener.
 2. **COMANDO** *(Requerido)*. Nombre del comando desde donde se invoca esta función. Este argumento sirve para registrar en la bitácora correspondiente a dicho comando todo lo referente a la ejecución del script.
-3. **PID** *(Opcional)*. Indica el PID del proceso a detener. En caso de no especificarse, se busca el PID entre los procesos en ejecución de acuerdo al nombre del proceso. Cabe aclarar que, por cómo se manejan los procesos en el sistema y en UNIX en general, el nombre del proceso puede matchear con varios procesos con PIDs distintos; en ese caso, se selecciona el primer PID de la lista.
+3. **PID** *(Opcional)*. Indica el PID del proceso a detener. En caso de no especificarse, se busca el PID entre los procesos en ejecución de acuerdo al nombre del proceso. Cabe aclarar que, por cómo se manejan los procesos en el sistema y en UNIX en general, el nombre del proceso puede matchear con varios procesos con PIDs distintos; en ese caso, se selecciona el primer PID de la lista.<br />
 
 El script devuelve alguno de los siguientes valores:
 * **0**: Éxito. El proceso se estaba ejecutando y fue detenido con éxito. En realidad, el valor de retorno que se devuelve es el correspondiente al comando `kill {PID}`.
-* **1**: Error. El proceso a detener no estaba ejecutándose.
+* **1**: Error. El proceso a detener no estaba ejecutándose.<br />
 
 
