@@ -69,11 +69,6 @@ seteoVariables() {
 	read input
 	if [ "$input" != "" ]; then NOKDIR="$GRUPO""${input%/*}/"; fi
 
-	dirSinBarra="${CONFDIR%/*}"
-	printf "\$CONFDIR (default: ${dirSinBarra##*/}/): "
-	read input
-	if [ "$input" != "" ]; then CONFDIR="$GRUPO""${input%/*}/"; fi
-
 	dirSinBarra="${RESGDIR%/*}"
 	printf "\$RESGDIR (default: ${dirSinBarra##*/}/): "
 	read input

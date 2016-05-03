@@ -1,9 +1,5 @@
 #! /bin/bash
 
-#Cosas a revisar:
-# Todas los llamados a GrabarBitacora, LanzarProceso y DetenerProceso.
-# Ver todos los ####REVISAR y demas comentarios.
-
 ###################################################################
 #################### FUNCIONES AUXILIARES #########################
 ###################################################################
@@ -189,14 +185,27 @@ verificarPermisosMaestros() {
 	return $PERMISOS_MAESTROS
 }
 
-#Chequeo existencia del archivo de configuracion:
+#Verificaciones sobre el archivo de configuracion:
 verificarArchivoConfiguracion() {
 	CONFIG_EXISTE=1
 	
+	#Chequeo que exista el archivo:
 	if [ ! -f "../config/CIPAK.cnf" ]; then
 		bash GrabarBitacora.sh PrepararAmbiente "El archivo de configuracion CIPAK.cnf no existe." 2
 		echo "ERROR: El archivo de configuracion CIPAK.cnf no existe. Debe instalar nuevamente el sistema."
 		CONFIG_EXISTE=0
+	else
+		#Si existe, chequeo que tenga permiso de lectura:
+		if [ ! -r "../config/CIPAK.cnf" ]; then
+			bash GrabarBitacora.sh PrepararAmbiente "El archivo CIPAK.cnf no tiene permiso de lectura. Se intenta modificarlo." 1
+			echo "WARNING: El archivo CIPAK.cnf no tiene permiso de lectura. Se intenta modificarlo."
+			chmod +r "../config/CIPAK.cnf"
+		fi
+		if [ ! -r "../config/CIPAK.cnf" ]; then
+			bash GrabarBitacora.sh PrepararAmbiente "El archivo CIPAK.cnf no tiene permiso de lectura y no fue posible modificarlo. Reinstalar sistema." 2
+			echo "ERROR: No fue posible modificar el permiso. Reinstalar sistema."
+			CONFIG_EXISTE=0 #Considero que no tener permiso de lectura es equivalente a no tener el archivo, ya que no se lo puede utilizar.
+		fi	
 	fi
 	
 	return $CONFIG_EXISTE
@@ -242,7 +251,7 @@ setearVariablesAmbiente() {
 		export $VARIABLE=$VALOR
 		bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: $VARIABLE - Valor: $VALOR"
 		echo "Nombre de variable: $VARIABLE - Valor: $VALOR"
-	done <../config/CIPAK.cnf ######REVISAR: Chequear si accedo bien. Por el momento si
+	done <../config/CIPAK.cnf
 	IFS=$IFS_original
 	
 	#Otra variables necesarias (agregar mas de ser necesario):
@@ -269,10 +278,11 @@ continuarEjecucion() {
 	RESPUESTA=""
 	while [ "$RESPUESTA" != "Sí" -a "$RESPUESTA" != "No" ]
 	do
+		echo
 		echo "Puede iniciar ahora la recepción de nuevas ofertas corriendo RecibirOfertas."
 		echo
 		echo "[Aviso: RecibirOfertas es un \"demonio\" y por lo tanto correrá en el background."
-		echo "Para frenarlo, cierre la terminal o corra: 'DetenerProceso.sh RecibirOfertas.sh'.]"
+		echo "Para frenarlo, corra: 'DetenerProceso.sh RecibirOfertas.sh'.]"
 		echo
 		echo "¿Desea efectuar la activación de RecibirOfertas ahora? 	Sí - No"
 		read RESPUESTA
@@ -300,13 +310,13 @@ continuarEjecucion() {
 				echo
 				echo "El comando RecibirOferta fue activado. RecibirOfertas está corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"
-				echo "DetenerProceso.sh RecibirOfertas.sh"
+				echo "bash DetenerProceso.sh RecibirOfertas.sh"
 			fi
 			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
-			echo "bash LanzarProceso.sh RecibirOfertas.sh otroComando" ######## REVISAR que pongo en otrocomando?   # En otroComando debería decir MANUAL? O nada?
+			echo ". LanzarProceso.sh RecibirOfertas.sh"
 			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 			return 0
 		fi
@@ -338,6 +348,7 @@ main() {
 
 	# Return 1 = Error: Ambiente ya inicializado
 	if [ $? -eq 0 ]; then
+		bash MoverArchivos.sh "$BINDIR""PrepararAmbiente.log" "$LOGDIR"
 		return 1
 	fi
 
