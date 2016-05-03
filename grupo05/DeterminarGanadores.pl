@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use Fcntl ':flock';
 use Data::Dumper;
 # Universidad de Buenos Aires
 # Facultad de Ingenieria
@@ -27,25 +28,26 @@ sub recibir_parametros{
 	#Si es -g, graba en los archivos de output descritos
 	#Si es -a, ejecuta la ayuda correspondiente
 	#Si es vacío, sólo se mostrarán las consultas pedidas por pantalla
-	print "Bienvenido al CIPAK.\nPara consultar por un sorteo, ingrese A\n";
-	print "Para consultar por los ganadores de un sorteo dentro de uno o varios grupos, ingrese B\n";
-	print "Para consultar los ganadores por licitacion dentro de uno o varios grupos, ingrese C\n";
-	print "Para consultar los ganadores por licitacion y sorteo dentro de un grupo, ingrese D\n";
-	print "Para salir, presione enter\n";
-	if (@ARGV eq 0){
-		$modo = '';
-		hacer_consulta();
- 	}
 	$modo = $ARGV[0];
-	if ($modo =~ /-g/){
-		print "Script ejecutado con opción de grabado de archivos\n";
-		$sorteo_a_mostrar = $ARGV[1];
-		hacer_consulta();
-	} elsif ($modo =~ /-a/){
+	if ($modo =~ /-a/){
 		ejecutar_ayuda();
 		exit 0;
-	}
+	}else{
+		print "Bienvenido al CIPAK.\nPara consultar por un sorteo, ingrese A\n";
+		print "Para consultar por los ganadores de un sorteo dentro de uno o varios grupos, ingrese B\n";
+		print "Para consultar los ganadores por licitacion dentro de uno o varios grupos, ingrese C\n";
+		print "Para consultar los ganadores por licitacion y sorteo dentro de un grupo, ingrese D\n";
+		print "Para salir, presione enter\n";
 	
+		if (@ARGV eq 0){
+			$modo = '';
+			hacer_consulta();
+	 	}
+		if ($modo =~ /-g/){
+			print "Script ejecutado con opción de grabado de archivos\n";
+			hacer_consulta();
+		} 
+	}
 }
 
 sub hacer_consulta{
@@ -392,7 +394,7 @@ sub recibir_grupo{
 sub ejecutar_ayuda(){
 	#Comando de ayuda que se ejecuta pasando por ARGV los caracteres "-a"
 	#Contiene información sobre cómo operar el script para obtener las consultas.
-	print "Esta es la ayuda del comando determinarGanador. \n";
+	print "Esta es la ayuda del comando DeterminarGanador. \n";
 	print "Ejecutando el script pasando por argumento la opción '-g' se graban los resultados en el directorio $ENV{'INFODIR'}\n";
 	print "Se tienen las siguientes consultas disponibles:\n";
 	print "A entrega el numero ganador del sorteo correspondiente a la fecha de adjudicación indicada por parámetro\n";
@@ -471,9 +473,10 @@ sub generar_hash_datos{
 		hacer_consulta();
 	}
 }
-
+open my $scripth, '<', $0 or die "No pudo abrirse el handler: $!";
+flock $scripth, LOCK_EX | LOCK_NB or die "Ya se está corriendo una instancia de DeterminarGanadores \n";
 while( 1){
 recibir_parametros();
 sleep 6;
 }
-
+exit 0;
