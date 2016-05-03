@@ -16,6 +16,18 @@
 # 		Log del Comando LOGDIR/GenerarSorteo.log
 #
 
+#Booleanos
+TRUE=1
+FALSE=0
+
+#Para saber si se llama en la terminal o no
+if [ "$0" == "LanzarProceso.sh" -o "$0" == "./LanzarProceso.sh" ]; then
+	CALLED_FROM_COMMANDLINE=$TRUE
+else
+	CALLED_FROM_COMMANDLINE=$FALSE
+fi
+
+
 #funcion que genera un sorteo para una fecha y un ID
 generarSorteo() {
 	
@@ -127,8 +139,15 @@ if [ -r "$ARCH_FECHAS_ADJ" ]
 		
 		#genero el sorteo
 		generarSorteo $fecha_adj $(generarId "$fecha_adj")
-	#exit 0
+	RETVAL=0
 else
 	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion, el proceso no se realizo" 3
-	#exit 1
+	RETVAL=1
+fi
+
+#retorno exito o fracaso
+if [ $CALLED_FROM_COMMANDLINE -eq $TRUE ]; then
+	exit "$RETVAL"
+else
+	return "$RETVAL"
 fi
