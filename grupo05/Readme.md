@@ -82,8 +82,8 @@ El desinstalador no utiliza ningún parámetro. Para ejecutarlo, se recomienda q
 No requiere ningún parámetro.<br />
 El script necesita imperiosamente de los siguientes archivos para lograr su cometido:
 * Archivo de Configuración: *CONFDIR/CIPAK.cnf*
-* Scripts ejecutables: *BINDIR/<script>.sh/.pl*
-* Archivos maestros: *MAEDIR/<maestro>.csv*
+* Scripts ejecutables: *BINDIR/{script}.sh/.pl*
+* Archivos maestros: *MAEDIR/{maestro}.csv*
 * Directorio de resguardo: A definir por el instalador.
 
 El script define las siguientes variables de ambiente:
