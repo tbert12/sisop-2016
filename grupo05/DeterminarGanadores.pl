@@ -136,17 +136,18 @@ sub ganadores_por_sorteo{
 	#Recibo: el id del sorteo a ver, uno o varios grupos (para marcar un rango usar delimitador "-"). Si no recibo
 	#un grupo, se va a proceder a mostrar los ganadores de TODOS los grupos.
 	#
+	my $hash_datos = {};
+	my $hash_sorteo = {};
 	listar_archivos($ENV{'PROCDIR'}."sorteos/");
 	recibir_idsorteo_fecha();
 	recibir_grupo();
-	my $hash_datos = {};
-	my $hash_sorteo = {};
+	
 	my @lineas_a_grabar;
-	push @lineas_a_grabar,"Ganadores del sorteo ".$sorteo_a_mostrar." de fecha ".$fecha_sorteo ."\n";
-	print $lineas_a_grabar[0];
 	my $nombre_archivo = $fecha_sorteo.".txt";
 	generar_hash_datos($hash_datos,$nombre_archivo);
 	generar_hash_sorteo($hash_sorteo);
+	push @lineas_a_grabar,"Ganadores del sorteo ".$sorteo_a_mostrar." de fecha ".$fecha_sorteo ."\n";
+	print $lineas_a_grabar[0];
 	if ($modo_comando eq "r"){
 		my @rango_de_grupos = split(/-/,$grupo_recibido_parametro);
 		@rango_de_grupos = ($rango_de_grupos[0]..$rango_de_grupos[1]);
@@ -157,13 +158,13 @@ sub ganadores_por_sorteo{
 				@laskeys = (keys %$nro_ordenes_a_ordenar);
 				@ordenados = sort { $hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @laskeys;	
 			}else{
-				my $linea_a_guardar = "No se encontro el numero de grupo $num_grupo en los datos.\n";
+				my $linea_a_guardar = "No existe el grupo $num_grupo en los datos.\n";
+				print $linea_a_guardar;
 				push @lineas_a_grabar,$linea_a_guardar;
 				next;
 			}
 			
 			foreach my $num_orden_del_grupo (@ordenados){
-				print Dumper($hash_datos->{$num_grupo});
 				$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,". $hash_datos->{$num_grupo}->{$num_orden_del_grupo}[6] ."(Numero de sorteo %.3d) \n",$num_grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
 				print $linea_a_guardar;
 				push @lineas_a_grabar,$linea_a_guardar;
@@ -180,7 +181,7 @@ sub ganadores_por_sorteo{
 		my $linea_a_guardar;
 		my $grupo = $grupo_recibido_parametro;
 		if (!exists$hash_datos->{$grupo}){
-			print "No existe el grupo en los datos. Por favor ingrese un grupo válido \n";
+			print "No existe el grupo $grupo en los datos.\n";
 			hacer_consulta();	
 		}
 		my $ordenes_a_ordenar = $hash_datos->{$grupo};
@@ -205,7 +206,8 @@ sub ganadores_por_sorteo{
 				@laskeys = (keys %$nro_ordenes_a_ordenar);
 				@ordenados = sort { $hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @laskeys;
 			} else{
-				my $linea_a_guardar = sprintf "No se encontro el numero de grupo $num_grupo en los datos.\n";
+				my $linea_a_guardar = sprintf "No existe el grupo $num_grupo en los datos.\n";
+				print $linea_a_guardar;
 				push @lineas_a_grabar, $linea_a_guardar;
 				next;
 			}
@@ -262,13 +264,14 @@ sub ganadores_por_licitacion{
 	#Por ahora..
 	$hash_sorteo = {};
 	$hash_datos = {};
-	my @lineas_a_grabar;
-	push @lineas_a_grabar,"Ganadores por Licitacion ". $sorteo_a_mostrar . " de fecha $fecha_sorteo .\n";
-	print $lineas_a_grabar[0];
-	my @grupos;
-	listar_archivos($ENV{'PROCDIR'}."sorteos");
 	recibir_idsorteo_fecha();
 	recibir_grupo();
+	my @lineas_a_grabar;
+	push @lineas_a_grabar,"Ganadores por Licitacion ". $sorteo_a_mostrar . " de fecha $fecha_sorteo .\n";
+	
+	my @grupos;
+	listar_archivos($ENV{'PROCDIR'}."sorteos");
+	print $lineas_a_grabar[0];
 	my $nombre_archivo = $fecha_sorteo .".txt";
 	generar_hash_sorteo($hash_sorteo);
 	generar_hash_datos($hash_datos,$nombre_archivo);
@@ -290,7 +293,7 @@ sub ganadores_por_licitacion{
 	@grupos = sort {$a <=> $b} @grupos;
 	foreach my $num_grupo (@grupos){
 		if (!exists($hash_datos->{$num_grupo})){
-			$linea_a_guardar = sprintf "El grupo $num_grupo no existe en los datos \n";
+			$linea_a_guardar = sprintf "No existe el grupo $num_grupo en los datos. \n";
 			push(@lineas_a_grabar,$linea_a_guardar);
 			next;
 		}
