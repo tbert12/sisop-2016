@@ -316,7 +316,7 @@ continuarEjecucion() {
 		elif [ "$RESPUESTA" = "No" ]; then
 			echo "Para efectuar la activacion de RecibirOfertas debera hacerlo a traves del comando LanzarProceso."
 			echo "Dicho comando se ejecuta utilizando la siguiente linea:"
-			echo ". LanzarProceso.sh RecibirOfertas.sh"
+			echo "LanzarProceso.sh RecibirOfertas.sh"
 			bash GrabarBitacora.sh PrepararAmbiente "Finaliza la ejecucion de PrepararAmbiente."
 			return 0
 		fi
