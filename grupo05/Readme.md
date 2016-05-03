@@ -5,8 +5,8 @@
 
 ### Instalar
 
-Para instalar el sistema CIPAK en su computadora, elija un directorio y descomprima allí
-el archivo `CIPAK-G5.tgz` (puede hacerlo mediante clic derecho, y la opción "Extract here"),
+Para instalar el sistema **CIPAK** en su computadora, elija un directorio y descomprima allí
+el archivo `CIPAK-G5.tgz` (puede hacerlo mediante clic derecho, y la opción *Extract here*),
 y corra el instalador dentro de la carpeta, mediante la siguiente línea de comando:
 `.../CIPAK-G5$ . installer.sh`
 El instalador debe estar en el mismo directorio que el fichero comprimido `source.tar.gz` para poder realizar la instalación con éxito.
@@ -14,21 +14,21 @@ El instalador debe estar en el mismo directorio que el fichero comprimido `sourc
 
 ### Desinstalar
 
-Para desinstalar el sistema, vaya a la carpeta de binarios (por default, Grupo05/binarios/)
-y corra el uninstaller.sh, lo cual puede hacer mediante:
+Para desinstalar el sistema, vaya a la carpeta de binarios (por default, *Grupo05/binarios/*)
+y corra el **uninstaller.sh**, lo cual puede hacer mediante:
 `.../Grupo05/binarios/$ . uninstaller.sh`
 
 
 ### Preparar el ambiente
 
-Una vez instalado CIPAK ejecute en una terminal en la dirección "Grupo05/binarios" el comando
+Una vez instalado **CIPAK** ejecute en una terminal en la dirección *Grupo05/binarios* el comando
 `.../Grupo05/binarios/$ . PrepararAmbiente.sh`
 Mediante esto usted tendrá todo preparado para poder ejecutar los programas del sistema.
 
 
 ### Recibir ofertas
 
-Una vez iniciado el ambiente, puede en cualquier momento (el paso anterior ofrece hacerlo por usted) iniciar el daemon receptor mediante
+Una vez iniciado el ambiente, puede en cualquier momento (el paso anterior ofrece hacerlo automáticamente) iniciar el *daemon* receptor mediante
 `.../Grupo05/binarios/$ LanzarProceso.sh RecibirOfertas.sh`
 con lo cual se iniciará en un segundo plano el proceso que medie la recepción de archivos de oferta. Para frenarlo, utilice el mismo formato pero con el comando `DetenerProceso.sh`.
 
@@ -64,11 +64,48 @@ Si recibió el paquete **CIPAK_G5.tgz**, el primer paso es descomprimirlo. Esto 
 `tar -xzf CIPAK_G5.tgz`<br />
 
 Tras esto, dispondrá de una carpeta del mismo nombre con todo los archivos que necesita la instalación, junto con esta documentación.<br />
-El instalador no requiere ningún parámetro para su funcionamiento. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la instalación se realice en el mismo proceso que la terminal, y con el working directory posicionado en la carpeta del mismo, de forma que pueda funcionar totalmente:
+El instalador no requiere ningún parámetro para su funcionamiento. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la instalación se realice en el mismo proceso que la terminal, y con el *working directory* posicionado en la carpeta del mismo, de forma que pueda funcionar totalmente:
 `. installer.sh`<br />
 
 Opcionalmente, se puede utilizar el flag `-d` para predefinir que se utilicen todas las variables de ambiente por default:
 `. installer.sh -d`<br />
 
 
+### uninstaller.sh
 
+El desinstalador no utiliza ningún parámetro. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la desinstalación se realice en el mismo proceso que la terminal, y, más importante, con el *working directory* posicionado en la carpeta del script, de forma que pueda garantizarse su total funcionamiento:
+`. uninstaller.sh`
+
+
+### PrepararAmbiente.sh
+
+No requiere ningún parámetro.<br />
+El script necesita imperiosamente de los siguientes archivos para lograr su cometido:
+* Archivo de Configuración: *CONFDIR/CIPAK.cnf*
+* Scripts ejecutables: *BINDIR/*<script>.sh/.pl*
+* Archivos maestros: *MAEDIR/<maestro>.csv*
+* Directorio de resguardo: A definir por el instalador.
+
+El script define las siguientes variables de ambiente:
+* Por enunciado:
+··* GRUPO
+··* MAEDIR
+··* ARRIDIR
+··* OKDIR
+··* PROCDIR
+··* INFODIR
+··* LOGDIR
+··* NOKDIR
+··* LOGSIZE
+··* SLEEPTIME
+··* PATH
+* Agregadas:
+··* REGSDIR: Donde se encuentra el repositorio de resguardo.
+··* AMBIENTE_INICIALIZADO: flag para informar que el ambiente fue inicializado correctamente.
+
+El script devuelve alguno de los siguientes valores:
+* 0: Éxito. El usuario decide no continuar la ejecución del sistema con **RecibirOfertas**.
+* 1: Error. No se inicializó el sistema (falta el archivo de configuración o ya se encuentra inicializado).
+* 2: Error. No se poseen todos los scripts obligatorios.
+* 3: Error. No se poseen todos los archivos maestros obligatorios.
+* 4: Error. No se poseen todos los permisos necesarios en los scripts o los archivos maestros.
