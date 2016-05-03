@@ -1,14 +1,15 @@
 # CIPAK | Sistemas Operativos (75.08)| 1er Cuatrimestre 2016 | FIUBA
 
-Descripción del sistema
+## Descripción del sistema
 
 
 ### Instalar
 
 Para instalar el sistema CIPAK en su computadora, elija un directorio y descomprima allí
-el archivo CIPAK-G5.tgz (puede hacerlo mediante clic derecho, y la opción "Extract here"),
+el archivo `CIPAK-G5.tgz` (puede hacerlo mediante clic derecho, y la opción "Extract here"),
 y corra el instalador dentro de la carpeta, mediante la siguiente línea de comando:
 `.../CIPAK-G5$ . installer.sh`
+El instalador debe estar en el mismo directorio que el fichero comprimido `source.tar.gz` para poder realizar la instalación con éxito.
 
 
 ### Desinstalar
@@ -38,7 +39,6 @@ ProcesarOfertas es llamado por RecibirOfertas cuando hay novedades.
 Una vez finalizado se pueden ver los resultados en los outputs correspondientes referenciados en la documentación.
 
 
-
 ### Generar sorteo
 
 Una vez que el ambiente esté listo podrá generar el sorteo mediante
@@ -54,5 +54,21 @@ Posicionarse en `.../Grupo05/binarios/` y ejecutar el comando mediante la senten
 Dentro de las opciones del comando, usted puede utilizar:<br />
 `-g` para grabar las consultas realizadas en un archivo de texto. `$ ./DeterminarGanadores.pl -g`<br />
 `-a` para acceder a la ayuda correspondiente al comando. `$ ./DeterminarGanadores.pl -a`<br />
+
+## Modo de uso de scripts
+
+
+### installer.sh
+
+Si recibió el paquete **CIPAK_G5.tgz**, el primer paso es descomprimirlo. Esto se puede hacer mediante clic derecho y eligiendo la opción de descompresión en la carpeta actual, o con:
+`tar -xzf CIPAK_G5.tgz`<br />
+
+Tras esto, dispondrá de una carpeta del mismo nombre con todo los archivos que necesita la instalación, junto con esta documentación.<br />
+El instalador no requiere ningún parámetro para su funcionamiento. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la instalación se realice en el mismo proceso que la terminal, y con el working directory posicionado en la carpeta del mismo, de forma que pueda funcionar totalmente:
+`. installer.sh`<br />
+
+Opcionalmente, se puede utilizar el flag `-d` para predefinir que se utilicen todas las variables de ambiente por default:
+`. installer.sh -d`<br />
+
 
 
