@@ -3,7 +3,7 @@
 RED='\033[0;31m' # Rojo
 NC='\033[0m' # Sin color
 
-#
+
 if [ $(($AMBIENTE_INICIALIZADO)) -ne 1 ]
   then
 	GRUPO="$(dirname $PWD)"
@@ -25,7 +25,7 @@ if [ ! -e "$RESGDIR" ]
 	echo "Para forzar una desinstalación, simplemente elimina el directorio $GRUPO"
 	return 1
 fi
-#
+
 
 echo
 printf "DESINSTALADOR ~ ${RED}Está usted TOTAL E IRREVOCABLEMENTE SEGURO de querer eliminar el sistema CIPAK_G5 con toda la carpeta $GRUPO, los registros, reportes, configuración y demases?${NC}\n"
@@ -39,13 +39,13 @@ if [ "$respuesta" != "y" -a "$respuesta" != "yes" ]
 	return 1
 fi
 echo
-echo
 echo "Frenando procesos que puedan estar corriendo..."
 
+# Aniquilo todos los procesos por las dudas
 start-stop-daemon --stop --name "RecibirOfertas." &> /dev/null
 start-stop-daemon --stop --name "ProcesarOfertas" &> /dev/null
-### Este es el único daemon...
-### ¿Haría falta asegurarse de matar algún otro script?
+start-stop-daemon --stop --name "GenerarSorteo.s" &> /dev/null
+start-stop-daemon --stop --name "DeterminarGanad" &> /dev/null
 
 
 echo "Recreando instalador..."

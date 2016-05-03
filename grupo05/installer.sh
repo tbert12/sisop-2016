@@ -1,4 +1,4 @@
-# Valores de ambiente por default
+# --- Valores de ambiente por default ----
 GRUPO=$(pwd)"/Grupo05/"
 
 BINDIR="$GRUPO""binarios/"
@@ -15,7 +15,7 @@ RESGDIR="$GRUPO""source/"
 
 LOGSIZE=500
 SLEEPTIME=10
-# --------------------------------
+# ----------------------------------------
 
 arch_comprimido="source.tar.gz"
 
@@ -76,14 +76,15 @@ seteoVariables() {
 
 	echo
 
-	printf "\$LOGSIZE (tamaño límite para cada log; default: $LOGSIZE Kbytes): "
+	printf "\$LOGSIZE (tamaño límite para cada log; 0 = sin límite; default: $LOGSIZE Kbytes): "
 	read input
-	if [ "$input" != "" -a "$input" -eq "$input" -a "$input" -gt 0 ] 2> /dev/null; then LOGSIZE="$input"; else echo "Mantengo default"; fi
+	if [ "$input" != "" -a "$input" -eq "$input" -a "$input" -ge 0 ] 2> /dev/null; then LOGSIZE="$input"; else echo "Mantengo default"; fi
 
 	printf "\$SLEEPTIME (para el demonio; default: $SLEEPTIME segundos): "
 	read input
 	if [ "$input" != "" -a "$input" -eq "$input" -a "$input" -ge 0 ] 2> /dev/null; then SLEEPTIME="$input"; else echo "Mantengo default"; fi
 }
+
 
 generarArchConfiguracion(){
 	ARCH_CNF="$CONFDIR""CIPAK.cnf"
@@ -104,6 +105,7 @@ generarArchConfiguracion(){
 	echo "SLEEPTIME=$SLEEPTIME=$USER=$fecha_y_hora" >> "$ARCH_CNF"
 }
 
+
 organizarArchivos(){
 	if [ ! -e "$arch_comprimido" ]
 	  then
@@ -115,7 +117,7 @@ organizarArchivos(){
 
 	cp -ar source/ARRIDIR/ "$DATDIR"
 	cp -ar source/MAEDIR/ "$DATDIR"
-	mv source/ARRIDIR/* "$ARRIDIR"  ## Esta línea puede deber comentarse
+	#mv source/ARRIDIR/* "$ARRIDIR"  # Esta línea inserta los archivos novedades por default en $ARRIDIR
 	mv source/MAEDIR/* "$MAEDIR"
 	mv source/BINDIR/* "$BINDIR"
 
