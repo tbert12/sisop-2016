@@ -82,7 +82,7 @@ El desinstalador no utiliza ningún parámetro. Para ejecutarlo, se recomienda q
 No requiere ningún parámetro.<br />
 El script necesita imperiosamente de los siguientes archivos para lograr su cometido:
 * Archivo de Configuración: *CONFDIR/CIPAK.cnf*
-* Scripts ejecutables: *BINDIR/*<script>.sh/.pl*
+* Scripts ejecutables: *BINDIR/<script>.sh/.pl*
 * Archivos maestros: *MAEDIR/<maestro>.csv*
 * Directorio de resguardo: A definir por el instalador.
 
@@ -109,3 +109,85 @@ El script devuelve alguno de los siguientes valores:
 * 2: Error. No se poseen todos los scripts obligatorios.
 * 3: Error. No se poseen todos los archivos maestros obligatorios.
 * 4: Error. No se poseen todos los permisos necesarios en los scripts o los archivos maestros.
+
+
+### RecibirOfertas.sh
+
+No requiere ningún parámetro.<br />
+Se lo ejecuta opcionalmente tras el proceso de **PrepararAmbiente** o bien independientemente.<br />
+Si el ambiente no había sido inicializado, de cualquier manera, el programa no correrá.<br />
+
+El script necesita imperiosamente de los siguientes archivos para lograr su cometido:
+* Archivos de oferta: *ARRIDIR/<cod_concesionario>_<aniomesdia>.csv*
+* Tabla de fechas de adjudicación: *MAEDIR/FechasAdj.csv*
+* Registro de concesionarios: *MAEDIR/concesionarios.csv*
+El resultado de un ciclo del programa es la separación de los archivos de oferta de *input* en aquellos válidos e inválidos según una serie de criterios:
+* Archivos de oferta válidos: *OKDIR/<cod_concesionario>_<aniomesdia>.csv*
+* Archivos de oferta inválidos: *NOKDIR/<cod_concesionario>_<aniomesdia>.csv*
+
+
+### ProcesarOfertas.sh
+
+No requiere ningún parámetro.<br />
+
+El script necesita imperiosamente de los siguientes archivos para lograr su cometido:
+* Archivo de Ofertas: *OKDIR/<cod_concesionario>_<aniomesdia>.csv*
+* Padrón de Suscriptores: *MAEDIR/temaK_padron.csv*
+* Tabla de Fechas de adjudicación: *MAEDIR/fechas_adj.csv*
+* Tabla de Grupos: *MAEDIR/grupos.csv*
+Desde estos input genera como resultado-output:
+* Archivo de ofertas válidas: *PROCDIR/validas/<fecha_de_adjudicacion >.txt*
+* Archivos procesados: *PROCDIR/procesadas/<nombre del archivo>*
+* Archivos de ofertas rechazadas: *PROCDIR/rechazadas/<cod_concesionario>.rech*
+* Archivos rechazados (archivo completo): *NOKDIR/<nombre del archivo>*
+
+
+### GenerarSorteo.sh
+
+No recibe parámetros.<br />
+
+El script necesita imperiosamente del siguiente archivo para lograr su cometido:
+* Tabla de Fechas de adjudicación: *MAEDIR/FechasAdj.csv*
+Desde este input genera como resultado-output:
+* Archivos de sorteos: *PROCDIR/sorteos/<sorteoId><fecha_de_adjudicacion>.csv*, donde se indica para cada una de las 168 órdenes el número aleatorio que se le asignó.
+
+En caso de realizarse un flow completo del script, es decir que llegue al final de su ejecución sin ningún inconveniente, generará un archivo SRT para la fecha más próxima alojada en la Tabla de Fechas de adjudicación.
+
+
+### DeterminarGanadores.pl
+
+
+### MoverArchivos.sh
+
+El script acepta hasta 3 argumentos distintos:
+1. **ORIGEN** *(Requerido)*. Nombre del archivo a mover.
+2. **DESTINO** *(Requerido)*. Nombre del directorio adonde se quiere mover el archivo origen.
+3. **COMANDO** *(Opcional)*. Indica el nombre del comando invocador, utilizado dentro del script para loggear en la bitácora correspondiente la información pertinente. Si no se especifica, la información de ejecución se imprime por *STDOUT*.
+
+El script devuelve alguno de los siguientes valores:
+* 0: Éxito. El archivo fue movida del origen al destino sin necesidad de realizar duplicados o colocarlo en una carpeta auxiliar.
+* 1: Éxito. El archivo pudo ser movido exitosamente pero debió guardarse como copia en la carpeta auxiliar *dpl/*.
+* 2: Error. El destino corresponde al mismo directorio donde se halla actualmente el archivo origen y por lo tanto no se puede mover el archivo.
+* 3: Error. El archivo origen no se encuentra en el directorio específicado.
+* 4: Error. El directorio destino no existe.
+
+### GrabarBitacora.sh
+
+El script acepta hasta 3 argumentos distintos:
+1. **COMANDO** *(Requerido)*. Nombre del comando invocador del script. El archivo de bitácora donde se plasmarán los registros se llamará *<COMANDO>.log*.
+2. **MENSAJE** *(Requerido)*. El mensaje a registrar en la bitácora.
+3. **TIPO DE MENSAJE** *(Opcional)*. Indica la categoría del mensaje a registrar en la bitácora. Puede ser INFO, WARNING o ERROR. Si no se define este parámetro, el valor por defecto es INFO.
+
+Se utilizan las siguientes variables de ambiente:
+* *LOGDIR*: Directorio donde se crearán los archivos de log.
+* *USER*: Usuario actual que escribe el registro en la bitácora.
+* *LOGSIZE*: Tamaño máximo de los archivos de log en KBytes.
+
+
+### MostrarBitacora.pl
+
+
+
+
+
+
