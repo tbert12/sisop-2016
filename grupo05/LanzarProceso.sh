@@ -27,6 +27,7 @@ else
 	CALLED_FROM_COMMANDLINE=$FALSE
 fi
 
+AMBIENTE_INICIALIZADO=${AMBIENTE_INICIALIZADO:-$FALSE}
 if [ "$AMBIENTE_INICIALIZADO" -ne $FALSE ]; then	# Variable de entorno booleana.
 	PROCESS_NAME=`echo "${PROCESS##*/}" | awk '{print $1;}'`
 	PROCESS_NAME="${PROCESS_NAME:0:15}"
