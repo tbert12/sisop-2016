@@ -21,6 +21,21 @@
 #	monto_minimo = valor_de_cuota_pura * cantidad_de_cuotas_para_licitacion
 #	monto_maximo = valor_de_cuota_puta * cantidad_de_cuotas_pendientes
 
+
+SELF=`basename ${0%.*}`
+
+#FORTMATO QUE ESPERO DE LOS ARCHIVOS QUE SE LEEN
+CANT_CAMPOS_ARCHIVO=2
+SEPARADOR=";"
+
+#Creo (si no lo estan las carpetas que utiliza el proceso)
+VALIDAS_DIR="$PROCDIR"validas #Se guardaran los registros validos
+PROCESADAS_DIR="$PROCDIR"procesadas #Se guardaran los registros procesados (Para buscar duplicados)
+RECHAZADAS_DIR="$PROCDIR"rechazadas #Se guardaran los registros rechazados 
+mkdir -p "$VALIDAS_DIR" # -p (si ya existe no ejecuta el mkdir)
+mkdir -p "$PROCESADAS_DIR"
+mkdir -p "$RECHAZADAS_DIR"
+
 function rechazarRegistro {
 	# Si alguna de las validaciones da error, rechazar el registro grabandolo en Archivo de ofertas rechazadas
 	# -Incrementar los contadores adecuados
@@ -88,21 +103,6 @@ function proximaFechaDeAdjudicacion {
 	return 0
 }
 
-
-SELF=`basename ${0%.*}`
-
-#FORTMATO QUE ESPERO DE LOS ARCHIVOS QUE SE LEEN
-CANT_CAMPOS_ARCHIVO=2
-SEPARADOR=";"
-
-#Creo (si no lo estan las carpetas que utiliza el proceso)
-VALIDAS_DIR="$PROCDIR"validas #Se guardaran los registros validos
-PROCESADAS_DIR="$PROCDIR"procesadas #Se guardaran los registros procesados (Para buscar duplicados)
-RECHAZADAS_DIR="$PROCDIR"rechazadas #Se guardaran los registros rechazados 
-mkdir -p "$VALIDAS_DIR" # -p (si ya existe no ejecuta el mkdir)
-mkdir -p "$PROCESADAS_DIR"
-mkdir -p "$RECHAZADAS_DIR"
-
 # 1. Procesar todos los archivos que se encuentran en OKDIR
 #	El orden de procesamiento de los archivos debe hacerse cronologico desde el antiguo al mas 
 #	reciente segun sea la fecha que figura en el nombre del archivo 
@@ -115,7 +115,7 @@ bash GrabarBitacora.sh "$SELF" "Inicio de ProcesarOfertas" "INFO"
 FILES=(`ls -1p "$OKDIR" | grep -v "/\$" | sort -n -t _ -k 2`) #Ordeno por fecha -n (numerico), -t (split con _), -k split[2]
 
 #echo "Cantidad de archivos a procesar: ${#FILES[@]}"
-bash GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar:  ${#FILES[@]}" "INFO"
+bash GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar: ${#FILES[@]}" "INFO"
 
 ARCHIVOS_ACEPTADOS=0
 ARCHIVOS_RECHAZADOS=0
@@ -134,7 +134,7 @@ do
 	# 2.1 Verificar que no sea un archivo duplicado
 	#	Cada vez que se procesa un archivo, se lo mueve tal cual fue recibido y con el mismo nombre a PROCDIR/procesadas
 	#	Desde el directorio se puede verificar si ya existe, si existe moverlo a NOKDIR
-	if [ -f "$PROCESADAS_DIR""$ARCHIVO_NAME" ]; then
+	if [ -f "$PROCESADAS_DIR"/"$ARCHIVO_NAME" ]; then
 		#echo "El archivo [$ARCHIVO_NAME] se rechaza porque ya esta en procesadas" 
 		ARCHIVOS_RECHAZADOS=$[$ARCHIVOS_RECHAZADOS +1]
 		bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME por estar DUPLICADO" "WAR"
@@ -196,7 +196,8 @@ do
 		ORDEN=${CONTRATO_FUSIONADO:4:3}
 
 		#Este parser de una linea del CSV a un array elimina los campos VACIOS. (No genera problemas)
-		SUSCRIPTOR=(`grep "^$GRUPO;$ORDEN" "$MAEDIR"temaK_padron.csv | tr ";" "\n"`)
+		# -a se utiliza para los nombres que tengan ascentos
+		SUSCRIPTOR=(`grep -a "^$GRUPO;$ORDEN" "$MAEDIR"temaK_padron.csv | tr ";" "\n"`)
 
 		if [ "${#SUSCRIPTOR[@]}" -eq 0 ]; then 
 			# Contrato no encontrado Grupo+Orden
@@ -220,10 +221,25 @@ do
 		# Importe (2do Campo)
 		IMPORTE=`echo "${CAMPOS[1]}" | tr -d "\n"`
 
-		VALOR_CUOTA_PURA=${GRUPO[3]} #Reemplazo comma por punto (en distros de EEUU se usa punto)
+		VALOR_CUOTA_PURA=${GRUPO[3]} #Reemplazo comma por punto (en distros de UTF8 se usa punto)
 		CANTIDAD_CUOTAS_PARA_LICITACION=${GRUPO[5]}
 		CANTIDAD_CUOTAS_PENDIENTES=${GRUPO[4]}
 		
+		REGEXESNUMERO="^([0-9]|[+-])[0-9]*\,?[0-9]+?$"
+
+		#Chequeo Si todos los valores esperados son numeros (float o int)
+		if ! echo "$IMPORTE" | egrep -q "$REGEXESNUMERO" 
+			then
+			rechazarRegistro "El Importe $IMPORTE es invalido"
+			continue
+		fi
+
+		if ! echo "$VALOR_CUOTA_PURA" | egrep -q "$REGEXESNUMERO" 
+			then
+				rechazarRegistro "El Valor de la cuota pura $VALOR_CUOTA_PURA es invalido"
+				continue
+		fi
+
 		MONTO_MINIMO=`echo "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PARA_LICITACION" | tr "," "." | tr -d $'\r' | bc -l`
 		
 		# 4.3 monto_minimo (valor de cuota pura * cantidad de cuotas para licitaci�n) <= IMPORTE
@@ -276,11 +292,11 @@ do
 	done <$FILE_PATH
 	# 7. Fin de Archivo
 	#	Para evitar el reprocesamiento de un mismo archivo, mover el archivo procesado a: PROCDIR/procesadas
-	bash MoverArchivos.sh "$FILE_PATH" "$PROCESADAS_DIR" "$SELF"
+	bash MoverArchivos.sh "$FILE_PATH" "$PROCESADAS_DIR/" "$SELF"
 
 	#	[Registros leidos = aaa: cantidad de ofertas validas bbb cantidad de ofertas rechazadas = ccc]
 	# echo Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS
-	bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
+	bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
 					
 	# 8. Llevar a cero todos los contadores de registros
 	REGISTROS_LEIDOS=0
