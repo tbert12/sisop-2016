@@ -480,8 +480,15 @@ sub generar_hash_datos{
 }
 open my $scripth, '<', $0 or die "No pudo abrirse el handler: $!";
 flock $scripth, LOCK_EX | LOCK_NB or die "Ya se está corriendo una instancia de DeterminarGanadores \n";
-while( 1){
-recibir_parametros();
-sleep 6;
+if ($ENV{'AMBIENTE_INICIALIZADO'} eq 1){
+
+	while( 1){
+	recibir_parametros();
+	sleep 6;
+	}
+}else {
+	print "No se inicializo el ambiente. Primero inicialicelo, ABORTANDO SCRIPT \n";
+	sleep 3;
+	exit 1;
 }
 exit 0;
