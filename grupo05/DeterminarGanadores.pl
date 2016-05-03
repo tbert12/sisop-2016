@@ -264,13 +264,14 @@ sub ganadores_por_licitacion{
 	#Por ahora..
 	$hash_sorteo = {};
 	$hash_datos = {};
+	listar_archivos($ENV{'PROCDIR'}."sorteos");
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	my @lineas_a_grabar;
 	push @lineas_a_grabar,"Ganadores por Licitacion ". $sorteo_a_mostrar . " de fecha $fecha_sorteo .\n";
 	
 	my @grupos;
-	listar_archivos($ENV{'PROCDIR'}."sorteos");
+	
 	print $lineas_a_grabar[0];
 	my $nombre_archivo = $fecha_sorteo .".txt";
 	generar_hash_sorteo($hash_sorteo);
@@ -294,6 +295,7 @@ sub ganadores_por_licitacion{
 	foreach my $num_grupo (@grupos){
 		if (!exists($hash_datos->{$num_grupo})){
 			$linea_a_guardar = sprintf "No existe el grupo $num_grupo en los datos. \n";
+			print $linea_a_guardar;
 			push(@lineas_a_grabar,$linea_a_guardar);
 			next;
 		}
@@ -373,7 +375,7 @@ sub recibir_grupo{
 	#Un rango de grupos delimitado por -
 	#Todos los grupos si se ingresa espacio en blanco
 	print "Ingrese el o los grupos que quiera consultar. De querer un rango, ingrese xxxx-yyyy\n";
-	print "ATENCION: Si usted está consultando un grupo en particular, debe ingresar uno solo\n";
+	print "ATENCION: Si usted está consultando la opción D, debe ingresar uno solo\n";
 	$grupo_recibido_parametro = <STDIN>;
 	chomp($grupo_recibido_parametro);
 	if ($grupo_recibido_parametro =~ /.+-.+/){
