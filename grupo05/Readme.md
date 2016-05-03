@@ -1,4 +1,4 @@
-# CIPAK | Sistemas Operativos (75.08)| 1er Cuatrimestre 2016 | FIUBA
+# CIPAK | Sistemas Operativos (75.08) | 1er Cuatrimestre 2016 | FIUBA
 
 ## Descripción del sistema
 
@@ -15,21 +15,21 @@ El instalador debe estar en el mismo directorio que el fichero comprimido `sourc
 ### Desinstalar
 
 Para desinstalar el sistema, vaya a la carpeta de binarios (por default, *Grupo05/binarios/*)
-y corra el **uninstaller.sh**, lo cual puede hacer mediante:
-`.../Grupo05/binarios/$ . uninstaller.sh`<br />
+y corra el desinstalador **uninstaller.sh**, lo cual puede hacer mediante:
+`.../Grupo05/binarios$ . uninstaller.sh`<br />
 
 
 ### Preparar el ambiente
 
 Una vez instalado **CIPAK** ejecute en una terminal en la dirección *Grupo05/binarios* el comando
-`.../Grupo05/binarios/$ . PrepararAmbiente.sh`
+`.../Grupo05/binarios$ . PrepararAmbiente.sh`
 Mediante esto usted tendrá todo preparado para poder ejecutar los programas del sistema.<br />
 
 
 ### Recibir ofertas
 
 Una vez iniciado el ambiente, puede en cualquier momento (el paso anterior ofrece hacerlo automáticamente) iniciar el *daemon* receptor mediante
-`.../Grupo05/binarios/$ LanzarProceso.sh RecibirOfertas.sh`
+`.../Grupo05/binarios$ bash LanzarProceso.sh RecibirOfertas.sh`
 con lo cual se iniciará en un segundo plano el proceso que medie la recepción de archivos de oferta. Para frenarlo, utilice el mismo formato pero con el comando `DetenerProceso.sh`.<br />
 
 
@@ -42,7 +42,7 @@ Una vez finalizado se pueden ver los resultados en los outputs correspondientes 
 ### Generar sorteo
 
 Una vez que el ambiente esté listo podrá generar el sorteo mediante
-`.../Grupo05/binarios/$ bash LanzarProceso.sh "bash GenerarSorteo.sh"`
+`.../Grupo05/binarios$ bash LanzarProceso.sh "bash GenerarSorteo.sh"`
 Esto genera los archivos necesarios para poder determinar los ganadores.<br />
 
 
@@ -58,6 +58,8 @@ Dentro de las opciones del comando, usted puede utilizar:<br />
 ### Lanzar y detener procesos
 
 Toda la lógica de ejecución de procesos está centralizada en las funciones **LanzarProceso** y **DetenerProceso**. Los procesos son ejecutados en background, demonizados. La única excepción en la que no DEBE llamarse a **LanzarProceso** para ejecutar otro proceso es en el caso de la función de **PrepararAmbiente** pues, por requerimiento, un proceso no puede ser lanzado sin estar inicializado el ambiente.<br />
+
+
 
 ## Modo de uso de scripts
 
@@ -126,7 +128,7 @@ El script necesita imperiosamente de los siguientes archivos para lograr su come
 * Tabla de fechas de adjudicación: *MAEDIR/FechasAdj.csv*
 * Registro de concesionarios: *MAEDIR/concesionarios.csv*<br />
 
-El resultado de un ciclo del programa es la separación de los archivos de oferta de *input* en aquellos válidos e inválidos según una serie de criterios:
+El resultado de un ciclo del programa es la separación de los archivos de oferta de *input* en aquellos válidos e inválidos según una serie de criterios, con lo que el *output* será:
 * Archivos de oferta válidos: *OKDIR/{cod_concesionario}_{aniomesdia}.csv*
 * Archivos de oferta inválidos: *NOKDIR/{cod_concesionario}_{aniomesdia}.csv*<br />
 
