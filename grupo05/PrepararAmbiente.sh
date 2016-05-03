@@ -267,6 +267,7 @@ setearVariablesAmbiente() {
 	
 	#Confirmo sistema inicializado correctamente:
 	bash GrabarBitacora.sh PrepararAmbiente "Estado del Sistema: INICIALIZADO CORRECTAMENTE."
+	echo
 	echo "Estado del Sistema: INICIALIZADO CORRECTAMENTE."
 	echo
 	
