@@ -11,6 +11,14 @@ logMessage () {
 	fi
 }
 
+# Elimina los archivos auxiliares del proceso,
+# que deben terminar con las iniciales del mismo y extensión .aux
+borrarArchAuxiliares () {
+	INICIALES=$(tr -dc '[:upper:]' <<< "$1")
+	find "$GRUPO" -name "*_$INICIALES.aux" -delete
+}
+
+
 PROCESS_NAME=$1		# Nombre del proceso a matar.
 COMANDO=$2	# Comando desde donde se invoca este script.
 
@@ -30,6 +38,7 @@ else
 fi
 
 if [ "$STOP_RESULT" -eq 0 ]; then
+	borrarArchAuxiliares "$PROCESS_NAME"
 	if [ -z "$PID" ]; then
 		logMessage "$COMANDO" "El proceso $PROCESS_NAME ha sido detenido exitosamente." "0"
 	else
