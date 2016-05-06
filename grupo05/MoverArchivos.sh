@@ -31,7 +31,7 @@ DPLDIR="dpl/"
 
 ORIGEN_PATH=`echo ${ORIGEN%/*}`
 DESTINO_PATH=`echo ${DESTINO%/*}`
-if [ "$DESTINO" != "." -a "$ORIGEN" != "$DESTINO" -a "$ORIGEN_PATH" != "$DESTINO_PATH" ]; then
+if [[ "$ORIGEN" != "$DESTINO" && "$ORIGEN_PATH" != "$DESTINO_PATH" && "$DESTINO" != "." ]] || [[ "$DESTINO" == "." && "$ORIGEN" != "$ORIGEN_PATH" ]]; then
 	if [ -e "$ORIGEN" ]; then
 		if [ -d "$DESTINO" ]; then
 			if [ ! -e "$DESTINO$ORIGEN" ]; then
