@@ -87,11 +87,12 @@ sub resultado_general{
 	#por valor de hash de sorteo
 	#para obtener al ganador del mismo
 	print "Se le presentara un listado de adjudicaciones válidas.\n";
-	print "\n";
+	print "-------------------\n";
 	listar_archivos($ENV{'PROCDIR'}."sorteos/");
+	print "-------------------\n";
 	recibir_idsorteo_fecha();
 	my $nombre_archivo_sorteo = $ENV{'PROCDIR'}."sorteos/".$sorteo_a_mostrar ."_".$fecha_sorteo.".srt";
-	my @datos_sorteo;
+	my @lineas_a_grabar;
 	my %hash_datos;
 	if(open(my $fh,'<',$nombre_archivo_sorteo)){  
 	while (my $linea = <$fh>){
@@ -105,13 +106,14 @@ sub resultado_general{
 		hacer_consulta();
 	}
 	foreach my $numero_orden (sort {$hash_datos{$a}[0] <=> $hash_datos{$b}[0] } keys %hash_datos){
-		$linea_a_guardar =sprintf "Nro de Sorteo %.3d le correspondió al número de orden %.3d \n",$sorteo_a_mostrar,$numero_orden;
-		last;
+		$linea_a_guardar =sprintf "Nro de Sorteo %.3d le correspondió al número de orden %.3d \n",$hash_datos{$numero_orden}[0],$numero_orden;
+		 push @lineas_a_grabar,$linea_a_guardar;
+		print $linea_a_guardar;
 	}
-	print $linea_a_guardar;
+	
 	if ($modo ne ""){
 		my $nombre_archivo_res_gral =$ENV{'INFODIR'}. $sorteo_a_mostrar . "_" . $fecha_sorteo . ".txt";
-		grabar_a_archivo($nombre_archivo_res_gral,$linea_a_guardar);
+		grabar_a_archivo($nombre_archivo_res_gral,@lineas_a_grabar);
 	}
 }
 
@@ -400,12 +402,17 @@ sub ejecutar_ayuda(){
 	#Comando de ayuda que se ejecuta pasando por ARGV los caracteres "-a"
 	#Contiene información sobre cómo operar el script para obtener las consultas.
 	print "Esta es la ayuda del comando DeterminarGanador. \n";
-	print "Ejecutando el script pasando por argumento la opción '-g' se graban los resultados en el directorio $ENV{'INFODIR'}\n";
+	print "El módulo puede ejecutarse con los siguientes argumentos:";
+	print " './DeterminarGanadores.pl -g' graba los resultados en el directorio $ENV{'INFODIR'}\n";
+	print "'./DeterminarGanadores.pl' sólo se muestran las consultas en pantalla\n";
+	print "Una vez lanzado el módulo, se presentará la pantalla de bienvenida\n";
+	print "La misma le pedirá que ingrese una opción para acceder a una consulta\n";
 	print "Se tienen las siguientes consultas disponibles:\n";
 	print "A entrega el numero ganador del sorteo correspondiente a la fecha de adjudicación indicada por parámetro\n";
 	print "B indica, dentro de los grupos especificados por el usuario, qué numero de orden resulto ganador del sorteo \n";
 	print "C indica, dentro de los grupos especificados por el usuario, qué numero de orden resulto ganador de la licitación, tomando en cuenta al ganador del sorteo\n";
 	print "D indica, para un grupo en particular, los ganadores por sorteo y licitación\n";
+	print "El ingreso de cualquier otro caracter diferente a los mencionados, causará el término de ejecución del módulo\n";
 }
 
 sub recibir_idsorteo_fecha{
