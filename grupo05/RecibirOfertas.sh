@@ -22,7 +22,7 @@ obtenerFechaUltAdjudicacion() {
 		ret_val=1  # Si no es corregido, no hay fecha de adj. pasada
 
 		fecha_hoy=$(date +%Y%m%d)
-		tac "$ARCH_FECHAS_ADJ" > fechas_adj_inversoAUX.aux
+		tac "$ARCH_FECHAS_ADJ" > "$DATDIR"fechas_adj_inverso_RO.aux
 
 		while read -r linea_adj
 		do
@@ -38,7 +38,7 @@ obtenerFechaUltAdjudicacion() {
 					break
 				fi
 			fi
-		done < fechas_adj_inversoAUX.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicación anterior o igual a hoy
+		done < "$DATDIR"fechas_adj_inverso_RO.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicación anterior o igual a hoy
 	else
 		#### Solo salta si falta el archivo, lo cual no debería
 		bash GrabarBitacora.sh "RecibirOfertas" "Falta archivo maestro ""$MAEDIR""FechasAdj.csv" '1'  # No hay archivo de adjudicación no vacío
@@ -46,9 +46,9 @@ obtenerFechaUltAdjudicacion() {
 		ret_val=2
 	fi
 
-	if [ -e fechas_adj_inversoAUX.aux ]
+	if [ -e "$DATDIR"fechas_adj_inverso_RO.aux ]
 	  then
-		rm fechas_adj_inversoAUX.aux
+		rm "$DATDIR"fechas_adj_inverso_RO.aux
 	fi
 
 	if [ $ret_val -gt 0 ]
@@ -95,7 +95,7 @@ do
 	obtenerFechaUltAdjudicacion  # modifica $fecha_ult_adj
 
 	# Obtengo una lista de todos los archivos en la carpeta $ARRIDIR
-	find "$ARRIDIR" -maxdepth 1 -type f > RecibirOfertasAUX.aux
+	find "$ARRIDIR" -maxdepth 1 -type f > "$DATDIR"arch_arr_RO.aux
 
 	# Por cada archivo encontrado...
 	while read -r linea_arch
@@ -140,8 +140,8 @@ do
 		else
 			rechazarArchivo "$nom_arch" "inválido tipo o nombre del archivo"
 		fi
-	done < RecibirOfertasAUX.aux
-	rm RecibirOfertasAUX.aux
+	done < "$DATDIR"arch_arr_RO.aux
+	rm "$DATDIR"arch_arr_RO.aux 2> /dev/null
 
 	if [ "$(ls -A "$OKDIR")" ]
 	  then  # hay archivos aceptados en $OKDIR para procesar
