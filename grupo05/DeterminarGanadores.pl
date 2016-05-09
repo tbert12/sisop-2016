@@ -50,6 +50,7 @@ sub recibir_parametros{
 	}
 }
 
+
 sub hacer_consulta{
 	#Subrutina que se encarga de imprimir por pantalla
 	#Un menu amigable para el usuario de manera de
@@ -69,6 +70,7 @@ sub hacer_consulta{
 	} elsif ($tipo_consulta eq "D"){
 		resultados_grupo();
 	} else{
+		print "Gracias por utilizar el módulo CIPAK. Saliendo de la aplicación \n";
 		exit 0;
 	}
 }
@@ -131,6 +133,7 @@ sub grabar_a_archivo{
 	close $fh;
 }
 
+
 sub ganadores_por_sorteo{
 	#Imagino que los sorteos son por Grupos, por lo cual voy a tomar el grupo, o rango de grupos que me pidan, y voy a ordenar
 	#en ese grupo, tomando los numeros del archivo de sorteos para una fecha.
@@ -140,114 +143,57 @@ sub ganadores_por_sorteo{
 	#
 	my $hash_datos = {};
 	my $hash_sorteo = {};
+	my @grupos;
 	listar_archivos($ENV{'PROCDIR'}."sorteos/");
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	
 	my @lineas_a_grabar;
 	my $nombre_archivo = $fecha_sorteo.".txt";
-	generar_hash_datos($hash_datos,$nombre_archivo);
+	generar_hash_datos_sorteo($hash_datos);
 	generar_hash_sorteo($hash_sorteo);
 	push @lineas_a_grabar,"Ganadores del sorteo ".$sorteo_a_mostrar." de fecha ".$fecha_sorteo ."\n";
 	print $lineas_a_grabar[0];
-	if ($modo_comando eq "r"){
-		my @rango_de_grupos = split(/-/,$grupo_recibido_parametro);
-		@rango_de_grupos = ($rango_de_grupos[0]..$rango_de_grupos[1]);
-		$nombre_archivo_a_guardar = $sorteo_a_mostrar . "_Grd".$rango_de_grupos[0]."- Gr".$rango_de_grupos[-1]  . ".txt";
-		foreach my $num_grupo (@rango_de_grupos){
-			my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
-			if (exists $hash_datos->{$num_grupo}){
-				@laskeys = (keys %$nro_ordenes_a_ordenar);
-				@ordenados = sort { $hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @laskeys;	
-			}else{
-				my $linea_a_guardar = "No existe el grupo $num_grupo en los datos.\n";
-				print $linea_a_guardar;
-				push @lineas_a_grabar,$linea_a_guardar;
-				next;
-			}
-			
-			foreach my $num_orden_del_grupo (@ordenados){
-				$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,". $hash_datos->{$num_grupo}->{$num_orden_del_grupo}[6] ."(Numero de sorteo %.3d) \n",$num_grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
-				print $linea_a_guardar;
-				push @lineas_a_grabar,$linea_a_guardar;
-				last;
-			}
-		}
-		if ($modo ne ""){
-		grabar_a_archivo($nombre_archivo_a_guardar,@lineas_a_grabar);
-		
-		}
-		
-	}
-	if ($modo_comando eq "u"){
-		my $linea_a_guardar;
-		my $grupo = $grupo_recibido_parametro;
-		if (!exists$hash_datos->{$grupo}){
-			print "No existe el grupo $grupo en los datos.\n";
-			hacer_consulta();	
-		}
-		my $ordenes_a_ordenar = $hash_datos->{$grupo};
-		$nombre_archivo_a_guardar = $sorteo_a_mostrar. "_Grd".$grupo."- Gr".$grupo . ".txt";
-		@ordenados = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} }keys %$ordenes_a_ordenar;
-		foreach my $num_orden_del_grupo (@ordenados){
-			$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,". $hash_datos->{$grupo}->{$num_orden_del_grupo}[6] ."(Numero de sorteo %.3d) \n",$grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
-			print $linea_a_guardar;
-			last;
-		}
-		if ($modo ne ""){
-		grabar_a_archivo($nombre_archivo_a_guardar,$linea_a_guardar);
-		}
-	}
-	if ($modo_comando eq "v"){
-		my @grupos = split(/,/,$grupo_recibido_parametro);
-		@grupos = sort{ $a > $b } @grupos;
-		$nombre_archivo_a_guardar = $sorteo_a_mostrar . "_Grd".$grupos[0]."- Gr".$grupos[-1]  . ".txt";
-		foreach my $num_grupo (@grupos){
-			my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
-			if (exists $hash_datos->{$num_grupo} ){
-				@laskeys = (keys %$nro_ordenes_a_ordenar);
-				@ordenados = sort { $hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @laskeys;
-			} else{
-				my $linea_a_guardar = sprintf "No existe el grupo $num_grupo en los datos.\n";
-				print $linea_a_guardar;
-				push @lineas_a_grabar, $linea_a_guardar;
-				next;
-			}
-			
-			foreach my $num_orden_del_grupo (@ordenados){
-				$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,". $hash_datos->{$num_grupo}->{$num_orden_del_grupo}[6] ."(Numero de sorteo %.3d) \n",$num_grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
-				print $linea_a_guardar;
-				push @lineas_a_grabar,$linea_a_guardar;
-				last;
-			}
-		}
-			if ($modo ne "" && (@lineas_a_grabar) >= 1){
-			grabar_a_archivo($nombre_archivo_a_guardar,@lineas_a_grabar);
-			}
+	if ($modo_comando eq "t"){
+		@grupos = (keys %$hash_datos);
 	
 	}
-	if ($modo_comando eq "t"){
-		
-		
-		@grupos = (keys %$hash_datos);
-		@grupos = sort {$a > $b} @grupos;
-		$nombre_archivo_a_guardar = $sorteo_a_mostrar."_Gr".$grupos[0]."_Gr".$grupos[-1]. "_sorteo.txt";
-		foreach my $num_grupo (@grupos){
-			my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo}; #obtengo ref al primer hash
-			@las_keys = (keys %$nro_ordenes_a_ordenar); #obtengo keys del segundo hash
-			@ordenados = sort { $hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @las_keys ; #ordeno el segundo hash
-			#print Dumper(@ordenados);
-			foreach my $num_orden_del_grupo (@ordenados){
-				$linea_a_guardar =sprintf "Ganador por sorteo del grupo %.3d: Número de orden %.3d ,". $hash_datos->{$num_grupo}->{$num_orden_del_grupo}[6] ."(Numero de sorteo %.3d) \n",$num_grupo,$num_orden_del_grupo,$sorteo_a_mostrar;
-				print $linea_a_guardar;
-				push @lineas_a_grabar,$linea_a_guardar;
-				last;
-			}
+	if ($modo_comando eq "r"){
+		@grupos = split(/-/,$grupo_recibido_parametro);
+		@grupos = sort {$a <=> $b} @grupos;
+		@grupos = ($grupos[0]..$grupos[-1]);
+	}
+	if ($modo_comando eq "v"){
+		@grupos = split(/,/,$grupo_recibido_parametro);
+	}
+	if ($modo_comando eq "u"){
+		@grupos = ($grupo_recibido_parametro);
+	}
+	
+	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo.".txt";
+	foreach my $num_grupo (@grupos){
+		my $linea_a_guardar;
+		if (!exists($hash_datos->{$num_grupo})){
+			$linea_a_guardar = sprintf "No existe el grupo $num_grupo en los datos. \n";
+			print $linea_a_guardar;
+			push(@lineas_a_grabar,$linea_a_guardar);
+			next;
 		}
-		my $tam_array = @lineas_a_grabar;
-		if ($modo ne "" && $tam_array >=2){
-			grabar_a_archivo($nombre_archivo_a_guardar,@lineas_a_grabar);
-			}
+		my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
+		my @keys_a_ordenar = (keys %$nro_ordenes_a_ordenar);
+		if (@keys_a_ordenar < 1){
+			$linea_a_guardar = sprintf "Para el grupo $num_grupo no hay suficientes participantes validos \n";
+			push @lineas_a_grabar,$linea_a_guardar;
+			next;
+		}
+		@keys_a_ordenar = sort{$hash_sorteo->{$a} <=> $hash_sorteo->{$b}  } @keys_a_ordenar;
+		$linea_a_guardar = sprintf "Ganador por sorteo del grupo %.3d : Nro de orden %.3d , ".$hash_datos->{$num_grupo}->{$keys_a_ordenar[0]}[2] . "(Numero de sorteo %.3d)\n",$num_grupo,$keys_a_ordenar[0],$hash_sorteo->{$keys_a_ordenar[0]};
+		print $linea_a_guardar;
+		push @lineas_a_grabar,$linea_a_guardar;
+	}
+
+	if ($modo ne "" && @lineas_a_grabar >= 1){
+		grabar_a_archivo($nombre_archivo_a_guardar,@lineas_a_grabar);
 	}
 }
 
@@ -266,24 +212,27 @@ sub ganadores_por_licitacion{
 	#Por ahora..
 	$hash_sorteo = {};
 	$hash_datos = {};
+	$hash_datos_sorteo = {};
 	listar_archivos($ENV{'PROCDIR'}."sorteos");
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	my @lineas_a_grabar;
 	push @lineas_a_grabar,"Ganadores por Licitacion ". $sorteo_a_mostrar . " de fecha $fecha_sorteo .\n";
-	
+	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
 	my @grupos;
 	
 	print $lineas_a_grabar[0];
 	my $nombre_archivo = $fecha_sorteo .".txt";
 	generar_hash_sorteo($hash_sorteo);
 	generar_hash_datos($hash_datos,$nombre_archivo);
+	generar_hash_datos_sorteo($hash_datos_sorteo);
 	if ($modo_comando eq "t"){
 		@grupos = (keys %$hash_datos);
 	
 	}
 	if ($modo_comando eq "r"){
 		@grupos = split(/-/,$grupo_recibido_parametro);
+		@grupos = sort {$a <=> $b} @grupos;
 		@grupos = ($grupos[0]..$grupos[-1]);
 	}
 	if ($modo_comando eq "v"){
@@ -292,7 +241,7 @@ sub ganadores_por_licitacion{
 	if ($modo_comando eq "u"){
 		@grupos = ($grupo_recibido_parametro);
 	}
-	my $nombre_archivo_a_guardar = $sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
+	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
 	@grupos = sort {$a <=> $b} @grupos;
 	foreach my $num_grupo (@grupos){
 		if (!exists($hash_datos->{$num_grupo})){
@@ -302,16 +251,18 @@ sub ganadores_por_licitacion{
 			next;
 		}
 		my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
-		@las_keys = (keys %$nro_ordenes_a_ordenar);
-		@ordenes_ordenadas_por_licitacion = sort {$hash_datos->{$num_grupo}->{$b}[5] <=> $hash_datos->{$num_grupo}->{$a}[5] or $hash_sorteo->{$a} <=> $hash_sorteo->{$b}} @las_keys;
-		@ordenes_ordenadas_por_sorteo = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @las_keys;
+		my $nro_ordenes_sorteo_a_ordenar = $hash_datos_sorteo->{$num_grupo};
+		my @las_keys_licitacion = (keys %$nro_ordenes_a_ordenar);
+		my @las_keys_sorteo = (keys %$nro_ordenes_sorteo_a_ordenar);
+		my @ordenes_ordenadas_por_licitacion = sort {$hash_datos->{$num_grupo}->{$b}[5] <=> $hash_datos->{$num_grupo}->{$a}[5] or $hash_sorteo->{$a} <=> $hash_sorteo->{$b}} @las_keys_licitacion;
+		my @ordenes_ordenadas_por_sorteo = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @las_keys_sorteo;
 		my $tam_array = @ordenes_ordenadas_por_licitacion;
 		if ($ordenes_ordenadas_por_sorteo[0] eq $ordenes_ordenadas_por_licitacion[0] && $tam_array >= 2){
 			 $i = 1;
 		}else{
 			 $i = 0;
 		}
-		$linea_a_guardar = sprintf "Ganador por licitación del grupo %.3d : Número de orden %.3d." . $hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[6] . " con ".chr(36)." $hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[5]   (Nro de Sorteo %.3d) \n",$num_grupo,$ordenes_ordenadas_por_licitacion[$i],$sorteo_a_mostrar;
+		$linea_a_guardar = sprintf "Ganador por licitación del grupo %.3d : Número de orden %.3d, " . $hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[6] . " con ".chr(36)." $hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[5]   (Nro de Sorteo %.3d) \n",$num_grupo,$ordenes_ordenadas_por_licitacion[$i],$hash_sorteo->{$ordenes_ordenadas_por_licitacion[$i]};
 		print $linea_a_guardar;
 		push(@lineas_a_grabar,$linea_a_guardar);
 	}
@@ -334,8 +285,10 @@ sub resultados_grupo{
 	recibir_grupo();
 	my $hash_datos = {};
 	my $hash_sorteo = {};
+	my $hash_datos_sorteo = {};
 	my $nombre_archivo = $fecha_sorteo .".txt";
 	generar_hash_sorteo($hash_sorteo);
+	generar_hash_datos_sorteo($hash_datos_sorteo);
 	generar_hash_datos($hash_datos,$nombre_archivo);
 	my @lineas_a_grabar;
 	if ($modo_comando ne "u"){
@@ -344,22 +297,24 @@ sub resultados_grupo{
 	}
 	$nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar . "_Grupo".$grupo_recibido_parametro."_".$fecha_sorteo.".txt";
 	my $num_grupo = $grupo_recibido_parametro;
-	if (!exists($hash_datos->{$num_grupo})){
+	if (!exists($hash_datos->{$num_grupo}) && (!exists($hash_datos_sorteo{$num_grupo}))){
 			$linea_a_guardar = sprintf "El grupo $num_grupo no existe en los datos \n";
 			print $linea_a_guardar;
 			push @lineas_a_grabar,$linea_a_guardar;
 		}else{
 			my $nro_ordenes_a_ordenar = $hash_datos->{$num_grupo};
+			my $nro_ordenes_sorteo_a_ordenar = $hash_datos_sorteo->{$num_grupo};
 			@las_keys = (keys %$nro_ordenes_a_ordenar);
+			@las_keys_sorteo = (keys %$nro_ordenes_sorteo_a_ordenar);
 			@ordenes_ordenadas_por_licitacion = sort {$hash_datos->{$num_grupo}->{$b}[5] <=> $hash_datos->{$num_grupo}->{$a}[5] or $hash_sorteo->{$a} <=> $hash_sorteo->{$b}} @las_keys;
-			@ordenes_ordenadas_por_sorteo = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @las_keys;
+			@ordenes_ordenadas_por_sorteo = sort {$hash_sorteo->{$a} <=> $hash_sorteo->{$b} } @las_keys_sorteo;
 			my $tam_array = @ordenes_ordenadas_por_licitacion;
 			if ($ordenes_ordenadas_por_sorteo[0] eq $ordenes_ordenadas_por_licitacion[0] && $tam_array >= 2){
 				 $i = 1;
 			}else{
 			 	$i = 0;
 			}
-			$linea_a_guardar = sprintf "%.3d - %.3d S (".$hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_sorteo[0]}[6].") \n",$num_grupo,$ordenes_ordenadas_por_sorteo[0];
+			$linea_a_guardar = sprintf "%.3d - %.3d S (".$hash_datos_sorteo->{$num_grupo}->{$ordenes_ordenadas_por_sorteo[0]}[2].") \n",$num_grupo,$ordenes_ordenadas_por_sorteo[0];
 			print $linea_a_guardar;
 			push(@lineas_a_grabar,$linea_a_guardar);
 			$linea_a_guardar = sprintf "%.3d - %.3d L (".$hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[6].") \n",$num_grupo,$ordenes_ordenadas_por_licitacion[$i];
@@ -401,8 +356,10 @@ sub recibir_grupo{
 sub ejecutar_ayuda(){
 	#Comando de ayuda que se ejecuta pasando por ARGV los caracteres "-a"
 	#Contiene información sobre cómo operar el script para obtener las consultas.
-	print "Esta es la ayuda del comando DeterminarGanador. \n";
-	print "El módulo puede ejecutarse con los siguientes argumentos:";
+	print "Esta es la ayuda del comando DeterminarGanador del módulo CIPAK. \n";
+	print "Previo a ejecutarse este comando, debe inicializarse correspondientemente el ambiente \n";
+	print "Para saber cómo iniciar correctamente el ambiente, diríjase a la documentación proporcionada\n";
+	print "El módulo puede ejecutarse con los siguientes argumentos: \n";
 	print " './DeterminarGanadores.pl -g' graba los resultados en el directorio $ENV{'INFODIR'}\n";
 	print "'./DeterminarGanadores.pl' sólo se muestran las consultas en pantalla\n";
 	print "Una vez lanzado el módulo, se presentará la pantalla de bienvenida\n";
@@ -413,6 +370,12 @@ sub ejecutar_ayuda(){
 	print "C indica, dentro de los grupos especificados por el usuario, qué numero de orden resulto ganador de la licitación, tomando en cuenta al ganador del sorteo\n";
 	print "D indica, para un grupo en particular, los ganadores por sorteo y licitación\n";
 	print "El ingreso de cualquier otro caracter diferente a los mencionados, causará el término de ejecución del módulo\n";
+	print "\n";
+	print "Posibles Errores del módulo (cualquiera de estos errores provoca el paro en la ejecucion del comando):\n";
+	print "1. No se inicializó el ambiente. Primero inicialicelo\n";
+	print "Causa del error: No se ejecutó el comando PrepararAmbiente, por lo cual el módulo no puede ser ejecutado\n";
+	print "2. Ya se está corriendo una instancia de DeterminarGanadores \n";
+	print "Causa del error: Se intenta ejecutar, otra vez y en otra ventana, el módulo cuando el mismo ya está siendo ejecutado \n";
 }
 
 sub recibir_idsorteo_fecha{
@@ -442,6 +405,41 @@ sub listar_archivos{
 	}
 }
 
+
+
+
+sub generar_hash_datos_sorteo{
+	#función auxiliar utilizada para generar el hash de datos para
+	#la funcion de ganadores por sorteo.
+	#En esta función se verifica que el usuario participante del padrón
+	#cumpla con la restricción de que el campo PARTICIPA esté en 
+	#1 o 2. De otra forma, no puede participar en el sorteo
+	my $hash_datos = shift;
+	if (open(my $fh,"<",$ENV{'MAEDIR'}.'temaK_padron.csv'))	{
+	while (my $linea = <$fh>){
+		chomp $linea;
+		my @campos = split(/;/,$linea);
+		if ($campos[5] eq 1 || $campos[5] eq 2){
+			$campos[1] =~ s/0*(\d+)/$1/;
+			if (not defined $hash_datos->{$campos[0]}){
+				$hash_datos->{$campos[0]} = {$campos[1] => [@campos]};
+			}
+			$hash_datos->{$campos[0]}->{$campos[1]} = [@campos];	
+		}else{
+			next;
+		}
+		
+	}
+
+	}else{
+		print "No se encontró el archivo de padrón [$!]\n";
+		print "Revise su instalación\n";
+		hacer_consulta();
+	}
+	close $fh;
+}
+
+
 sub generar_hash_sorteo{
 	#funcion auxiliar utilizada para generar el hash de sorteo
 	#Respetando la estructura del programa para encontrar los archivos
@@ -461,6 +459,7 @@ sub generar_hash_sorteo{
 		hacer_consulta();
 	}
 }
+
 sub generar_hash_datos{
 	#funcion auxiliar utilizada para generar el hash de los datos de las personas
 	#en el padrón dado
