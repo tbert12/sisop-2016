@@ -93,6 +93,7 @@ sub resultado_general{
 	listar_archivos($ENV{'PROCDIR'}."sorteos/");
 	print "-------------------\n";
 	recibir_idsorteo_fecha();
+	
 	my $nombre_archivo_sorteo = $ENV{'PROCDIR'}."sorteos/".$sorteo_a_mostrar ."_".$fecha_sorteo.".srt";
 	my @lineas_a_grabar;
 	my %hash_datos;
@@ -144,7 +145,9 @@ sub ganadores_por_sorteo{
 	my $hash_datos = {};
 	my $hash_sorteo = {};
 	my @grupos;
+	print "-------------------\n";
 	listar_archivos($ENV{'PROCDIR'}."sorteos/");
+	print "-------------------\n";
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	
@@ -213,7 +216,9 @@ sub ganadores_por_licitacion{
 	$hash_sorteo = {};
 	$hash_datos = {};
 	$hash_datos_sorteo = {};
-	listar_archivos($ENV{'PROCDIR'}."sorteos");
+	print "-------------------\n";
+	listar_archivos($ENV{'PROCDIR'}."sorteos/");
+	print "-------------------\n";
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	my @lineas_a_grabar;
@@ -280,7 +285,10 @@ sub resultados_grupo{
 	#Nota: Sólo permite el ingreso de un grupo en particular, se ha decidido
 	#No aceptar rangos de grupos para esta función, dado que se plantea como
 	#una función para consultar un grupo en particular y obtener los detalles.
+	
+	print "-------------------\n";
 	listar_archivos($ENV{'PROCDIR'}."sorteos/");
+	print "-------------------\n";
 	recibir_idsorteo_fecha();
 	recibir_grupo();
 	my $hash_datos = {};
@@ -490,7 +498,8 @@ if ($ENV{'AMBIENTE_INICIALIZADO'} eq 1){
 
 	while( 1){
 	recibir_parametros();
-	sleep 6;
+	sleep 8;
+	system $^O eq 'MSWin32' ? 'cls' : 'clear';
 	}
 }else {
 	print "No se inicializo el ambiente. Primero inicialicelo, ABORTANDO SCRIPT \n";
