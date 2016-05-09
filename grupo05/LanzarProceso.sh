@@ -18,18 +18,27 @@ logMessage () {
 	fi
 }
 
+if [ "$0" == "LanzarProceso.sh" -o "$0" == "./LanzarProceso.sh" ]; then
+	CALLED_FROM_COMMANDLINE=$TRUE
+else
+	CALLED_FROM_COMMANDLINE=$FALSE
+fi
+
+if [ $# -eq 0 ]; then
+	logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "No se especificaron argumentos para la función. No se pasó como parámetro el proceso." "2"
+	if [ $CALLED_FROM_COMMANDLINE -eq $TRUE ]; then
+		exit 4
+	else
+		return 4
+	fi
+fi
+
 if [[ $* == *--foreground* ]] || [[ $* == *-f* ]]; then
 	PROCESS=$2
 	COMANDO=$3
 else
 	PROCESS=$1
 	COMANDO=$2
-fi
-
-if [ "$0" == "LanzarProceso.sh" -o "$0" == "./LanzarProceso.sh" ]; then
-	CALLED_FROM_COMMANDLINE=$TRUE
-else
-	CALLED_FROM_COMMANDLINE=$FALSE
 fi
 
 source funcionesDeChequeo.sh 
@@ -52,7 +61,7 @@ if [ $AMBIENTE_INICIALIZADO -eq 0 ]; then	# Variable de entorno booleana.
 			RETVAL=0
 			logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El proceso \"$PROCESS\" ha sido lanzado exitosamente." "0"
 		else
-			RETVAL=2
+			RETVAL=3
 			logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "No se pudo lanzar el proceso \"$PROCESS\"" "2"
 		fi
 	else
