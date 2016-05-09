@@ -18,8 +18,13 @@ logMessage () {
 	fi
 }
 
-PROCESS=$1
-COMANDO=$2
+if [[ $* == *--foreground* ]] || [[ $* == *-f* ]]; then
+	PROCESS=$2
+	COMANDO=$3
+else
+	PROCESS=$1
+	COMANDO=$2
+fi
 
 if [ "$0" == "LanzarProceso.sh" -o "$0" == "./LanzarProceso.sh" ]; then
 	CALLED_FROM_COMMANDLINE=$TRUE
@@ -33,8 +38,13 @@ if [ "$AMBIENTE_INICIALIZADO" -ne $FALSE ]; then	# Variable de entorno booleana.
 	PROCESS_NAME="${PROCESS_NAME:0:15}"
 	PID=$(pgrep "$PROCESS_NAME" | tail -n 1)
 	if [ -z "$PID" ]; then
-		$PROCESS &
-		START_RESULT=$?
+		if [[ $* == *--foreground* ]] || [[ $* == *-f* ]]; then
+			$PROCESS
+			START_RESULT=$?
+		else
+			$PROCESS &
+			START_RESULT=$?
+		fi
 
 		if [ "$START_RESULT" -eq 0 ]; then
 			RETVAL=0
