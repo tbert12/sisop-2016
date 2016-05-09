@@ -1,13 +1,5 @@
 #!/bin/bash
 
-#####De prueba
-#ARRIDIR="ARRIDIR/"
-#MAEDIR="MAEDIR/"
-#NOKDIR="NOKDIR/"
-#OKDIR="OKDIR/"
-#SLEEPTIME=10 #segundos
-#####
-
 
 validarFormatoNombreArchivo() {
 	# Formato buscado: <cod_concesionaria_de_4_digitos>_<aniomesdia>.csv
@@ -21,7 +13,7 @@ validarFormatoNombreArchivo() {
 }
 
 
-# Obtener la fecha de la ultima adjudicacion
+# Obtener la fecha de la última adjudicación
 obtenerFechaUltAdjudicacion() {
 	fecha_ult_adj=0
 
@@ -30,7 +22,7 @@ obtenerFechaUltAdjudicacion() {
 		ret_val=1  # Si no es corregido, no hay fecha de adj. pasada
 
 		fecha_hoy=$(date +%Y%m%d)
-		tac "$ARCH_FECHAS_ADJ" > fechas_adj_inversoAUX.aux
+		tac "$ARCH_FECHAS_ADJ" > "$DATDIR"fechas_adj_inverso_RO.aux
 
 		while read -r linea_adj
 		do
@@ -46,17 +38,17 @@ obtenerFechaUltAdjudicacion() {
 					break
 				fi
 			fi
-		done < fechas_adj_inversoAUX.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicacion anterior o igual a hoy
+		done < "$DATDIR"fechas_adj_inverso_RO.aux  # Leo el archivo de abajo para arriba hasta encontrar la primera adjudicación anterior o igual a hoy
 	else
-		#####solo salta si falta el archivo, lo cual no debería
-		bash GrabarBitacora.sh "RecibirOfertas" "COME FIND ME, OBI WAN KENOBI" '1'  # No hay archivo de adjudicacion no vacio
+		#### Solo salta si falta el archivo, lo cual no debería
+		bash GrabarBitacora.sh "RecibirOfertas" "Falta archivo maestro ""$MAEDIR""FechasAdj.csv" '1'  # No hay archivo de adjudicación no vacío
 		###echo "YOURE MY ONLY HOPE"
 		ret_val=2
 	fi
 
-	if [ -e fechas_adj_inversoAUX.aux ]
+	if [ -e "$DATDIR"fechas_adj_inverso_RO.aux ]
 	  then
-		rm fechas_adj_inversoAUX.aux
+		rm "$DATDIR"fechas_adj_inverso_RO.aux
 	fi
 
 	if [ $ret_val -gt 0 ]
@@ -95,7 +87,7 @@ do
 	# Incremento e imprimo el número de ciclo
 	nro_ciclo=$((nro_ciclo+1))
 	bash GrabarBitacora.sh "RecibirOfertas" "ciclo nro. $nro_ciclo"
-	##echo "ciclo nro. $nro_ciclo"
+	#echo "ciclo nro. $nro_ciclo"
 
 	# Obtengo fecha de última adjudicación y fecha de hoy para comparaciones
 	fecha_hoy=$(date +%Y%m%d)
@@ -103,7 +95,7 @@ do
 	obtenerFechaUltAdjudicacion  # modifica $fecha_ult_adj
 
 	# Obtengo una lista de todos los archivos en la carpeta $ARRIDIR
-	find "$ARRIDIR" -maxdepth 1 -type f > RecibirOfertasAUX.aux
+	find "$ARRIDIR" -maxdepth 1 -type f > "$DATDIR"arch_arr_RO.aux
 
 	# Por cada archivo encontrado...
 	while read -r linea_arch
@@ -148,11 +140,11 @@ do
 		else
 			rechazarArchivo "$nom_arch" "inválido tipo o nombre del archivo"
 		fi
-	done < RecibirOfertasAUX.aux
-	rm RecibirOfertasAUX.aux
+	done < "$DATDIR"arch_arr_RO.aux
+	rm "$DATDIR"arch_arr_RO.aux 2> /dev/null
 
 	if [ "$(ls -A "$OKDIR")" ]
-	  then # hay archivos aceptados en $OKDIR para procesar
+	  then  # hay archivos aceptados en $OKDIR para procesar
 		. "$BINDIR"LanzarProceso.sh "$BINDIR""ProcesarOfertas.sh" "RecibirOfertas"
 		RES_LNZ=$?
 		if [ $RES_LNZ -eq 0 ]

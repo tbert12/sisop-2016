@@ -16,12 +16,15 @@
 # 		Log del Comando LOGDIR/GenerarSorteo.log
 #
 
+#uso funciones de chequeo
+source funcionesDeChequeo.sh
+
 #Booleanos
 TRUE=1
 FALSE=0
 
 #Para saber si se llama en la terminal o no
-if [ "$0" == "LanzarProceso.sh" -o "$0" == "./LanzarProceso.sh" ]; then
+if [ "$0" == "GenerarSorteo.sh" -o "$0" == "./GenerarSorteo.sh" -o "$0" == "$BINDIR""GenerarSorteo.sh" ]; then	
 	CALLED_FROM_COMMANDLINE=$TRUE
 else
 	CALLED_FROM_COMMANDLINE=$FALSE
@@ -37,7 +40,7 @@ generarSorteo() {
 	SORTEOID=$2
 
 	#Inicio el log grabando "Inicio de Sorteo"
-	bash GrabarBitacora.sh GenerarSorteo "Inicio de Sorteo Numero: $SORTEOID de la fecha: $(echo $FECHAADJ | cut -c7-8)/$(echo $FECHAADJ | cut -c5-6)/$(echo $FECHAADJ | cut -c1-4)"
+	bash GrabarBitacora.sh GenerarSorteo "Inicio de Sorteo Número: $SORTEOID de la fecha: $(echo $FECHAADJ | cut -c7-8)/$(echo $FECHAADJ | cut -c5-6)/$(echo $FECHAADJ | cut -c1-4)"
 
 	#genera en NUMEROS_SORTEO un array con la secuencia de 1 a 168 random
 	NUMEROS_SORTEO=($(seq 168 | shuf))
@@ -58,21 +61,21 @@ generarSorteo() {
 		mv $FILE $FILE".backup"
 
 		#Avisa en el log
-		bash GrabarBitacora.sh GenerarSorteo "El archivo: $FILE ya existia, se renombro por: $FILE.backup para no sobreescribirlo" 2
+		bash GrabarBitacora.sh GenerarSorteo "El archivo: $FILE ya existía, se renombro por: $FILE.backup para no sobreescribirlo" 2
 	fi
 
 	#for guardando en sorteo y logueando.
 	for i in $(seq 1 168)
 	do
 	    #Log con numero de sorteo y numero de orden
-		bash GrabarBitacora.sh GenerarSorteo "Numero de orden: $i le corresponde el numero de sorteo: ${NUMEROS_SORTEO[$i]}"
+		bash GrabarBitacora.sh GenerarSorteo "Número de orden: $i le corresponde el número de sorteo: ${NUMEROS_SORTEO[$i]}"
 
 		#Guardo en archivo
 		echo $i";"${NUMEROS_SORTEO[$((i-1))]} >> $FILE
 	done
 
 	#Finalizo el log grabando "Fin de Sorteo"
-	bash GrabarBitacora.sh GenerarSorteo "Fin de Sorteo Numero: $SORTEOID de la fecha: $(echo $FECHAADJ | cut -c7-8)/$(echo $FECHAADJ | cut -c5-6)/$(echo $FECHAADJ | cut -c1-4)"
+	bash GrabarBitacora.sh GenerarSorteo "Fin de Sorteo Número: $SORTEOID de la fecha: $(echo $FECHAADJ | cut -c7-8)/$(echo $FECHAADJ | cut -c5-6)/$(echo $FECHAADJ | cut -c1-4)"
 }
 
 #genera el id correspondiente para la fecha
@@ -100,14 +103,25 @@ fechaProximaAdjudicacion() {
 	hoy=$(date +'%Y%m%d')
 	local diferenciaMin=0
 	local diferenciaActual=0
-	local PROX=""
+	local PROX=1
 
 	while read -r linea 
 	do
 		if [ -n "$linea" ]
 			then
+
+			#chequeo la linea
+			local fechaOK=$(chequearFechaAdjudicacion $linea)
+			
+			#si la fecha contiene un error prosigo con la siguiente
+			if [ $fechaOK == 1 ]
+				then
+					continue
+			fi
+
 			# Extraigo la fecha y reformateo a YYYYMMDD
 			fecha_actual=$(echo "$linea" | cut -c7-10)$(echo "$linea" | cut -c4-5)$(echo "$linea" | cut -c1-2)
+
 			
 			#fecha de la linea del archivo es mayor que la de hoy
 			if [ $fecha_actual -gt $hoy ] 
@@ -137,11 +151,18 @@ if [ -r "$ARCH_FECHAS_ADJ" ]
 		# Extraigo la fecha de la proxima adjudicacion y reformateo a YYYYMMDD
 		fecha_adj=$(fechaProximaAdjudicacion)
 		
-		#genero el sorteo
-		generarSorteo $fecha_adj $(generarId "$fecha_adj")
-	RETVAL=0
+		#si la proxima fecha es "" no hay fecha válida.
+		if [ $fecha_adj == 1 ]
+			then
+			bash GrabarBitacora.sh GenerarSorteo "No hay fecha válida de adjudicación, el proceso no se realizó correctamente" 2
+			RETVAL=1
+		else
+			#genero el sorteo
+			generarSorteo $fecha_adj $(generarId "$fecha_adj")
+			RETVAL=0
+		fi
 else
-	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion, el proceso no se realizo" 3
+	bash GrabarBitacora.sh GenerarSorteo "No hay archivo de adjudicacion, el proceso no se realizó correctamente" 2
 	RETVAL=1
 fi
 
