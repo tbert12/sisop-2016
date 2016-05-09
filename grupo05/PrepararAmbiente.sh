@@ -248,6 +248,34 @@ setearVariablesAmbiente() {
 	IFS="="
 	while read VARIABLE VALOR USUARIO FECHA
 	do
+		#Chequeo path correctos:
+		if [ ! -d "$VALOR" -a "$VARIABLE" != "LOGSIZE" -a "$VARIABLE" != "SLEEPTIME" ]; then
+			bash GrabarBitacora.sh PrepararAmbiente "Archivo de configuracion CIPAK.cnf contiene errores. Debe instalar nuevamente el sistema." 2
+			echo "ERROR: Archivo de configuracion CIPAK.cnf contiene errores. Debe instalar nuevamente el sistema."
+			SETEO_CORRECTO=0
+			return $SETEO_CORRECTO
+		fi
+		
+		#Chequeo numeros validos en Logsize y Sleeptime:
+		if [ "$VARIABLE" == "LOGSIZE" -o "$VARIABLE" == "SLEEPTIME" ]; then
+			if ! [[ $VALOR =~ ^-?[0-9]+$ ]]; then
+				bash GrabarBitacora.sh PrepararAmbiente "Archivo de configuracion CIPAK.cnf contiene errores. Debe instalar nuevamente el sistema." 2
+				echo "ERROR: Archivo de configuracion CIPAK.cnf contiene errores. Debe instalar nuevamente el sistema."
+				SETEO_CORRECTO=0
+				return $SETEO_CORRECTO
+			fi
+		fi
+		
+		#Chequeo nombres validos de las variables globales:
+		if [ "$VARIABLE" != "GRUPO" -a "$VARIABLE" != "BINDIR" -a "$VARIABLE" != "MAEDIR" -a "$VARIABLE" != "ARRIDIR" \
+		-a "$VARIABLE" != "OKDIR" -a "$VARIABLE" != "PROCDIR" -a "$VARIABLE" != "INFODIR" -a "$VARIABLE" != "LOGDIR" \
+		-a "$VARIABLE" != "NOKDIR" -a "$VARIABLE" != "LOGSIZE" -a "$VARIABLE" != "SLEEPTIME" -a "$VARIABLE" != "RESGDIR" ]; then
+			bash GrabarBitacora.sh PrepararAmbiente "Archivo de configuracion CIPAK.cnf contiene errores. Debe instalar nuevamente el sistema." 2
+			echo "ERROR: Archivo de configuracion CIPAK.cnf contiene errores. Debe instalar nuevamente el sistema."
+			SETEO_CORRECTO=0
+			return $SETEO_CORRECTO
+		fi
+		
 		export $VARIABLE=$VALOR
 		bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: $VARIABLE - Valor: $VALOR"
 		echo "Nombre de variable: $VARIABLE - Valor: $VALOR"
