@@ -19,6 +19,11 @@ borrarArchAuxiliares () {
 }
 
 
+if [ $# -eq 0 ]; then
+	echo "No se especificaron argumentos para la función. No se pasó como parámetro el proceso a detener."
+	exit 2
+fi
+
 PROCESS_NAME=$1		# Nombre del proceso a matar.
 COMANDO=$2	# Comando desde donde se invoca este script.
 

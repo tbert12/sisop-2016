@@ -25,7 +25,7 @@ else
 fi
 
 if [ $# -eq 0 ]; then
-	logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "No se especificaron argumentos para la función. No se pasó como parámetro el proceso." "2"
+	echo "No se especificaron argumentos para la función. No se pasó como parámetro el proceso a lanzar."
 	if [ $CALLED_FROM_COMMANDLINE -eq $TRUE ]; then
 		exit 4
 	else
