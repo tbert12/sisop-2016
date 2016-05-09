@@ -38,7 +38,13 @@ else
 fi
 
 if [ "$STOP_RESULT" -eq 0 ]; then
-	borrarArchAuxiliares "$PROCESS_NAME"
+	source ./funcionesDeChequeo.sh
+	chequearAmbienteInicializado
+	AMBIENTE_INICIALIZADO=$?
+	if [ $AMBIENTE_INICIALIZADO -eq 0 ]; then
+		borrarArchAuxiliares "$PROCESS_NAME"
+	fi
+
 	if [ -z "$PID" ]; then
 		logMessage "$COMANDO" "El proceso $PROCESS_NAME ha sido detenido exitosamente." "0"
 	else

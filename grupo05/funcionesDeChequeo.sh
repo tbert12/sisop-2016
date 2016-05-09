@@ -53,4 +53,16 @@ chequearFechaAdjudicacion() {
 
 }
 
+chequearAmbienteInicializado() {
+	TRUE=1
+	FALSE=0
+
+	AMBIENTE_INICIALIZADO=${AMBIENTE_INICIALIZADO:-$FALSE}
+	if [ "$AMBIENTE_INICIALIZADO" -ne $FALSE ]; then # Variable de entorno booleana.
+		return 0	# OK
+	else
+		return 1	# AMBIENTE NO INICIALIZADO
+	fi
+}
+
 export -f chequearFechaAdjudicacion

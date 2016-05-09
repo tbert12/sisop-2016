@@ -32,8 +32,10 @@ else
 	CALLED_FROM_COMMANDLINE=$FALSE
 fi
 
-AMBIENTE_INICIALIZADO=${AMBIENTE_INICIALIZADO:-$FALSE}
-if [ "$AMBIENTE_INICIALIZADO" -ne $FALSE ]; then	# Variable de entorno booleana.
+source funcionesDeChequeo.sh 
+chequearAmbienteInicializado
+AMBIENTE_INICIALIZADO=$?
+if [ $AMBIENTE_INICIALIZADO -eq 0 ]; then	# Variable de entorno booleana.
 	PROCESS_NAME=`echo "${PROCESS##*/}" | awk '{print $1;}'`
 	PROCESS_NAME="${PROCESS_NAME:0:15}"
 	PID=$(pgrep "$PROCESS_NAME" | tail -n 1)
