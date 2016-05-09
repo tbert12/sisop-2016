@@ -230,12 +230,16 @@ El script acepta hasta 2 argumentos distintos:<br />
 1. **PROCESO** *(Requerido)*. Nombre completo del proceso a lanzar, incluidos todos los parámetros que este reciba. Debemos imaginar este argumento como un comando cualquiera que queramos ejecutar en una línea de shell en la terminal.<br />
 2. **COMANDO** *(Opcional)*. Indica el comando desde el cual se invoca al script. En caso de no pasarse este argumento, en caso de querer registrarse algo en la bitácora no se podrá puesto que no estará especificado el comando correspondiente a la misma.<br />
 
+El comportamiento por defecto de la función es lanzar los procesos en *background*. No obstante, se puede cambiar este comportamiento para que el proceso sea lanzado en primer plano setteando el *flag* opcional `-f` o `--foreground`.<br />
+
 Se recomienda invocar este comando como `bash LanzarProceso.sh "{PROCESO}"` cuando se lo quiera llamar desde la línea de comandos. Por el contrario, se sugiere hacerlo *source* (alias `.`) en aquellos casos en los que se lo ejecute desde otro script: `. LanzarProceso.sh "{PROCESO}"`. El porqué de esta diferenciación tiene que ver con cómo deberá manejar el script el registro de errores e información.<br />
 
 El script devuelve alguno de los siguientes valores:
 * **0**: Éxito. El proceso especificado pudo ser lanzado correctamente.
 * **1**: Error. El proceso a lanzar ya está en ejecución.
-* **2**: Error. Ante cualquier otro error al querer lanzar el proceso en background.<br />
+* **2**: Error. Ante cualquier otro error al querer lanzar el proceso en background.
+* **3**: Error. El ambiente no fue inicializado.
+* **4**: Error. La función no recibió parámetros, es decir que no se especificó el proceso a lanzar.<br />
 
 
 ### DetenerProceso.sh

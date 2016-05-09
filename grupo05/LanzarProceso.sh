@@ -61,7 +61,7 @@ if [ $AMBIENTE_INICIALIZADO -eq 0 ]; then	# Variable de entorno booleana.
 			RETVAL=0
 			logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El proceso \"$PROCESS\" ha sido lanzado exitosamente." "0"
 		else
-			RETVAL=3
+			RETVAL=2
 			logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "No se pudo lanzar el proceso \"$PROCESS\"" "2"
 		fi
 	else
@@ -69,7 +69,7 @@ if [ $AMBIENTE_INICIALIZADO -eq 0 ]; then	# Variable de entorno booleana.
 		logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El proceso $PROCESS ya está en ejecución. Su PID es $PID" "1"
 	fi
 else
-	RETVAL=2
+	RETVAL=3
 	logMessage "$CALLED_FROM_COMMANDLINE" "$COMANDO" "El ambiente no fue inicializado. El proceso \"$PROCESS\" no puede ser lanzado." "2"
 fi
 
