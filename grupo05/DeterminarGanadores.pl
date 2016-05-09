@@ -231,6 +231,7 @@ sub ganadores_por_licitacion{
 	generar_hash_sorteo($hash_sorteo);
 	generar_hash_datos($hash_datos,$nombre_archivo);
 	generar_hash_datos_sorteo($hash_datos_sorteo);
+	print Dumper(%$hash_datos_sorteo);
 	if ($modo_comando eq "t"){
 		@grupos = (keys %$hash_datos);
 	
@@ -249,8 +250,15 @@ sub ganadores_por_licitacion{
 	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
 	@grupos = sort {$a <=> $b} @grupos;
 	foreach my $num_grupo (@grupos){
-		if (!exists($hash_datos->{$num_grupo})){
-			$linea_a_guardar = sprintf "No existe el grupo $num_grupo en los datos. \n";
+		if (exists($hash_datos_sorteo->{$num_grupo})){
+			if (!exists($hash_datos->{$num_grupo})){
+				$linea_a_guardar = sprintf "El grupo $num_grupo no ha presentado ofertas válidas. \n";
+				print $linea_a_guardar;
+				push(@lineas_a_grabar,$linea_a_guardar);
+				next;
+			}
+		} else{
+			$linea_a_guardar = sprintf "El grupo $num_grupo no existe en los datos. \n";
 			print $linea_a_guardar;
 			push(@lineas_a_grabar,$linea_a_guardar);
 			next;
@@ -305,7 +313,8 @@ sub resultados_grupo{
 	}
 	$nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar . "_Grupo".$grupo_recibido_parametro."_".$fecha_sorteo.".txt";
 	my $num_grupo = $grupo_recibido_parametro;
-	if (!exists($hash_datos->{$num_grupo}) && (!exists($hash_datos_sorteo{$num_grupo}))){
+	
+	if (!exists($hash_datos->{$num_grupo}) && (!exists($hash_datos_sorteo->{$num_grupo}))){
 			$linea_a_guardar = sprintf "El grupo $num_grupo no existe en los datos \n";
 			print $linea_a_guardar;
 			push @lineas_a_grabar,$linea_a_guardar;
@@ -325,7 +334,12 @@ sub resultados_grupo{
 			$linea_a_guardar = sprintf "%.3d - %.3d S (".$hash_datos_sorteo->{$num_grupo}->{$ordenes_ordenadas_por_sorteo[0]}[2].") \n",$num_grupo,$ordenes_ordenadas_por_sorteo[0];
 			print $linea_a_guardar;
 			push(@lineas_a_grabar,$linea_a_guardar);
-			$linea_a_guardar = sprintf "%.3d - %.3d L (".$hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[6].") \n",$num_grupo,$ordenes_ordenadas_por_licitacion[$i];
+			if (@ordenes_ordenadas_por_licitacion < 1){
+				$linea_a_guardar = sprintf "Para el grupo $num_grupo no hubieron ofertas válidas \n";
+			}else{
+				$linea_a_guardar = sprintf "%.3d - %.3d L (".$hash_datos->{$num_grupo}->{$ordenes_ordenadas_por_licitacion[$i]}[6].") \n",$num_grupo,$ordenes_ordenadas_por_licitacion[$i];
+			}
+			
 			print $linea_a_guardar;
 			push(@lineas_a_grabar,$linea_a_guardar);
 		}
