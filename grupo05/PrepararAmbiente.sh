@@ -237,7 +237,7 @@ setearVariablesAmbiente() {
 	# Chequeo que el archivo de configuracion se encuentre disponible:
 	verificarArchivoConfiguracion
 	if [ $? -eq 0 ]; then
-		SETEO_CORRECTO=0
+		SETEO_CORRECTO=2
 		return $SETEO_CORRECTO
 	fi
 	
@@ -248,6 +248,34 @@ setearVariablesAmbiente() {
 	IFS="="
 	while read VARIABLE VALOR USUARIO FECHA
 	do
+		#Chequeo path correctos:
+		if [ ! -d "$VALOR" -a "$VARIABLE" != "LOGSIZE" -a "$VARIABLE" != "SLEEPTIME" ]; then
+			bash GrabarBitacora.sh PrepararAmbiente "Archivo de configuracion CIPAK.cnf contiene errores en los path. Debe instalar nuevamente el sistema." 2
+			echo "ERROR: Archivo de configuracion CIPAK.cnf contiene errores en los path. Debe instalar nuevamente el sistema."
+			SETEO_CORRECTO=2
+			return $SETEO_CORRECTO
+		fi
+		
+		#Chequeo numeros validos en Logsize y Sleeptime:
+		if [ "$VARIABLE" == "LOGSIZE" -o "$VARIABLE" == "SLEEPTIME" ]; then
+			if ! [[ $VALOR =~ ^-?[0-9]+$ ]]; then
+				bash GrabarBitacora.sh PrepararAmbiente "Archivo de configuracion CIPAK.cnf contiene errores en variables numericas. Debe instalar nuevamente el sistema." 2
+				echo "ERROR: Archivo de configuracion CIPAK.cnf contiene errores en variables numericas. Debe instalar nuevamente el sistema."
+				SETEO_CORRECTO=2
+				return $SETEO_CORRECTO
+			fi
+		fi
+		
+		#Chequeo nombres validos de las variables globales:
+		if [ "$VARIABLE" != "GRUPO" -a "$VARIABLE" != "BINDIR" -a "$VARIABLE" != "MAEDIR" -a "$VARIABLE" != "ARRIDIR" \
+		-a "$VARIABLE" != "OKDIR" -a "$VARIABLE" != "PROCDIR" -a "$VARIABLE" != "INFODIR" -a "$VARIABLE" != "LOGDIR" \
+		-a "$VARIABLE" != "NOKDIR" -a "$VARIABLE" != "LOGSIZE" -a "$VARIABLE" != "SLEEPTIME" -a "$VARIABLE" != "RESGDIR" ]; then
+			bash GrabarBitacora.sh PrepararAmbiente "Archivo de configuracion CIPAK.cnf contiene errores en nombres de variables globales. Debe instalar nuevamente el sistema." 2
+			echo "ERROR: Archivo de configuracion CIPAK.cnf contiene errores en nombres de variables globales. Debe instalar nuevamente el sistema."
+			SETEO_CORRECTO=2
+			return $SETEO_CORRECTO
+		fi
+		
 		export $VARIABLE=$VALOR
 		bash GrabarBitacora.sh PrepararAmbiente "Nombre de variable: $VARIABLE - Valor: $VALOR"
 		echo "Nombre de variable: $VARIABLE - Valor: $VALOR"
@@ -337,7 +365,7 @@ borrarVariablesAmbiente() {
 	unset NOKDIR
 	unset LOGSIZE
 	unset SLEEPTIME
-	PATH=$(echo $PATH | sed 's-^\(.*\):.*$-\1-g')
+	#PATH=$(echo $PATH | sed 's-^\(.*\):.*$-\1-g')
 }
 
 ###################################################################
@@ -347,9 +375,17 @@ borrarVariablesAmbiente() {
 main() {
 	setearVariablesAmbiente
 
-	# Return 1 = Error: Ambiente ya inicializado
-	if [ $? -eq 0 ]; then
-		bash MoverArchivos.sh "$BINDIR""PrepararAmbiente.log" "$LOGDIR"
+	# Return 1 = Error: Problema en la inicializacion
+	retornoSeteo=$?
+	#Ambiente ya inicializado:
+	if [ $retornoSeteo -eq 0 ]; then
+		return 1
+	#Errores en el archivo de configuracion:
+	elif [ $retornoSeteo -eq 2 ]; then
+		if [ -f "$BINDIR""PrepararAmbiente.log" ]; then
+			bash MoverArchivos.sh "$BINDIR""PrepararAmbiente.log" "/home/guidonegri/grupo05/CIPAK_G5/Grupo05/bitacoras"
+		fi
+		borrarVariablesAmbiente
 		return 1
 	fi
 
