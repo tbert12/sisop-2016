@@ -251,6 +251,7 @@ El script acepta hasta 3 argumentos distintos:<br />
 
 El script devuelve alguno de los siguientes valores:
 * **0**: Éxito. El proceso se estaba ejecutando y fue detenido con éxito. En realidad, el valor de retorno que se devuelve es el correspondiente al comando `kill {PID}`.
-* **1**: Error. El proceso a detener no estaba ejecutándose.<br />
+* **1**: Error. El proceso a detener no estaba ejecutándose.
+* **2**: Error. La función no recibió parámetros, es decir que no se especificó el proceso a detener.<br />
 
 
