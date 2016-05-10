@@ -21,8 +21,20 @@
 #	monto_minimo = valor_de_cuota_pura * cantidad_de_cuotas_para_licitacion
 #	monto_maximo = valor_de_cuota_puta * cantidad_de_cuotas_pendientes
 
+source funcionesDeChequeo.sh
 
 SELF=`basename ${0%.*}`
+
+#Paso 0:
+# Verifico que existen todos los INPUTS
+PADRON_FILE="$MAEDIR"temaK_padron.csv
+FECHAS_ADJ_FILE="$MAEDIR"FechasAdj.csv
+GRUPOS_FILE="$MAEDIR"grupos.csv
+
+if [ ! -f "$FECHAS_ADJ_FILE" ] || [ ! -f "$PADRON_FILE" ] || [ ! -f "$GRUPOS_FILE" ] ; then
+    bash GrabarBitacora.sh "$SELF" "No se puede procesar ofertas, verificar los INPUTS" 2
+    exit 1
+fi
 
 #FORTMATO QUE ESPERO DE LOS ARCHIVOS QUE SE LEEN
 CANT_CAMPOS_ARCHIVO=2
@@ -35,6 +47,8 @@ RECHAZADAS_DIR="$PROCDIR"rechazadas #Se guardaran los registros rechazados
 mkdir -p "$VALIDAS_DIR" # -p (si ya existe no ejecuta el mkdir)
 mkdir -p "$PROCESADAS_DIR"
 mkdir -p "$RECHAZADAS_DIR"
+
+
 
 function rechazarRegistro {
 	# Si alguna de las validaciones da error, rechazar el registro grabandolo en Archivo de ofertas rechazadas
@@ -69,7 +83,7 @@ function proximaFechaDeAdjudicacion {
 	local ANO=${FECHA_ARCHIVO:0:4}
 	local MES=${FECHA_ARCHIVO:4:2}
 	local DIA=${FECHA_ARCHIVO:6:8}
-	if grep -q "$DIA/$MES/$ANO" "$MAEDIR"FechasAdj.csv; then
+	if grep -q "$DIA/$MES/$ANO" "$FECHAS_ADJ_FILE"; then
 		#La fecha esta en el archiv - "es hoy la proxima adjudicacion"
 		FECHA_DE_ADJUDICACION=$FECHA_ARCHIVO #ANOMESDIA
 		return 0
@@ -82,6 +96,10 @@ function proximaFechaDeAdjudicacion {
 	# La comparacion la realizo con todas las fechas. De todos modos el archivo de fechas esta ordenado
 	# Me seria suficiente encontrar la primera fecha MAYOR
 	while read fecha; do
+		if [[ $(chequearFechaAdjudicacion "$fecha" "$SELF") -ne 0 ]]
+			then
+				continue
+		fi
 		local FechaRow=`echo "$fecha" | tr ";" "\n" | head -n 1 | tr "/" "\n"`
 		read fDIA fMES fANO <<< $FechaRow
 		local FechaSEP=$fANO$fMES$fDIA
@@ -94,7 +112,7 @@ function proximaFechaDeAdjudicacion {
 				PROX=$FechaSEP
 			fi
 		fi
-	done < "$MAEDIR"FechasAdj.csv
+	done < "$FECHAS_ADJ_FILE"
 	
 	#Asigno a la global
 	#Es imposible que PROXIMA quede vacio ya RecibirOfertas se encarga de que no me pase eso
@@ -109,13 +127,13 @@ function proximaFechaDeAdjudicacion {
 #		[Inicio de ProcesarOfertas]
 #		[Cantidad de archivos a procesar:<cantidad>]
 
-bash GrabarBitacora.sh "$SELF" "Inicio de ProcesarOfertas" "INFO"
+bash GrabarBitacora.sh "$SELF" "Inicio de ProcesarOfertas"
 #echo "Inicio de ProcesarOfertas"
 
 FILES=(`ls -1p "$OKDIR" | grep -v "/\$" | sort -n -t _ -k 2`) #Ordeno por fecha -n (numerico), -t (split con _), -k split[2]
 
 #echo "Cantidad de archivos a procesar: ${#FILES[@]}"
-bash GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar: ${#FILES[@]}" "INFO"
+bash GrabarBitacora.sh "$SELF" "Cantidad de archivos a procesar: ${#FILES[@]}"
 
 ARCHIVOS_ACEPTADOS=0
 ARCHIVOS_RECHAZADOS=0
@@ -137,7 +155,7 @@ do
 	if [ -f "$PROCESADAS_DIR"/"$ARCHIVO_NAME" ]; then
 		#echo "El archivo [$ARCHIVO_NAME] se rechaza porque ya esta en procesadas" 
 		ARCHIVOS_RECHAZADOS=$[$ARCHIVOS_RECHAZADOS +1]
-		bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME por estar DUPLICADO" "WAR"
+		bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME por estar DUPLICADO" 1
 		bash MoverArchivos.sh "$FILE_PATH" "$NOKDIR" "$SELF"
 		continue
 	fi
@@ -152,14 +170,14 @@ do
 		#echo "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado"
 		ARCHIVOS_RECHAZADOS=$[$ARCHIVOS_RECHAZADOS +1]
 		bash MoverArchivos.sh "$FILE_PATH" "$NOKDIR" "$SELF"
-		bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado" "WAR" 
+		bash GrabarBitacora.sh "$SELF" "Se rechaza el archivo $ARCHIVO_NAME porque su estructura no se corresponde con el formato esperado" 1 
 		continue
 	fi
 
 	# 3. Si se puede procesar el archivo (pasa el 2)
 	#		[Archivo a procesar: <nombre del archivo a procesar>]
 	
-	bash GrabarBitacora.sh "$SELF" "Archivo a procesar: $ARCHIVO_NAME" "INFO"
+	bash GrabarBitacora.sh "$SELF" "Archivo a procesar: $ARCHIVO_NAME"
 	ARCHIVOS_ACEPTADOS=$[$ARCHIVOS_ACEPTADOS +1]
 	
 	#Me ahorro y defino ahora la proxima fecha de adjudicacion para el archivo que estoy haciendo
@@ -179,7 +197,11 @@ do
 		# Espero 2 campos (Contrato fusionado, Importe de la Oferta), le quito el salto de linea
 		CAMPOS=(`echo $registro | tr "$SEPARADOR" "\n" | tr -d $'\r'`) 
 		
-		#TODO: Verifico que sean 2?
+		#Verifico que sean 2 (el csv esta correcto)
+		if [ ${#CAMPOS[@]} -ne 2 ]; then
+			rechazarRegistro "Formato del registro invalido (tiene mas de 2 campos)"
+			continue
+		fi
 		
 		# 4. Validar oferta (si no pasa los campos rechazar)
 		# MOTIVOS DE RECHAZO:
@@ -190,26 +212,46 @@ do
 		#	4.5 Suscriptor no puede participar.
 		
 		CONTRATO_FUSIONADO=${CAMPOS[0]}
+		if [ ${#CONTRATO_FUSIONADO} -ne 7 ];then
+			#Aunque ProcesarOfertas no falla si pasa esto, detecto que es un error
+			rechazarRegistro "El campo Contrato fusionado tiene un tamano invalido"
+			continue
+		fi
+		if ! echo "$CONTRATO_FUSIONADO" | egrep -q ^[0-9]+$ 
+			then
+				rechazarRegistro "El campo Contrato fusionado tiene un formato invalido (deben ser 7 digitos)"
+				continue
+		fi
+
 		# 4.1 Contrato Fusionado [7] = Grupo[4];Orden[3] 
 		# Se debe validar contra el padron de suscriptores MAEDIR/temaK_padron.csv (existe o no existe)
 		GRUPO=${CONTRATO_FUSIONADO:0:4}
 		ORDEN=${CONTRATO_FUSIONADO:4:3}
 
+		#Verifique la correcta existencia del padron en el archivo de padrones
 		#Este parser de una linea del CSV a un array elimina los campos VACIOS. (No genera problemas)
 		# -a se utiliza para los nombres que tengan ascentos
-		SUSCRIPTOR=(`grep -a "^$GRUPO;$ORDEN" "$MAEDIR"temaK_padron.csv | tr ";" "\n"`)
-
+		SUSCRIPTOR_LINE=`grep -a "^$GRUPO;$ORDEN" "$PADRON_FILE"`
+		SUSCRIPTOR=(`echo $SUSCRIPTOR_LINE | tr ";" "\n"`)
 		if [ "${#SUSCRIPTOR[@]}" -eq 0 ]; then 
 			# Contrato no encontrado Grupo+Orden
 			rechazarRegistro "Contrato no encontrado"
 			continue
 		fi
 		
-		# Si llego aca, el grupo existe (esta en temaK_padron.csv).
-
-		# Numero de grupo [4]: Se debe validar contra el archivo de Grupos: MAEDIR/Grupos.csv (Estado del grupo ABIERTO o NUEVO) 
-		GRUPO=(`grep "^$GRUPO" "$MAEDIR"grupos.csv | tr "$SEPARADOR" "\n"`)
+		if [[ $(chequearSuscriptorDelPadron "$SUSCRIPTOR_LINE" $SELF) -ne 0 ]]; then
+			rechazarRegistro "El Suscriptor asociado al registro es invalido en el padron"
+			continue
+		fi
 		
+		# Si encontro el padron, encuentra el grupo
+		# Numero de grupo [4]: Se debe validar contra el archivo de Grupos: MAEDIR/Grupos.csv (Estado del grupo ABIERTO o NUEVO) 
+		GRUPO_LINE=`grep "^$GRUPO" "$GRUPOS_FILE"`
+		GRUPO=(`echo $GRUPO_LINE | tr "$SEPARADOR" "\n"`)
+		if [[ $(chequearGrupo "$GRUPO_LINE" "$SELF") -ne 0 ]]; then
+			rechazarRegistro "El Grupo asociado al registro es invalido en el archivo de grupos"
+			continue
+		fi
 		# 4.2 Estado es GRUPO[1] - ver tabla
 		if [ "${GRUPO[1]}" == "CERRADO" ]; then
 			# El grupo esta cerrado
@@ -220,7 +262,6 @@ do
 		
 		# Importe (2do Campo)
 		IMPORTE=`echo "${CAMPOS[1]}" | tr -d "\n"`
-
 		VALOR_CUOTA_PURA=${GRUPO[3]} #Reemplazo comma por punto (en distros de UTF8 se usa punto)
 		CANTIDAD_CUOTAS_PARA_LICITACION=${GRUPO[5]}
 		CANTIDAD_CUOTAS_PENDIENTES=${GRUPO[4]}
@@ -241,7 +282,6 @@ do
 		fi
 
 		MONTO_MINIMO=`echo "$VALOR_CUOTA_PURA*$CANTIDAD_CUOTAS_PARA_LICITACION" | tr "," "." | tr -d $'\r' | bc -l`
-		
 		# 4.3 monto_minimo (valor de cuota pura * cantidad de cuotas para licitaci�n) <= IMPORTE
 		if [ `echo $MONTO_MINIMO'>'$IMPORTE | tr "," "." | tr -d $'\r' | bc -l` == 1 ]; then
 			# No alcanza el monto Minimo
@@ -263,7 +303,7 @@ do
 			rechazarRegistro "Suscriptor no puede participar"
 			continue
 		fi	
-		
+
 		# 5. GRABAR oferta valida (**ver cuadro de campos)
 		#	-La fecha de adjudicacion del nombre del archivo a grabar se obtiene de la Tabla de Fechas de adjudicacion MAEDIR/fechas_adj.csv
 		#	corresponde con la fecha del proximo acto de adjudicacion
@@ -284,7 +324,31 @@ do
 		NOMBRE=${SUSCRIPTOR[2]}
 		FECHA=`date +%d/%m/%Y" "%H:%M:%S`
 		#echo "ACEPTADA"
-		`echo "$CONCESIONARIO;$FECHA_ARCHIVO;$CONTRATO_FUSIONADO;$GRUPO;$ORDEN;$IMPORTE;$NOMBRE;$USER;$FECHA" >> $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt`
+
+		REGISTRO_VALIDO_A_GRABAR="$CONCESIONARIO;$FECHA_ARCHIVO;$CONTRATO_FUSIONADO;$GRUPO;$ORDEN;$IMPORTE;$NOMBRE;$USER;$FECHA"
+
+		# NEW. Me fijo si el suscriptor ya hizo una oferta respecto a FECHA_DE_ADJUDICACION
+		if [ -f "$VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt" ]; then
+			BUSQUEDA_EN_VALIDAS=`grep "$CONTRATO_FUSIONADO;$GRUPO;$ORDEN" "$VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt"`
+			BUSQUEDA_EN_VALIDAS_ARRAY=(`echo $BUSQUEDA_EN_VALIDAS | tr "$SEPARADOR" "\n"`)
+			if [ ! "${#BUSQUEDA_EN_VALIDAS_ARRAY[@]}" -eq 0 ]; then 
+				# Encontro el registro en el archivo, me fijo si el importe es de antes es mas grande
+				IMPORTE_VIEJO=${BUSQUEDA_EN_VALIDAS_ARRAY[5]}
+				if [ `echo $IMPORTE_VIEJO'>'$IMPORTE | tr "," "." | tr -d $'\r' | bc -l` -eq 1 ]; then
+					# Supera el monto maximo
+					rechazarRegistro "La oferta ya fue validada con un importe mayor. Importe Nuevo: $IMPORTE,Importe Anaterior: $IMPORTE_VIEJO"
+					continue
+				else
+					bash GrabarBitacora.sh "$SELF" "Se encontró una oferta validada en $FECHA_DE_ADJUDICACION.txt de $CONTRATO_FUSIONADO, como el importe de esta es mas alto (Nuevo: $IMPORTE - Viejo: $IMPORTE_VIEJO), se reemplazará" 1	
+					$(sed -i "s~$BUSQUEDA_EN_VALIDAS~$REGISTRO_VALIDO_A_GRABAR~" $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt)
+				fi
+			else
+				`echo "$REGISTRO_VALIDO_A_GRABAR" >> $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt`
+			fi
+		else
+			`echo "$REGISTRO_VALIDO_A_GRABAR" >> $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt`
+		fi
+		
 		
 		# Si llego aca, esta aceptado
 		REGISTROS_ACEPTADOS=$[$REGISTROS_ACEPTADOS +1]
@@ -296,7 +360,7 @@ do
 
 	#	[Registros leidos = aaa: cantidad de ofertas validas bbb cantidad de ofertas rechazadas = ccc]
 	# echo Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS
-	bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS" "INFO"
+	bash GrabarBitacora.sh "$SELF" "Registros leidos = $REGISTROS_LEIDOS: cantidad de ofertas validas = $REGISTROS_ACEPTADOS cantidad de ofertas rechazadas = $REGISTROS_RECHAZADOS"
 					
 	# 8. Llevar a cero todos los contadores de registros
 	REGISTROS_LEIDOS=0
@@ -314,7 +378,7 @@ done
 #echo cantidad de archivos procesados $ARCHIVOS_ACEPTADOS
 #echo cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS
 #echo Fin de ProcesarOfertas
-bash GrabarBitacora.sh "$SELF" "cantidad de archivos procesados $ARCHIVOS_ACEPTADOS" "INFO"
-bash GrabarBitacora.sh "$SELF" "cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS" "INFO"
-bash GrabarBitacora.sh "$SELF" "Fin de ProcesarOfertas" "INFO"
+bash GrabarBitacora.sh "$SELF" "cantidad de archivos procesados $ARCHIVOS_ACEPTADOS"
+bash GrabarBitacora.sh "$SELF" "cantidad de archivos rechazados $ARCHIVOS_RECHAZADOS"
+bash GrabarBitacora.sh "$SELF" "Fin de ProcesarOfertas"
 
