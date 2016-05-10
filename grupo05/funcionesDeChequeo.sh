@@ -44,7 +44,7 @@ chequearSuscriptorDelPadron () {
 			then
 				echo 0
 		else
-			local NRO_LINEA=`grep -nr "$LINE" "$MAEDIR/temaK_padron.csv" | gawk '{print $1}' FS=":"`
+			local NRO_LINEA=`grep -nr "$LINE" "$MAEDIR/temaK_padron.csv" | tr ":" "\n" | head -n 1`
 			bash GrabarBitacora.sh "$CALLER" "Padron invalido en el archivo de Padrones. Linea: $NRO_LINEA" 2
 			
 			echo 1
@@ -68,7 +68,7 @@ chequearGrupo () {
 		then
 			echo 0
 	else
-		local NRO_LINEA=`grep -nr "$LINE" "$MAEDIR/grupos.csv" | gawk '{print $1}' FS=":"`
+		local NRO_LINEA=`grep -nr "$LINE" "$MAEDIR/grupos.csv" | tr ":" "\n" | head -n 1`
 		bash GrabarBitacora.sh "$CALLER" "Padron invalido en el archivo de Grupos. Linea: $NRO_LINEA" 2
 		echo 1
 	fi
