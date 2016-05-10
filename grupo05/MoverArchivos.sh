@@ -34,7 +34,7 @@ DESTINO_PATH=`echo ${DESTINO%/*}`
 if [[ "$ORIGEN" != "$DESTINO" && "$ORIGEN_PATH" != "$DESTINO_PATH" && "$DESTINO" != "." ]] || [[ "$DESTINO" == "." && "$ORIGEN" != "$ORIGEN_PATH" ]]; then
 	if [ -e "$ORIGEN" ]; then
 		if [ -d "$DESTINO" ]; then
-			if [ ! -e "$DESTINO$ORIGEN" ]; then
+			if [ ! -f "$DESTINO${ORIGEN##*/}" ]; then
 				RETVAL=0
 				mv "$ORIGEN" "$DESTINO"
 				logMessage "$COMANDO" "El archivo \"$ORIGEN\" se movió exitosamente al destino \"$DESTINO\"." "0"
@@ -44,7 +44,7 @@ if [[ "$ORIGEN" != "$DESTINO" && "$ORIGEN_PATH" != "$DESTINO_PATH" && "$DESTINO"
 				if [ -d "$DESTINO$DPLDIR" ]; then
 					getProxNroSecuencia
 					NRO_COPIA="$?"
-					mv "$ORIGEN" "$DESTINO$DPLDIR$ORIGEN.$NRO_COPIA"
+					mv "$ORIGEN" "$DESTINO$DPLDIR${ORIGEN##*/}.$NRO_COPIA"
 					logMessage "$COMANDO" "El archivo ya estaba duplicado, se creo otra copia numerada $NRO_COPIA." "0"
 				else 
 					mkdir "$DESTINO$DPLDIR"

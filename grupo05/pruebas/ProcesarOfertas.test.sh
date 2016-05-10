@@ -162,7 +162,7 @@ test_ProcesaUnRegistro () {
 	hacerGrep "Registros leidos = 1: cantidad de ofertas validas = 1" "$LOGDIR"ProcesarOfertas.log
 	
 	local FECHA=`date +%d/%m/%Y" "%H:%M`
-	hacerGrep "^1234;20160527;1234567;1234;567;1500;ALFONSO,MARIANA;tomi;$FECHA*" "$PROCDIR"validas/20160528.txt
+	hacerGrep "^1234;20160527;1234567;1234;567;1500;ALFONSO,MARIANA;[^;]*;$FECHA*" "$PROCDIR"validas/20160528.txt
 
 	imprimirResultado $CORRECTO ${FUNCNAME[0]}
 
@@ -343,7 +343,7 @@ test_SeHaceDobleOfertaSeQuedaConLaSegunda () {
 
 	hacerGrep "Se encontró una oferta ya validada en 20160528.txt del contrato: 1234567, como el importe de la que se esta procesando actualmente es igual o mas alto (Nuevo: 1510 - Viejo: 1500), se reemplazará" "$LOGDIR"ProcesarOfertas.log
 	
-	hacerGrep "1234;20160527;1234567;1234;567;1510;ALFONSO,MARIANA;tomi;" "$PROCDIR"validas/*.txt
+	hacerGrep "1234;20160527;1234567;1234;567;1510;ALFONSO,MARIANA;[^;]*;" "$PROCDIR"validas/*.txt
 
 	imprimirResultado $CORRECTO ${FUNCNAME[0]}
 	CleanPlease
