@@ -150,7 +150,7 @@ echo
 echo "~ Inicio de instalación del sistema CIPAK ~"
 echo "-------------------------------------------"
 echo
-if [ ! "$1" = "-d" ]
+if [ "$1" = "-d" ]
   then
 	seteoVariables
 	echo

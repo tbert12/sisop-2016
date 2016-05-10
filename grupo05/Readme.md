@@ -73,7 +73,7 @@ Tras esto, dispondrá de una carpeta del mismo nombre con todo los archivos que 
 El instalador no requiere ningún parámetro para su funcionamiento. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la instalación se realice en el mismo proceso que la terminal, y con el *working directory* posicionado en la carpeta del mismo, de forma que pueda funcionar totalmente:
 `. installer.sh`<br />
 
-Opcionalmente, se puede utilizar el flag `-d` para predefinir que se utilicen todas las variables de ambiente por default:
+Opcionalmente, se puede utilizar el flag `-d` para definir todas las variables de ambiente diferentes de aquellas por default:
 `. installer.sh -d`<br />
 
 

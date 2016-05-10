@@ -45,8 +45,8 @@ fi
 if [ "$STOP_RESULT" -eq 0 ]; then
 	source ./funcionesDeChequeo.sh
 	chequearAmbienteInicializado
-	AMBIENTE_INICIALIZADO=$?
-	if [ $AMBIENTE_INICIALIZADO -eq 0 ]; then
+	AMBIENTE_ESTA_INICIALIZADO=$?
+	if [ $AMBIENTE_ESTA_INICIALIZADO -eq 0 ]; then
 		borrarArchAuxiliares "$PROCESS_NAME"
 	fi
 

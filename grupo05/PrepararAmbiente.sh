@@ -73,7 +73,7 @@ verificarArchivoMaestro() {
 
 verificarScripts() {
 	SCRIPT_OK=1
-	
+
 	verificarScript "MoverArchivos.sh"
 	if [ $? -eq 0 ]; then
 		SCRIPT_OK=0
@@ -106,7 +106,11 @@ verificarScripts() {
 	if [ $? -eq 0 ]; then
 		SCRIPT_OK=0
 	fi
-		
+	verificarScript "funcionesDeChequeo.sh"
+	if [ $? -eq 0 ]; then
+		SCRIPT_OK=0
+	fi
+
 	return $SCRIPT_OK
 }
 
