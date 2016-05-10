@@ -336,10 +336,10 @@ do
 				IMPORTE_VIEJO=${BUSQUEDA_EN_VALIDAS_ARRAY[5]}
 				if [ `echo $IMPORTE_VIEJO'>'$IMPORTE | tr "," "." | tr -d $'\r' | bc -l` -eq 1 ]; then
 					# Supera el monto maximo
-					rechazarRegistro "La oferta ya fue validada con un importe mayor. Importe Nuevo: $IMPORTE,Importe Anaterior: $IMPORTE_VIEJO"
+					rechazarRegistro "La oferta ya fue validada anteriormente con un importe mayor. Importe Nuevo: $IMPORTE,Importe Anaterior: $IMPORTE_VIEJO"
 					continue
 				else
-					bash GrabarBitacora.sh "$SELF" "Se encontró una oferta validada en $FECHA_DE_ADJUDICACION.txt de $CONTRATO_FUSIONADO, como el importe de esta es mas alto (Nuevo: $IMPORTE - Viejo: $IMPORTE_VIEJO), se reemplazará" 1	
+					bash GrabarBitacora.sh "$SELF" "Se encontró una oferta ya validada en $FECHA_DE_ADJUDICACION.txt del contrato: $CONTRATO_FUSIONADO, como el importe de la que se esta procesando actualmente es igual o mas alto (Nuevo: $IMPORTE - Viejo: $IMPORTE_VIEJO), se reemplazará" 1	
 					$(sed -i "s~$BUSQUEDA_EN_VALIDAS~$REGISTRO_VALIDO_A_GRABAR~" $VALIDAS_DIR/$FECHA_DE_ADJUDICACION.txt)
 				fi
 			else

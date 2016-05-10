@@ -1,6 +1,4 @@
 *.project
 *.sh~
 *.pl~
-*.csv
-/grupo05/datos/
 /grupo05/CIPAK_G5/
