@@ -1,17 +1,8 @@
-sub logError {
-	my ($msg, $comando) = @_;
-	print "$msg";
-	system ("sh", "GrabarBitacora.sh", "$comando", "$msg", "2") == 0
-		or die "No se pudo loggear el error en la bitacora del comando invocador.";
-	return (0);	
-}
-
 sub imprimirLinea {
-	my ($linea, $comando) = @_;
+	my ($linea) = @_;
         if (defined $ARGV[2] && length $ARGV[2] > 0) {
                 open (SALIDA, ">>$ARGV[2]") 
-			or (&logError ("No se pudo abrir archivo de salida de MostrarBitacora.", $comando) == 0
-				or return (1));
+			or (print "No se pudo abrir archivo de salida de MostrarBitacora." and return (1));
                 print SALIDA $linea;
         } else {
                 print "$linea";
@@ -26,17 +17,16 @@ sub main {
 	}
 
 	open (BITACORA, "$bitacora") 
-		or (&logError("No se pudo abrir el archivo de bitacora sobre el que se va a realizar la consulta de MostrarBitacora.", $comando) == 0
-			or return (1));
+		or (print "No se pudo abrir el archivo de bitacora sobre el que se va a realizar la consulta de MostrarBitacora." and return (1));
 
 	while ($linea=<BITACORA>) {
 		if (defined $query) {
 			if ($linea =~ /$query/) {	# Busca coincidencias de regex.
-				&imprimirLinea ($linea, $comando) == 0
+				&imprimirLinea ($linea) == 0
 					or return (1);
 			}
 		} else {
-			&imprimirLinea ($linea, $comando) == 0
+			&imprimirLinea ($linea) == 0
 				or return (1);
 		}
 	}
