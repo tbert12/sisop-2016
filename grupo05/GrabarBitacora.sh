@@ -21,10 +21,10 @@ DATE=`date +%d/%m/%Y" "%H:%M:%S`	# Fecha actual
 BITACORA="$LOGDIR$COMANDO.log"
 if [ -n "$MSG" ]; then		# Solo loggeo mensajes no vacios.
 	echo "$USER $DATE $COMANDO [$MSG_TYPE]: $MSG" >> $BITACORA
-	
+
 	# Si el tamanio del archivo supera LOGSIZE se trunca a ultimas 50 lineas
 	CURRENT_LOGSIZE="$(wc -c < $BITACORA)"
-	if [ $LOGSIZE -gt 0 -a $((CURRENT_LOGSIZE)) -gt $(($LOGSIZE * 1024)) ]; then
+	if [ -z ${LOGSIZE+x} -a $LOGSIZE -gt 0 -a $((CURRENT_LOGSIZE)) -gt $(($LOGSIZE * 1024)) ]; then
         	LAST_REGS=`tail -n 50 "$BITACORA"`
         	rm "$BITACORA"
         	echo "$LAST_REGS" > $BITACORA

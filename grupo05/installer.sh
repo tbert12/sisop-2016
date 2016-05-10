@@ -14,7 +14,7 @@ CONFDIR="$GRUPO""config/"
 RESGDIR="$GRUPO""source/"
 
 LOGSIZE=500
-SLEEPTIME=10
+SLEEPTIME=1
 # ----------------------------------------
 
 arch_comprimido="source.tar.gz"
@@ -155,8 +155,8 @@ if [ "$1" = "-d" ]
 	seteoVariables
 	echo
 	echo "-------------------------------------------"
+	echo
 fi
-echo
 echo "Instalando..."
 echo
 

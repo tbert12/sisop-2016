@@ -43,7 +43,7 @@ else
 fi
 
 if [ "$STOP_RESULT" -eq 0 ]; then
-	source ./funcionesDeChequeo.sh
+	source funcionesDeChequeo.sh
 	chequearAmbienteInicializado
 	AMBIENTE_ESTA_INICIALIZADO=$?
 	if [ $AMBIENTE_ESTA_INICIALIZADO -eq 0 ]; then
