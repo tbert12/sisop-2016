@@ -387,7 +387,7 @@ main() {
 	#Errores en el archivo de configuracion:
 	elif [ $retornoSeteo -eq 2 ]; then
 		if [ -f "$BINDIR""PrepararAmbiente.log" ]; then
-			bash MoverArchivos.sh "$BINDIR""PrepararAmbiente.log" "/home/guidonegri/grupo05/CIPAK_G5/Grupo05/bitacoras"
+			bash MoverArchivos.sh "$BINDIR""PrepararAmbiente.log" "$LOGDIR"
 		fi
 		borrarVariablesAmbiente
 		return 1
