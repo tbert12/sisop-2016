@@ -147,3 +147,4 @@ chequearAmbienteInicializado() {
 export -f chequearFechaAdjudicacion
 export -f chequearSuscriptorDelPadron
 export -f chequearGrupo
+export -f chequearAmbienteInicializado

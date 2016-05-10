@@ -14,6 +14,11 @@ else
 	fi
 fi
 
+if [ -z $LOGSIZE ]		# Si no está definida o es nulo, usa LOGSIZE=0
+  then
+	LOGSIZE=0
+fi
+
 DATE=`date +%d/%m/%Y" "%H:%M:%S`	# Fecha actual
 
 # Escribo registro de log al final del archivo
