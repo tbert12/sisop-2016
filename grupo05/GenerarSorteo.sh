@@ -111,7 +111,7 @@ fechaProximaAdjudicacion() {
 			then
 
 			#chequeo la linea
-			local fechaOK=$(chequearFechaAdjudicacion $linea)
+			local fechaOK=$(chequearFechaAdjudicacion "$linea" "GenerarSorteo")
 			
 			#si la fecha contiene un error prosigo con la siguiente
 			if [ $fechaOK == 1 ]

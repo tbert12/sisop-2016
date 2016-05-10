@@ -90,7 +90,7 @@ chequearFechaAdjudicacion() {
 	if [ -n "$LINEA" ]
 		then
 			#corto y reformateo en YYYYMMDD
-			local arrayFecha=($(echo "$LINEA" | tr "$SEPARADOR" "\n" | head -n 1 | tr "/" "\n"))
+			local arrayFecha=($(echo "$LINEA" | tr ";" "\n" | head -n 1 | tr "/" "\n"))
 			local fecha=${arrayFecha[2]}${arrayFecha[1]}${arrayFecha[0]}
 			#lo formateado es un numero
 			if [[ $fecha =~ ^[0-9]+$ ]]
