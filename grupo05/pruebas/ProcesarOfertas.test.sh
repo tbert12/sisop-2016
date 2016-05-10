@@ -328,7 +328,7 @@ test_SeHaceDobleOfertaSeQuedaConLaPrimera () {
 
 	hacerGrep "Registros leidos = 2: cantidad de ofertas validas = 1" "$LOGDIR"ProcesarOfertas.log
 
-	hacerGrep "La oferta ya fue validada con un importe mayor" "$PROCDIR"rechazadas/*.rech
+	hacerGrep "La oferta ya fue validada anteriormente con un importe mayor. Importe Nuevo: 1400,Importe Anaterior: 1500;1234567" "$PROCDIR"rechazadas/*.rech
 
 	imprimirResultado $CORRECTO ${FUNCNAME[0]}
 	CleanPlease
@@ -341,7 +341,7 @@ test_SeHaceDobleOfertaSeQuedaConLaSegunda () {
 
 	hacerGrep "Registros leidos = 2: cantidad de ofertas validas = 2" "$LOGDIR"ProcesarOfertas.log
 
-	hacerGrep "Se encontró una oferta validada en 20160528.txt de 1234567, como el importe de esta es mas alto (Nuevo: 1510 - Viejo: 1500), se reemplazará" "$LOGDIR"ProcesarOfertas.log
+	hacerGrep "Se encontró una oferta ya validada en 20160528.txt del contrato: 1234567, como el importe de la que se esta procesando actualmente es igual o mas alto (Nuevo: 1510 - Viejo: 1500), se reemplazará" "$LOGDIR"ProcesarOfertas.log
 	
 	hacerGrep "1234;20160527;1234567;1234;567;1510;ALFONSO,MARIANA;tomi;" "$PROCDIR"validas/*.txt
 
