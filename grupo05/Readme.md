@@ -213,14 +213,15 @@ Se utilizan las siguientes variables de ambiente:
 ### MostrarBitacora.pl
 
 El script acepta hasta 3 argumentos distintos:<br />
-1. **COMANDO** *(Requerido)*. Nombre del comando invocador del script. El archivo de bitácora sobre el cual se realizará la consulta se llamará *{COMANDO}.log*.<br />
+1. **BITACORA** *(Requerido)*. Nombre del archivo bitácora sobre el cual se va a realizar la consulta. Debe especificarse ruta relativa y extensión del archivo.<br />
 2. **QUERY** *(Opcional)*. Puede ser tanto una cadena de texto normal como una expresión regular. Funciona como filtro puesto que se mostrarán sólo las líneas de la bitácora correspondiente que matcheen con la query ingresada. En caso de no indicarse este parámetro, se mostrarán todas las líneas de la bitácora.<br />
 3. **ARCHIVO DE SALIDA** *(Opcional)*. Es el nombre y extensión del archivo en el cual se imprimirán las líneas de la bitácora matcheadas por la query. En caso de no indicarse, obviamente se imprimirán por *STDOUT* por defecto. El archivo tendrá ubicación relativa al directorio donde se está ejecutando el script. Si el archivo de salida especificado no existe, lo crea; si ya existe, las líneas se insertan al final del mismo, en orden.<br />
 
-El script considera la gran mayoría de los casos como casos de éxito. Esto es, ya sea que se haya encontrado un match para nuestra consulta en la bitácora especificada o si, por el contrario, no se hallaron coincidencias, en ambos casos el valor de retorno es 0.<br />
-Casos de excepción son aquellos en los que el flow normal del programa se ve interrumpido por agentes no tenidos en cuenta o cuando se mata el proceso pues falla la llamada al sistema para grabar en la bitácora información sobre la ejecución del script.<br />
+El script devuelve alguno de los siguientes valores:
+* **0**: Éxito. El archivo bitácora fue abierto correctamente. No se distingue si la consulta fue *matcheada* o no en el valor de retorno.
+* **1**: Error. No se pudo abrir el archivo de bitácora sobre el que se va a realizar la consulta.
+* **2**: Error. No se pudo abrir o crear el archivo de salida del script.<br />
 
-Utiliza únicamente la variable de entorno *LOGDIR* para ver dónde deberá buscar el archivo de bitácora a consultar.<br />
 
 ### LanzarProceso.sh
 
