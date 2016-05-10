@@ -20,12 +20,11 @@ sub imprimirLinea {
 }
 
 sub main {
-	$comando = $ARGV[0];	# Nombre del comando, obligatorio.
+	$bitacora = $ARGV[0];	# Nombre del comando, obligatorio.
 	if (defined $ARGV[1] && length $ARGV[1] > 0) {
 		$query = $ARGV[1];	# String a buscar, opcional.
 	}
 
-	$bitacora = $ENV{LOGDIR} . $comando . ".log";
 	open (BITACORA, "$bitacora") 
 		or (&logError("No se pudo abrir el archivo de bitacora sobre el que se va a realizar la consulta de MostrarBitacora.", $comando) == 0
 			or return (1));
