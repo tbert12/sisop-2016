@@ -163,7 +163,7 @@ sub ganadores_por_sorteo{
 	}
 	if ($modo_comando eq "r"){
 		@grupos = split(/-/,$grupo_recibido_parametro);
-		@grupos = sort {$a <=> $b} @grupos;
+		
 		@grupos = ($grupos[0]..$grupos[-1]);
 	}
 	if ($modo_comando eq "v"){
@@ -172,7 +172,7 @@ sub ganadores_por_sorteo{
 	if ($modo_comando eq "u"){
 		@grupos = ($grupo_recibido_parametro);
 	}
-	
+	@grupos = sort {$a <=> $b} @grupos;
 	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo.".txt";
 	foreach my $num_grupo (@grupos){
 		my $linea_a_guardar;
@@ -231,14 +231,13 @@ sub ganadores_por_licitacion{
 	generar_hash_sorteo($hash_sorteo);
 	generar_hash_datos($hash_datos,$nombre_archivo);
 	generar_hash_datos_sorteo($hash_datos_sorteo);
-	print Dumper(%$hash_datos_sorteo);
 	if ($modo_comando eq "t"){
 		@grupos = (keys %$hash_datos);
 	
 	}
 	if ($modo_comando eq "r"){
 		@grupos = split(/-/,$grupo_recibido_parametro);
-		@grupos = sort {$a <=> $b} @grupos;
+		
 		@grupos = ($grupos[0]..$grupos[-1]);
 	}
 	if ($modo_comando eq "v"){
@@ -247,6 +246,7 @@ sub ganadores_por_licitacion{
 	if ($modo_comando eq "u"){
 		@grupos = ($grupo_recibido_parametro);
 	}
+	@grupos = sort {$a <=> $b} @grupos;
 	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
 	@grupos = sort {$a <=> $b} @grupos;
 	foreach my $num_grupo (@grupos){
@@ -374,6 +374,7 @@ sub recibir_grupo{
 		
 		$modo_comando = "u"; 
 	}
+	print "\n";
 	}
 sub ejecutar_ayuda(){
 	#Comando de ayuda que se ejecuta pasando por ARGV los caracteres "-a"
@@ -382,9 +383,9 @@ sub ejecutar_ayuda(){
 	print "Previo a ejecutarse este comando, debe inicializarse correspondientemente el ambiente \n";
 	print "Para saber cómo iniciar correctamente el ambiente, diríjase a la documentación proporcionada\n";
 	print "El módulo puede ejecutarse con los siguientes argumentos: \n";
-	print " './DeterminarGanadores.pl -g' graba los resultados en el directorio $ENV{'INFODIR'}\n";
+	print " './DeterminarGanadores.pl -g' graba las consultas en el directorio $ENV{'INFODIR'}\n";
 	print "'./DeterminarGanadores.pl' sólo se muestran las consultas en pantalla\n";
-	print "Una vez lanzado el módulo, se presentará la pantalla de bienvenida\n";
+	print "Una vez ejecutado el comando, se presentará la pantalla de bienvenida\n";
 	print "La misma le pedirá que ingrese una opción para acceder a una consulta\n";
 	print "Se tienen las siguientes consultas disponibles:\n";
 	print "A entrega el numero ganador del sorteo correspondiente a la fecha de adjudicación indicada por parámetro\n";
@@ -398,6 +399,10 @@ sub ejecutar_ayuda(){
 	print "Causa del error: No se ejecutó el comando PrepararAmbiente, por lo cual el módulo no puede ser ejecutado\n";
 	print "2. Ya se está corriendo una instancia de DeterminarGanadores \n";
 	print "Causa del error: Se intenta ejecutar, otra vez y en otra ventana, el módulo cuando el mismo ya está siendo ejecutado \n";
+	print "3. No es válido el directorio de sorteos.\n";
+	print "Causa del error: No se corrió el comando GenerarSorteo. Recuerde que debe correrlo primero para utilizar este comando.\n";
+	print "\n";
+	print "Para más información, recurrir a la documentación adjunta con el CIPAK.\n";
 }
 
 sub recibir_idsorteo_fecha{
@@ -409,6 +414,7 @@ sub recibir_idsorteo_fecha{
 	print "Especifique la fecha, en formato AAAAMMDD\n";
 	 $fecha_sorteo = <STDIN>;
 	chomp($fecha_sorteo);
+	print "\n";
 }
 
 sub listar_archivos{
@@ -416,7 +422,7 @@ sub listar_archivos{
 	#En caso de no hallar el directorio correspondiente
 	#Aborta la ejecución del script
 	my $dir = $_[0];
-	opendir(my $dh, $dir) or die "No es válido el directorio [$!] \n";
+	opendir(my $dh, $dir) or die "No es válido el directorio de sorteos. [$!] \n";
 	while (my $file = readdir($dh)){
 		if ($file =~ /\d_.+\.srt$/){
 			print "$file \n";	
@@ -512,7 +518,9 @@ if ($ENV{'AMBIENTE_INICIALIZADO'} eq 1){
 
 	while( 1){
 	recibir_parametros();
-	sleep 8;
+	print "\n";
+	print "Presione cualquier tecla para realizar otra consulta.\n";
+	<STDIN>;
 	system $^O eq 'MSWin32' ? 'cls' : 'clear';
 	}
 }else {
