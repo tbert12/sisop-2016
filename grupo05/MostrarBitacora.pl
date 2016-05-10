@@ -2,7 +2,7 @@ sub imprimirLinea {
 	my ($linea) = @_;
         if (defined $ARGV[2] && length $ARGV[2] > 0) {
                 open (SALIDA, ">>$ARGV[2]") 
-			or (print "No se pudo abrir archivo de salida de MostrarBitacora." and return (1));
+			or (print "No se pudo abrir archivo de salida de MostrarBitacora." and return (2));
                 print SALIDA $linea;
         } else {
                 print "$linea";
@@ -23,11 +23,11 @@ sub main {
 		if (defined $query) {
 			if ($linea =~ /$query/) {	# Busca coincidencias de regex.
 				&imprimirLinea ($linea) == 0
-					or return (1);
+					or return (2);
 			}
 		} else {
 			&imprimirLinea ($linea) == 0
-				or return (1);
+				or return (2);
 		}
 	}
 
