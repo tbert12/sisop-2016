@@ -11,11 +11,11 @@
 ### Pa' correr ###
 
 ```
-cd grupo05/
-bash compiler.sh
-cd CIPAK_O5/
-. installer.sh
-. PrepararAmbiente.sh
+$ cd grupo05/
+$ bash compiler.sh && tar -xzf CIPAK_G5.tgz 
+$ rm CIPAK_G5.tgz && cd CIPAK_G5/
+$ . installer.sh 
+$ . PrepararAmbiente.sh
 ```
 ### Como configuro el repo? ###
 

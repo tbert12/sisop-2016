@@ -5,8 +5,7 @@
 
 ### Instalar
 
-Para instalar el sistema **CIPAK** en su computadora, elija un directorio y descomprima allí
-el archivo `CIPAK-G5.tgz` (puede hacerlo mediante clic derecho, y la opción *Extract here*),
+Para instalar el sistema **CIPAK** en su computadora, coloque un dispositivo USB con el archivo `CIPAK-G5.tgz`, luego elija un directorio donde descomprimirlo, realice la descompresión del mismo (puede hacerlo mediante clic derecho, y la opción *Extract here*),
 y corra el instalador dentro de la carpeta, mediante la siguiente línea de comando:
 `.../CIPAK-G5$ . installer.sh`<br />
 El instalador debe estar en el mismo directorio que el fichero comprimido `source.tar.gz` para poder realizar la instalación con éxito.
