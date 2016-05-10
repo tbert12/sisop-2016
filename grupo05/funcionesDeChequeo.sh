@@ -33,14 +33,14 @@ chequearSuscriptorDelPadron () {
 	# iconv -f iso-8859-1 -t utf-8 $MAEDIR/temaK_padron.csv > $MAEDIR/temaK_padron.fix_charset.csv
 
 	
-	local EGREP_PATTERN='^[0-9]{4};[0-9]{3};[^;]*;[0-9]{4};[0-9]+;[0-2]?;.{2}?;[0-9]{6};[0-9]{2};[0-9]{8};[0-9]{2};[0-9]{10};[0-9]+$'
-	if echo $LINE | egrep -a -q "$EGREP_PATTERN"  
+	local EGREP_PATTERN='^[0-9]\{4\};[0-9]\{3\};[^;]*;[0-9]\{4\};[0-9]+;[0-2]?;.\{2\}?;[0-9]\{6\};[0-9]\{2\};[0-9]\{8\};[0-9]\{2\};[0-9]\{10\};[0-9]+$'
+	if echo "$LINE" | egrep -a -q "$EGREP_PATTERN"
 		then
 			echo 0
 	else
-		#Esfuero con el utf8
+		#Fuerzo con el utf8
 		local LINE_UTF8_FORZADO=$(echo $LINE | iconv -f iso-8859-1 -t utf-8)
-		if echo $LINE_UTF8_FORZADO | egrep -a -q "$EGREP_PATTERN"  
+		if echo "$LINE_UTF8_FORZADO" | egrep -a -q "$EGREP_PATTERN"
 			then
 				echo 0
 		else
@@ -63,7 +63,7 @@ chequearGrupo () {
 	#Cantidad de cuotas pendientes Numérico. Nos indica la cantidad de cuotas pendientes del Plan
 	#Cantidad de cuotas para licitación Numérico. Representa el mínimo de cuotas necesarias para licitar
 
-	local EGREP_PATTERN="^[0-9]{4};(NUEVO|ABIERTO|CERRADO);[0-9]+;[0-9]+,?[0-9]+;[0-9]+;[0-9]+$"
+	local EGREP_PATTERN="^[0-9]\{4\};(NUEVO|ABIERTO|CERRADO);[0-9]+;[0-9]+,?[0-9]+;[0-9]+;[0-9]+$"
 	if echo $LINE | egrep -a -q "$EGREP_PATTERN"  
 		then
 			echo 0
