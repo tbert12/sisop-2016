@@ -79,7 +79,7 @@ Opcionalmente, se puede utilizar el flag `-d` para definir todas las variables d
 
 ### uninstaller.sh
 
-El desinstalador no utiliza ningún parámetro. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la desinstalación se realice en el mismo proceso que la terminal, y, más importante, con el *working directory* posicionado en la carpeta del script, de forma que pueda garantizarse su total funcionamiento:
+El desinstalador no utiliza ningún parámetro. Para ejecutarlo, se recomienda que se utilice el siguiente comando, con la notación de `.` para que la desinstalación se realice en el mismo proceso que la terminal y con el *working directory* posicionado en la carpeta del script, de forma que pueda garantizarse su total funcionamiento:
 `. uninstaller.sh`<br />
 
 

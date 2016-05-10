@@ -3,6 +3,7 @@
 RED='\033[0;31m' # Rojo
 NC='\033[0m' # Sin color
 
+cd 'binarios' > /dev/null
 
 if [ $(($AMBIENTE_INICIALIZADO)) -ne 1 ]
   then
