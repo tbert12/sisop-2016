@@ -245,6 +245,10 @@ setearVariablesAmbiente() {
 		return $SETEO_CORRECTO
 	fi
 	
+	# Para evitar errores antes del seteo, exporto un logsize default.
+	LOGSIZE=500
+	export LOGSIZE
+	
 	#Parseo el archivo config para setear las variables:
 	echo "Arrancando la inicializacion del sistema. A continuacion se muestran y setean las variables de ambiente:"
 	echo	
