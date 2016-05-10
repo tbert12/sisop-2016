@@ -343,7 +343,7 @@ continuarEjecucion() {
 			#0 = Se ejecuto correctamente
 			elif [ $retornoLanzarProceso -eq 0 ]; then
 				bash GrabarBitacora.sh PrepararAmbiente "El comando RecibirOferta fue activado."
-				PID=$(pgrep "RecibirOfertas.")  #Hardcodeo de RecibirOfertas.sh acortado a 15 caracteres
+				PID=$(pgrep "RecibirOfertas." | head -n 1)  #Hardcodeo de RecibirOfertas.sh acortado a 15 caracteres
 				echo
 				echo "El comando RecibirOferta fue activado. RecibirOfertas está corriendo bajo el No: $PID"
 				echo "Para detenerlo utilizar la siguiente linea:"

@@ -163,7 +163,7 @@ sub ganadores_por_sorteo{
 	}
 	if ($modo_comando eq "r"){
 		@grupos = split(/-/,$grupo_recibido_parametro);
-		
+		@grupos = sort {$a <=> $b} @grupos;
 		@grupos = ($grupos[0]..$grupos[-1]);
 	}
 	if ($modo_comando eq "v"){
@@ -237,7 +237,7 @@ sub ganadores_por_licitacion{
 	}
 	if ($modo_comando eq "r"){
 		@grupos = split(/-/,$grupo_recibido_parametro);
-		
+		@grupos = sort {$a <=> $b } @grupos;	
 		@grupos = ($grupos[0]..$grupos[-1]);
 	}
 	if ($modo_comando eq "v"){
@@ -246,7 +246,6 @@ sub ganadores_por_licitacion{
 	if ($modo_comando eq "u"){
 		@grupos = ($grupo_recibido_parametro);
 	}
-	@grupos = sort {$a <=> $b} @grupos;
 	my $nombre_archivo_a_guardar = $ENV{'INFODIR'}.$sorteo_a_mostrar."_Grd".$grupos[0]."-Grh".$grupos[-1]."_".$fecha_sorteo."_licitacion.txt";
 	@grupos = sort {$a <=> $b} @grupos;
 	foreach my $num_grupo (@grupos){
