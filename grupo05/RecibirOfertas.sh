@@ -143,7 +143,7 @@ do
 	done < "$DATDIR"arch_arr_RO.aux
 	rm "$DATDIR"arch_arr_RO.aux 2> /dev/null
 
-	if [ "$(ls -A "$OKDIR")" ]
+	if [ -n "$(ls -1p "$OKDIR" | grep -v "/\$")" ]
 	  then  # hay archivos aceptados en $OKDIR para procesar
 		. "$BINDIR"LanzarProceso.sh "$BINDIR""ProcesarOfertas.sh" "RecibirOfertas"
 		RES_LNZ=$?

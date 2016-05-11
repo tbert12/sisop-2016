@@ -29,7 +29,7 @@ if [ -n "$MSG" ]; then		# Solo loggeo mensajes no vacios.
 
 	# Si el tamanio del archivo supera LOGSIZE se trunca a ultimas 50 lineas
 	CURRENT_LOGSIZE="$(wc -c < $BITACORA)"
-	if [ -z ${LOGSIZE+x} -a ${LOGSIZE:-0} -gt 0 -a $((CURRENT_LOGSIZE)) -gt $((${LOGSIZE:-0} * 1024)) ]; then
+	if [ ${LOGSIZE:-0} -gt 0 -a $((CURRENT_LOGSIZE)) -gt $((${LOGSIZE:-0} * 1024)) ]; then
         	LAST_REGS=`tail -n 50 "$BITACORA"`
         	rm "$BITACORA"
         	echo "$LAST_REGS" > $BITACORA
